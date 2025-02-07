@@ -20,13 +20,8 @@ const categorySchema = new mongoose.Schema(
     },
     image: {
       type: String, // Store image URL or file path
+      default: "/logo/category-brand-default-img.jpg"
     },
-    products: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product" // Future-proofing for product relations
-      }
-    ],
     isDeleted: {
       type: Boolean,
       default: false // Soft delete feature

@@ -4,7 +4,12 @@ const path = require("path");
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/uploads/categories"); // Image upload path
+
+    const baseUploadPath = "public/uploads";
+    // Extract module name from the request path (e.g., /upload/category → "category")    
+    const module = req.originalUrl.split("/")[2];   
+    const uploadPath = `${baseUploadPath}/${module}`;    
+    cb(null, uploadPath); // Image upload path
   },  
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname)); // Unique filename

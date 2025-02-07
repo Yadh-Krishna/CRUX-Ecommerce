@@ -97,34 +97,11 @@ const blockCategory=async (req, res) => {
       res.status(500).json({ error: "Failed to update category status." });
     }
   }
-
-  const searchCategory=async (req, res) => {
-    try {
-        const { searchCategories } = req.query; // Use `req.query` for search input
-
-        // If no search term is provided, return all categories
-        let filter = {};
-        if (searchCategories) {
-            filter.name = { $regex: searchCategories, $options: "i" };
-        }
-
-        const categories = await Category.find(filter);
-
-        // Check if categories exist
-        // if (categories.length === 0) {
-            return res.render('category',{categories});       
-
-        
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        res.status(500).json({ error: "Failed to fetch categories." });
-    }
-}
+ 
 
 module.exports={
     categoryList,
     addCategory,
     editCategory,
-    blockCategory,
-    searchCategory
+    blockCategory
 }
