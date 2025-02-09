@@ -8,6 +8,9 @@ const flash = require("connect-flash");
 const bcrypt=require('bcryptjs');
 const nocache=require('nocache');
 const adminRoutes=require('./routes/admin/adminRoute');
+const methodOverride = require("method-override");
+
+
 
 const app= express();
 
@@ -28,6 +31,18 @@ app.use(
     },
     })
   );//session management
+
+  app.use(methodOverride("_method"));
+
+  app.use((err, req, res, next) => {
+    console.error("Error:", err.message);
+    
+    // Set flash message for errors
+    req.flash("error", err.message || "Internal Server Error");
+
+    // Redirect back to the previous page or a generic error page
+    res.redirect("/admin/error"); // Redirects to the error page
+});
 
   // Initialize flash middleware
   app.use(flash());
@@ -52,7 +67,7 @@ app.use(express.static('public'));//Static file pointed
 // app.use('/user',userRoutes);
 
 
-app.use('/admin',adminRoutes);
+app.use('/admin',nocache(),adminRoutes);
 
 connectDB();
 const PORT = process.env.PORT;

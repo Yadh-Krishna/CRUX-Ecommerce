@@ -1,0 +1,171 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>CRUX Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <%- include("../partials/sidebar") %>
+    <main class="main-wrap">
+      <%- include("../partials/header") %>
+    
+      <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Products List</h2>
+          </div>
+          <div>
+            <a href="/admin/products/add" class="btn btn-primary btn-sm rounded">Add Product</a>
+          </div>
+        </div>
+    
+        <div class="card mb-4">
+          <header class="card-header">
+            <div class="d-flex align-items-center gap-2">
+              <form action="/admin/products" method="GET" class="d-flex gap-2 w-100">
+                <input type="text" name="search" placeholder="Search Product" class="form-control bg-grey" value="<%= search || '' %>">
+                <select name="category" class="form-select">
+                  <option value="">All Categories</option>
+                  <% categories.forEach(category => { %>
+                    <option value="<%= category._id %>" <%= category._id == selectedCategory ? "selected" : "" %> >
+                      <%= category.name %>
+                    </option>
+                  <% }) %>
+                </select>
+                <select name="brand" class="form-select">
+                  <option value="">All Brands</option>
+                  <% brands.forEach(brand => { %>
+                    <option value="<%= brand._id %>" <%= brand._id == selectedBrand ? "selected" : "" %> >
+                      <%= brand.name %>
+                    </option>
+                  <% }) %>
+                </select>
+                <select name="status" class="form-select">
+                  <option value="">All Status</option>
+                  <option value="Active" <%= status === "Active" ? "selected" : "" %>>Active</option>
+                  <option value="Disabled" <%= status === "Disabled" ? "selected" : "" %>>Disabled</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
+              </form>
+            </div>
+          </header>
+    
+          <div class="card-body">
+            <!-- ✅ HEADER ROW FOR COLUMNS -->
+            <div class="row fw-bold text-muted border-bottom pb-2 mb-3">
+              <div class="col-lg-1 col-sm-1 col-1">Sl.No</div>
+              <div class="col-lg-4 col-sm-4 col-4">Picture & Name</div>
+              <div class="col-lg-2 col-sm-2 col-2">Price</div>
+              <div class="col-lg-2 col-sm-2 col-2">Status</div>
+              <div class="col-lg-1 col-sm-1 col-1">Date</div>
+              <div class="col-lg-2 col-sm-2 col-2 text-end">Action</div>
+            </div>
+    
+            <!-- ✅ PRODUCT LIST -->
+            <% if (products.length > 0) { %>
+              <% products.forEach((product, index) => { %>
+                <article class="itemlist">
+                  <div class="row align-items-center">
+                    <div class="col col-check flex-grow-0">
+                      <div class="form-check">
+                        <%= index + 1 %>.
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                      <a class="itemside" href="#">
+                        <div class="left">
+                          <img src="<%= product.images.length ? product.images[0] : '/assets/imgs/default.jpg' %>" class="img-sm img-thumbnail" alt="<%= product.name %>">
+                        </div>
+                        <div class="info">
+                          <h6 class="mb-0"><%= product.name %></h6>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>$<%= product.finalPrice || product.price %></span> </div>
+                    <div class="col-lg-2 col-sm-2 col-4 col-status">
+                      <% if (!product.isDeleted) { %>
+                        <span class="badge rounded-pill alert-success">Active</span>
+                      <% } else { %>
+                        <span class="badge rounded-pill alert-danger">Disabled</span>
+                      <% } %>
+                    </div>
+                    <div class="col-lg-1 col-sm-2 col-4 col-date">
+                      <span><%= product.createdAt.toISOString().split('T')[0] %></span>
+                    </div>
+                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                      <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                        <i class="material-icons md-edit"></i> Edit
+                      </a>
+                      <a href="#" onclick="toggleProductStatus('<%= product._id %>')" class="btn btn-sm font-sm btn-light rounded">
+                        <% if (!product.isDeleted) { %>
+                          <i class="material-icons md-delete_forever"></i> Disable
+                        <% } else { %>
+                          <i class="material-icons md-check_circle"></i> Enable
+                        <% } %>
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              <% }) %>
+            <% } else { %>
+              <div class="text-center py-4">
+                <h5>No products found.</h5>
+              </div>
+            <% } %>
+          </div>
+        </div>
+    
+        <!-- ✅ PAGINATION -->
+        <div class="pagination-area mt-30 mb-50">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+              <% if (currentPage > 1) { %>
+                <li class="page-item"><a class="page-link" href="?page=<%= currentPage - 1 %>"><i class="material-icons md-chevron_left"></i></a></li>
+              <% } %>
+    
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+              <% } %>
+    
+              <% if (currentPage < totalPages) { %>
+                <li class="page-item"><a class="page-link" href="?page=<%= currentPage + 1 %>"><i class="material-icons md-chevron_right"></i></a></li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+    
+      </section>
+      <%- include("../partials/footer") %>
+    </main>
+    <script>
+        function toggleProductStatus(productId) {
+          fetch(`/admin/products/toggle-status/${productId}`, {
+            method: "PATCH"
+          }).then(() => location.reload());
+        }
+      </script>
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/select2.min.js"></script>
+    <script src="/assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="/assets/js/main.js" type="text/javascript"></script>
+</body>
+
+</html>

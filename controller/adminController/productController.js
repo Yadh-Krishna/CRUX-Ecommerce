@@ -1,17 +1,87 @@
-const Product=require('../../model/dbproducts');
-const Category=require('../../model/dbcategory');
-const Brand=require('../../model/dbrand');  
+const Product=require('../../models/dbproducts');
+const Category=require('../../models/dbcategory');
+const Brand=require('../../models/dbrands');  
+const asyncHandler = require('express-async-handler');
  
 const fs=require('fs');
 const path=require('path');
 const sharp=require('sharp');
 
-const productPage= async(req,res)=>{
-    try{
-
+const productList= asyncHandler(async (req, res) => {
+    try {
+      // Pagination & Filters
+      let page = parseInt(req.query.page) || 1;
+      let limit = 5; // Number of products per page
+      let skip = (page - 1) * limit;
+  
+      let search = req.query.search || "";
+      let category = req.query.category || "";
+      let brand = req.query.brand || "";
+      let status = req.query.status || "";
+  
+      // **Filter Query Object**
+      let filter = {};
+      
+      if (search) {
+        filter.name = { $regex: search, $options: "i" }; // Case-insensitive search
+      }
+      
+      if (category) {
+        filter.category = category;
+      }
+      
+      if (brand) {
+        filter.brands = brand;
+      }
+  
+      if (status === "Active") {
+        filter.isDeleted = false;
+      } else if (status === "Disabled") {
+        filter.isDeleted = true;
+      }
+  
+      // Fetch data with pagination
+      let products = await Product.find(filter)
+        .populate("category brands")
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+  
+      // Count total products for pagination
+      let totalProducts = await Product.countDocuments(filter);
+      let totalPages = Math.ceil(totalProducts / limit);
+  
+      // Fetch categories & brands for dropdowns
+      let categories = await Category.find();
+      let brands = await Brand.find();
+  
+      res.render("admin/productsList", {
+        products,
+        categories,
+        brands,
+        search,
+        selectedCategory: category,
+        selectedBrand: brand,
+        status,
+        currentPage: page,
+        totalPages
+      });
+  
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.redirect("/admin/error");
     }
-    catch(err){
-        
-    }
+  });
+const addProduct=(req,res)=>{
+    res.render('add-product',{categories:[],brands:[]});
 }
+
+const editProduct=(req,res)=>{
+    res.render('edit-product',{product:{tags:[],images:[]},categories:[],brands:[] });
+}
+module.exports={
+    productList,
+    addProduct,
+    editProduct
+};
 

@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   mobile: { type: String, required: true },
   password: { type: String, required: true },
   isActive: { type: Boolean, default: true },
+  image:{type:String,default: "/logo/default_user.avif"},
   createdDate: { type: Date, default: Date.now }, 
   updatedDate: { type: Date, default: Date.now },
 });
