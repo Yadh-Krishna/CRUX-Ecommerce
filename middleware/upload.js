@@ -1,12 +1,13 @@
 const multer = require("multer");
 const path = require("path");
+const fs=require('fs');
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
 
     const baseUploadPath = "public/uploads";
-    // Extract module name from the request path (e.g., /upload/category → "category")    
+    // Extract module name from the request path (e.g., /admin/category → "category")    
     const module = req.originalUrl.split("/")[2];   
     const uploadPath = `${baseUploadPath}/${module}`;    
     cb(null, uploadPath); // Image upload path
@@ -18,6 +19,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
+  limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml", "image/bmp"];
     if (!allowedTypes.includes(file.mimetype)) {

@@ -51,6 +51,7 @@ router.patch("/brands/:id/toggle-status",auth,brandManage.blockBrand);
 
 //Product Management
 router.get('/products',auth,productController.productList);
-router.get('/products/add',auth,productController.addProduct);
+router.get('/products/add',auth,productController.addProductLoad);
+router.post('/products/add',auth,upload.array("images",5),productController.addProduct);
 router.get('/products/edit',productController.editProduct);
 module.exports=router;

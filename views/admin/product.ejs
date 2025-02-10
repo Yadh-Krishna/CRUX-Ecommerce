@@ -62,7 +62,14 @@
               </form>
             </div>
           </header>
-    
+
+          <% if (messages.error) { %>
+            <div class="alert alert-danger"><%= message.error %></div>
+          <% } %>
+          
+          <% if (messages.success) { %>
+            <div class="alert alert-success"><%= message.error %></div>
+          <% } %>
           <div class="card-body">
             <!-- ✅ HEADER ROW FOR COLUMNS -->
             <div class="row fw-bold text-muted border-bottom pb-2 mb-3">
