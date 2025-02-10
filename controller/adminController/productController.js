@@ -42,7 +42,7 @@ const productList= asyncHandler(async (req, res) => {
       }
   
       // Fetch data with pagination
-      let products = await Product.find(filter)
+      let products = await Product.find(filter).sort({name:1})
         .populate("category brands")
         .skip(skip)
         .limit(limit)
@@ -87,49 +87,44 @@ const addProductLoad=asyncHandler(async(req,res)=>{
   }
 });
 
-const addProduct=asyncHandler(async(req,res)=>{
-
-  upload.array("images", 5)(req, res, async (err) => {
-    if (err) {
-      req.flash("error", err.message);
-      console.log("Hi hello")
-      return res.redirect("/admin/products/add");
-    }
-
-    // Extract data from the form
+const addProduct= asyncHandler(async (req, res) => {
+  try {
+    // Extract form data
     const { name, description, price, discount, stock, category, brands, gender, tags } = req.body;
-    console.log(req.body);
-   
-    // Ensure images are uploaded
+
+    // Validate images
     if (!req.files || req.files.length < 3) {
       req.flash("error", "Upload at least 3 images.");
       return res.redirect("/admin/products/add");
     }
 
+    // Ensure output directory for processed images exists
+    const outputDir = path.join(__dirname, "..", "..", "public/uploads/products");
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
     // Process images using Sharp
     const imagePaths = await Promise.all(
       req.files.map(async (file) => {
-        const outputPath = `/uploads/products/${file.filename}`;
-
-        const inputPath = path.join(__dirname, "..", "..", file.path);
-      const output = path.join(outputDir, file.filename);
-
-        console.log("Processing image:", inputPath, "→", outputPath); // Debugging
-
-        await sharp(file.path)
+        const inputPath = file.path; // Original uploaded file path
+        const outputPath = path.join(__dirname, "..", "..", "public/uploads/products", `resized-${file.filename}`);
+    
+        // console.log("Processing image:", inputPath, "→", outputPath); // Debugging
+    
+        await sharp(inputPath)
           .resize(500, 500, { fit: "cover" })
           .toFormat("jpeg")
           .jpeg({ quality: 80 })
-          .toFile(outputPath);
-
-        return `/uploads/products/${file.filename}`;
+          .toFile(outputPath); // Save processed file with a new name
+    
+        return `/uploads/products/resized-${file.filename}`; // Return new file path
       })
     );
-
     // Calculate final price
     const finalPrice = price - (price * (discount || 0)) / 100;
 
-    // Create & Save Product
+    // Save product to the database
     await Product.create({
       name,
       description,
@@ -146,17 +141,105 @@ const addProduct=asyncHandler(async(req,res)=>{
 
     req.flash("success", "Product added successfully!");
     res.redirect("/admin/products");
-  });
+
+  } catch (error) {
+    console.error("Error adding product:", error);
+    req.flash("error", "An error occurred while adding the product.");
+    res.redirect("/admin/products/add");
+  }
 });
       
 
-const editProduct=(req,res)=>{
-    res.render('edit-product',{product:{tags:[],images:[]},categories:[],brands:[] });
-}
+const editProduct= asyncHandler(async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const product = await Product.findById(productId)
+      .populate("category")
+      .populate("brands");
+
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+
+    const categories = await Category.find({});
+    const brands = await Brand.find({});
+
+    res.render("edit-product", {
+      product,
+      categories,
+      brands,
+    });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+const updateProduct=asyncHandler(async (req, res) => {
+  try {
+      const { name, description, price, discount, stock, category, brands, gender, replacedIndexes } = req.body;
+      const productId = req.params.id;
+
+      const product = await Product.findById(productId);
+      if (!product) return res.status(404).json({ error: "Product not found" });
+
+      // Update text fields
+      product.name = name;
+      product.description = description;
+      product.price = price;
+      product.discount = discount;
+      product.stock = stock;
+      product.category = category;
+      product.brands = brands;
+      product.gender = gender;
+
+      let updatedImages = [...product.images]; // Copy existing images
+
+      // Replace images based on indexes provided from frontend
+      if (req.files && req.files.length > 0) {
+          const newImages = req.files.map(file => `/uploads/products/${file.filename}`);
+          
+          if (replacedIndexes) {
+              const indexes = JSON.parse(replacedIndexes); // Convert JSON string back to an array
+              indexes.forEach((index, i) => {
+                  if (index >= 0 && index < updatedImages.length) {
+                      updatedImages[index] = newImages[i]; // Replace existing image at the correct position
+                  }
+              });
+          } else {
+              updatedImages = [...updatedImages, ...newImages]; // Append new images if no indexes are provided
+          }
+      }
+
+      // Ensure a maximum of 5 images
+      product.images = updatedImages.slice(0, 5);
+
+      await product.save();
+
+      res.json({ success: true, message: "Product updated successfully", updatedProduct: product });
+  } catch (error) {
+      console.error("Update Product Error:", error);
+      res.status(500).json({ error: "Server error" });
+  }
+});
+
+const blockProduct=asyncHandler(async(req,res)=>{
+  const productId=req.params.id;
+  const product=await Product.findById(productId);
+  if (!product) return res.status(404).json({ error: "Product not found"});
+  product.isDeleted=!product.isDeleted;
+  await product.save();
+  res.json({ success: true, message: product.isDeleted?"Product blocked successfully": "Product unblocked successfully"});
+  
+});
+    
 module.exports={
     productList,
     addProductLoad,
     addProduct,
-    editProduct
+    editProduct,
+    updateProduct,
+    blockProduct
 };
 

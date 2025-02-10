@@ -53,5 +53,7 @@ router.patch("/brands/:id/toggle-status",auth,brandManage.blockBrand);
 router.get('/products',auth,productController.productList);
 router.get('/products/add',auth,productController.addProductLoad);
 router.post('/products/add',auth,upload.array("images",5),productController.addProduct);
-router.get('/products/edit',productController.editProduct);
+router.get('/products/edit/:id',auth,productController.editProduct);
+router.put('/products/edit/:id',auth,upload.array("replacedImages",5),productController.updateProduct);
+router.patch('/products/:id/toggle-status',auth,productController.blockProduct);
 module.exports=router;

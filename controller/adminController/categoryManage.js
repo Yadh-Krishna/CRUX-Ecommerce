@@ -111,6 +111,8 @@ const blockCategory=asyncHandler(async (req, res) => {
   res.json({ success: true, message: req.flash("success") });
 
   });
+
+  
  
 
 module.exports={

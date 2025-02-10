@@ -8,6 +8,7 @@ const flash = require("connect-flash");
 const bcrypt=require('bcryptjs');
 const nocache=require('nocache');
 const adminRoutes=require('./routes/admin/adminRoute');
+const userRoutes=require('./routes/user/userRoute');
 const methodOverride = require("method-override");
 
 
@@ -58,7 +59,7 @@ app.use((req, res, next) => {
  
 
 //view engine
-app.set('views',path.join(__dirname,'views/admin'));
+app.set('views',[path.join(__dirname,'views/admin'),path.join(__dirname,'views/user')]);
 app.set('view engine','ejs');
 app.use(express.static('public'));//Static file pointed
 
@@ -68,6 +69,7 @@ app.use(express.static('public'));//Static file pointed
 
 
 app.use('/admin',nocache(),adminRoutes);
+app.use('/user',nocache(),userRoutes);
 
 connectDB();
 const PORT = process.env.PORT;

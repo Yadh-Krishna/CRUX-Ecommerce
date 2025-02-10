@@ -8,8 +8,8 @@ const ProductSchema = new mongoose.Schema({
   finalPrice: { type: Number },  
   stock: { type: Number, required: true },
   images: [{ type: String, required: true }],  // Ensure at least 3 images
-  category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-  brands: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: 'category' },
+  brands: { type: mongoose.Schema.Types.ObjectId, ref: 'brand' }, 
   gender: { type: String, enum: ["Men", "Women", "Unisex"], required: true },
   ratings: { type: Number, default: 0 },
   tags: [{ type: String }],

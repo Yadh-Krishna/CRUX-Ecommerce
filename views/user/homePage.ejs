@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Luxury Jewelry</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-brand">
+            <a href="/"><%= shopName %></a>
+        </div>
+        <div class="nav-links">
+            <% categories.forEach(function(category) { %>
+                <a href="/category/<%= category.slug %>"><%= category.name %></a>
+            <% }); %>
+        </div>
+        <div class="nav-actions">
+            <a href="/search"><i class="fas fa-search"></i></a>
+            <a href="/account"><i class="fas fa-user"></i></a>
+            <a href="/cart" class="cart-icon">
+                <i class="fas fa-shopping-bag"></i>
+                <% if (cartCount > 0) { %>
+                    <span class="cart-count"><%= cartCount %></span>
+                <% } %>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1><%= heroTitle %></h1>
+            <p><%= heroSubtitle %></p>
+            <a href="/collections/new" class="cta-button">Explore Collection</a>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-products">
+        <h2>Featured Pieces</h2>
+        <div class="product-grid">
+            <% featuredProducts.forEach(function(product) { %>
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
+                        <% if (product.isNew) { %>
+                            <span class="badge-new">New</span>
+                        <% } %>
+                    </div>
+                    <div class="product-info">
+                        <h3><%= product.name %></h3>
+                        <p class="product-category"><%= product.category %></p>
+                        <p class="product-price">$<%= product.price.toFixed(2) %></p>
+                        <button onclick="addToCart('<%= product.id %>')" class="add-to-cart">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <!-- Collections -->
+    <section class="collections">
+        <h2>Shop by Collection</h2>
+        <div class="collection-grid">
+            <% collections.forEach(function(collection) { %>
+                <div class="collection-card">
+                    <img src="<%= collection.imageUrl %>" alt="<%= collection.name %>">
+                    <div class="collection-overlay">
+                        <h3><%= collection.name %></h3>
+                        <p><%= collection.description %></p>
+                        <a href="/collections/<%= collection.slug %>" class="view-collection">
+                            View Collection
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <div class="newsletter-content">
+            <h2><%= newsletter.title %></h2>
+            <p><%= newsletter.description %></p>
+            <form class="newsletter-form" action="/subscribe" method="POST">
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About <%= shopName %></h3>
+                <p><%= footerAbout %></p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <% footerLinks.forEach(function(link) { %>
+                        <li><a href="<%= link.url %>"><%= link.text %></a></li>
+                    <% }); %>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><%= contactInfo.address %></p>
+                <p>Email: <%= contactInfo.email %></p>
+                <p>Phone: <%= contactInfo.phone %></p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <% socialLinks.forEach(function(social) { %>
+                        <a href="<%= social.url %>" target="_blank">
+                            <i class="fab fa-<%= social.platform %>"></i>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <%= new Date().getFullYear() %> <%= shopName %>. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/main.js"></script>
+    <% if (typeof extraScripts !== 'undefined') { %>
+        <% extraScripts.forEach(function(script) { %>
+            <script src="<%= script %>"></script>
+        <% }); %>
+    <% } %>
+</body>
+</html>
+

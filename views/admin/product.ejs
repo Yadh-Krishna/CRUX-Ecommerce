@@ -64,21 +64,27 @@
           </header>
 
           <% if (messages.error) { %>
-            <div class="alert alert-danger"><%= message.error %></div>
-          <% } %>
-          
-          <% if (messages.success) { %>
-            <div class="alert alert-success"><%= message.error %></div>
-          <% } %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= messages.error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <% if (messages.success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= messages.success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
           <div class="card-body">
-            <!-- ✅ HEADER ROW FOR COLUMNS -->
+            <!--  HEADER ROW FOR COLUMNS -->
             <div class="row fw-bold text-muted border-bottom pb-2 mb-3">
               <div class="col-lg-1 col-sm-1 col-1">Sl.No</div>
               <div class="col-lg-4 col-sm-4 col-4">Picture & Name</div>
               <div class="col-lg-2 col-sm-2 col-2">Price</div>
-              <div class="col-lg-2 col-sm-2 col-2">Status</div>
+              <div class="col-lg-2 col-sm-2 col-1">Status</div>
               <div class="col-lg-1 col-sm-1 col-1">Date</div>
-              <div class="col-lg-2 col-sm-2 col-2 text-end">Action</div>
+              <div class="col-lg-2 col-sm-2 col-2 text-center">Action</div>
             </div>
     
             <!-- ✅ PRODUCT LIST -->
@@ -98,10 +104,13 @@
                         </div>
                         <div class="info">
                           <h6 class="mb-0"><%= product.name %></h6>
+                          <small class="text-muted d-block">
+                            <%= product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description %>
+                          </small>
                         </div>
                       </a>
                     </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>$<%= product.finalPrice || product.price %></span> </div>
+                    <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>₹<%= product.finalPrice || product.price %></span> </div>
                     <div class="col-lg-2 col-sm-2 col-4 col-status">
                       <% if (!product.isDeleted) { %>
                         <span class="badge rounded-pill alert-success">Active</span>
@@ -109,10 +118,10 @@
                         <span class="badge rounded-pill alert-danger">Disabled</span>
                       <% } %>
                     </div>
-                    <div class="col-lg-1 col-sm-2 col-4 col-date">
+                    <div class="col-lg-1 col-sm-2 col-4 col-date text-nowrap">
                       <span><%= product.createdAt.toISOString().split('T')[0] %></span>
                     </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                    <div class="col-lg-2 col-sm-2 col-4 col-action text-start text-nowrap">
                       <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
                         <i class="material-icons md-edit"></i> Edit
                       </a>
@@ -159,13 +168,29 @@
       </section>
       <%- include("../partials/footer") %>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function toggleProductStatus(productId) {
-          fetch(`/admin/products/toggle-status/${productId}`, {
+          fetch(`/admin/products/${productId}/toggle-status`, {
             method: "PATCH"
-          }).then(() => location.reload());
+          }).then(response=>response.json())
+            .then(data=>{
+              if(data){
+                Swal.fire({
+                  title: "Success!",
+                    text: data.message,
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then((result) => {
+        if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
+          window.location.reload();  // Ensure the page reloads after confirmation
         }
-      </script>
+      })     
+          
+              }
+            });
+          }
+      </script>      
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/vendors/select2.min.js"></script>
