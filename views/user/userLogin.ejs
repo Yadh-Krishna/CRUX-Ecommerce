@@ -4,42 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUX Login</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/users/userLogin.css">
+       
 </head>
 <body>
-    <div class="split-container">
-        <div class="left-side">
-            <div>CRUX</div>
-        </div>
-        <div class="right-side">
-            <div class="login-container">
-                <div class="welcome-text">
-                    <h1>Welcome</h1>
-                    <p>Sign in to access your account</p>
-                </div>
-                <form action="/login" method="POST">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    <div class="container">
+        <div class="row">
+            <!-- Left Side -->
+            <div class="col-md-6 left-side d-none d-md-flex">
+                
+            </div>
+
+            <!-- Right Side (Login Form) -->
+            <div class="col-md-6 right-side">
+                <h2 class="text-center mb-3"><img src="/logo/logo-white.png" alt=""></h2>
+                <p class="text-center text-muted">Sign in to access your account</p>
+                <% if (error) { %>
+                    <div class="alert alert-danger"><%= error %></div>
+                <% } %>            
+                <form id="loginForm" action="/user/login" method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                        <small class="text-danger" id="emailError"></small>
                     </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required >
+                        <small class="text-danger" id="passwordError"></small>
                     </div>
-                    <button type="submit" class="login-button">Sign In</button>
+
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
                 </form>
-                <div class="divider"><span>OR</span></div>
-                <div class="social-login">
-                    <button class="social-button"><img src="/images/google-icon.png" alt="Google"></button>
-                    <button class="social-button"><img src="/images/facebook-icon.png" alt="Facebook"></button>
-                    <button class="social-button"><img src="/images/apple-icon.png" alt="Apple"></button>
+
+                <!-- Divider -->
+                <div class="divider my-3"><span>OR</span></div>
+
+                <!-- Social Login -->
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="social-button btn "><img src="/logo/google_icon.jpg " alt="Google"></button>
+                   
                 </div>
-                <div class="footer-text">
-                    <p>Don't have an account? <a href="/register">Create Account</a></p>
-                    <p><a href="/forgot-password">Forgot Password?</a></p>
+
+                <!-- Footer Links -->
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="/user/register" class="text-primary fw-bold">Create Account</a></p>
+                    <div class="d-flex justify-content-center fw-bold">
+                        <p class="mx-3 "><a href="/user/forgot-password" class="text-primary">Forgot Password</a></p>
+                        <p class="mx-3"><a href="/admin/login" class="text-primary">Admin Login</a></p></div>                    
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+         // Wait for the DOM to load
+    document.addEventListener("DOMContentLoaded", function () {
+        // Select the error alert
+        const errorAlert = document.querySelector(".alert-danger");
+
+        // If error alert exists, remove it after 3 seconds
+        if (errorAlert) {
+            setTimeout(() => {
+                errorAlert.style.display = "none";
+            }, 5000); // Hides after 3 seconds
+        }
+    });
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission if validation fails
+
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let emailError = document.getElementById("emailError");
+    let passwordError = document.getElementById("passwordError");
+
+    emailError.textContent = "";
+    passwordError.textContent = "";
+
+    let isValid = true;
+
+    // Email validation
+    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email === "") {
+        emailError.textContent = "Email is required.";
+        isValid = false;
+    } else if (!emailRegex.test(email)) {
+        emailError.textContent = "Enter a valid email address.";
+        isValid = false;
+    }
+
+    // Password validation
+    if (password === "") {
+        passwordError.textContent = "Password is required.";
+        isValid = false;
+    }
+
+    if (isValid) {
+        this.submit(); // Submit form if validation passes
+    }
+});
+    </script>
 </body>
 </html>

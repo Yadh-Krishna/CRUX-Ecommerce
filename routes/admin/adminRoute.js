@@ -26,7 +26,7 @@ router.get("/logout",adminDashboard.logout);//logging out of admin management
 
 //user Management
 router.get("/users",auth, UserManagement.loadUsers);  //Customer User page  
-router.patch("/users/delete/:id", UserManagement.blockUser);// Toggle user status (Block/Unblock)
+router.patch("/users/delete/:id",auth, UserManagement.blockUser);// Toggle user status (Block/Unblock)
 
 //Error Handling
 router.get('/error',auth,(req,res)=>{
@@ -37,9 +37,9 @@ router.get('/error',auth,(req,res)=>{
 router.get('/categories',auth,categoryManage.categoryList);
 router.get('/categories/add',auth,categoryManage.addCategoryLoad);
 router.post('/categories/add',auth,upload.single("image"), categoryManage.addCategory);
-router.get("/categories/edit/:id", categoryManage.editCategoryLoad );
+router.get("/categories/edit/:id",auth,categoryManage.editCategoryLoad );
 router.put("/categories/:id", upload.single("image"),categoryManage.editCategory );
-router.patch("/categories/:id/toggle-status", categoryManage.blockCategory);  
+router.patch("/categories/:id/toggle-status",auth,categoryManage.blockCategory);  
 
 //Brand management
 router.get('/brands',auth,brandManage.brandList);

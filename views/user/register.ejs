@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Crux Register</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="">
+    <!-- Template CSS -->
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <main>
+        
+        <section class="content-main mt-80 mb-80">
+            <div class="card mx-auto card-login ">
+                <div class="card-body">
+                    <img class="d-block mx-auto mb-3" src="/logo/logo-white.png" alt="CRUX">
+                    <h4 class="card-title mb-4 text-center">User Sign Up</h4>
+                    <% if (error) { %>
+                        <div class="alert alert-danger"><%= error %></div>
+                    <% } %>
+                    <form id="registerForm" action="/user/register" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input class="form-control" name='name' id="name" placeholder="Your Full Name" type="text">
+                            <small class="text-danger" id="nameError"></small>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input class="form-control" name='email' id="email" placeholder="Your email" type="text">
+                            <small class="text-danger" id="emailError"></small>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label class="form-label">Mobile No</label>
+                            <input class="form-control" name='mobile' id="mobile" placeholder="Phone" type="number">
+                            <small class="text-danger" id="mobileError"></small>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input class="form-control" name="password" id="password" placeholder="Password" type="password">
+                            <small class="text-danger" id="passwordError"></small>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>  
+                            <input class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" type="password">
+                            <small class="text-danger" id="confirmPasswordError"></small>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <p class="small text-center text-muted">By signing up, you confirm that you’ve read and accepted our User Notice and Privacy Policy.</p>
+                        </div>
+                    
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-primary w-100"> Sign Up </button>
+                        </div>
+                    </form>
+                    <p class="text-center small text-muted mb-15">or sign up with</p>
+                    <div class="d-flex justify-content-center mb-4">
+                        <a href="#" class="w-50 btn btn-light font-sm text-center">
+                            <svg aria-hidden="true" class="icon-svg" style="vertical-align: bottom; margin-top:-4px;" width="20" height="20" viewBox="0 0 20 20">
+                                <path d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z" fill="#4285F4"></path>
+                                <path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z" fill="#34A853"></path>
+                                <path d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z" fill="#FBBC05"></path>
+                                <path d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.3z" fill="#EA4335"></path>
+                            </svg> Sign on Google
+                        </a>                       
+                    </div>
+                    <p class="text-center mb-2">Already have an account? <a href="/user/login">Sign in now</a></p>
+                </div>
+            </div>
+        </section>
+        <footer class="main-footer text-center">
+            <p class="font-xs">
+                <script>
+                document.write(new Date().getFullYear())
+                </script> ©, CRUX - Ecommerce Platform .
+            </p>
+            <p class="font-xs mb-30">All rights reserved</p>
+        </footer>
+    </main>
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="/assets/js/main.js" type="text/javascript"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            
+        // Select the error alert
+        const errorAlert = document.querySelector(".alert-danger");
+
+        // If error alert exists, remove it after 3 seconds
+        if (errorAlert) {
+            setTimeout(() => {
+                errorAlert.style.display = "none";
+            }, 5000); // Hides after 3 seconds
+        }
+    
+
+    const form = document.getElementById("registerForm");
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form submission if validation fails
+        let isValid = true;
+
+        // Get form values
+        let name = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let mobile = document.getElementById("mobile").value.trim();
+        let password = document.getElementById("password").value.trim();
+        let confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+        // Error message elements
+        let nameError = document.getElementById("nameError");
+        let emailError = document.getElementById("emailError");
+        let mobileError = document.getElementById("mobileError");
+        let passwordError = document.getElementById("passwordError");
+        let confirmPasswordError = document.getElementById("confirmPasswordError");
+
+        // Clear previous errors
+        nameError.textContent = "";
+        emailError.textContent = "";
+        mobileError.textContent = "";
+        passwordError.textContent = "";
+        confirmPasswordError.textContent = "";
+
+        // Name validation
+        let nameRegex = /^[A-Za-z\s]+$/;
+        if (!nameRegex.test(name) || name === "") {
+            nameError.textContent = "Full Name must contain only letters.";
+            isValid = false;
+        }
+
+        // Email validation
+        let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email) || email === "") {
+            emailError.textContent = "Enter a valid email address.";
+            isValid = false;
+        }
+
+        // Mobile validation
+        let mobileRegex = /^[0-9]{10}$/;
+        if (!mobileRegex.test(mobile)) {
+            mobileError.textContent = "Mobile number must be exactly 10 digits.";
+            isValid = false;
+        }
+
+        // Password validation
+        let passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            passwordError.textContent = "Password must be 8+ chars, include 1 uppercase, 1 lowercase, 1 number, and 1 special char.";
+            isValid = false;
+        }
+
+        // Confirm Password validation
+        if (password !== confirmPassword) {
+            confirmPasswordError.textContent = "Passwords do not match.";
+            isValid = false;
+        }
+
+        // If all validations pass, submit the form
+        if (isValid) {
+            form.submit();
+        }
+    });
+});
+    </script>
+</body>
+
+</html>

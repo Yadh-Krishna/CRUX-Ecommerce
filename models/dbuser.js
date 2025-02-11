@@ -6,9 +6,12 @@ const userSchema = new mongoose.Schema({
   mobile: { type: String, required: true },
   password: { type: String, required: true },
   isActive: { type: Boolean, default: true },
+  otp: { type: String },
+  isVerified: { type: Boolean, default: false },
+  otpExpires: { type: Date },
   image:{type:String,default: "/logo/default_user.avif"},
-  createdDate: { type: Date, default: Date.now }, 
-  updatedDate: { type: Date, default: Date.now },
-});
+  googleId: { type: String },
+}, { timestamps: true });
+
 
 module.exports = mongoose.model('users', userSchema);

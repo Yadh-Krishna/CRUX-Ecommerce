@@ -10,8 +10,10 @@ const nocache=require('nocache');
 const adminRoutes=require('./routes/admin/adminRoute');
 const userRoutes=require('./routes/user/userRoute');
 const methodOverride = require("method-override");
+const dotenv=require('dotenv');
+const cookieParser = require('cookie-parser');
 
-
+dotenv.config();
 
 const app= express();
 
@@ -53,7 +55,7 @@ app.use((req, res, next) => {
     res.locals.messages = req.flash();
     next();
 });
-
+  app.use(cookieParser());
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ extended: true, limit: "50mb"  }));
  
