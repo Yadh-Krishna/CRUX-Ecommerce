@@ -101,7 +101,7 @@
                                                 <%= user.isActive ? 'Active' : 'Inactive' %>
                                             </span>
                                         </td>
-                                        <td class='align-middle'><%= new Date(user.createdDate).toLocaleDateString() %></td>
+                                        <td class='align-middle'><%=new Intl.DateTimeFormat('en-GB').format(new Date(user.createdAt)).replace(/\//g, '-')%></td>
                                         <td class="text-start align-middle">
                                             <a href="#" onclick="userStatusAlter('<%=user._id%>')" class="btn btn-sm btn-brand rounded font-sm mt-15"><%=user.isActive?"Block":"Unblock"%></a>
                                         </td>

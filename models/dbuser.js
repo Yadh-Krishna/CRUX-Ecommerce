@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  fullName: { type: String, required: true },
+  fullName: { type: String, required: function() { return !this.googleId; } },
   email: { type: String, required: true, unique: true },
-  mobile: { type: String, required: true },
-  password: { type: String, required: true },
+  mobile: { type: String, required: function() { return !this.googleId; } },
+  password: { type: String, required: function() { return !this.googleId;}},
   isActive: { type: Boolean, default: true },
   otp: { type: String },
+  googleId: { type: String, unique: true, sparse: true }, // Allow users without Google OAuth
   isVerified: { type: Boolean, default: false },
   otpExpires: { type: Date },
   image:{type:String,default: "/logo/default_user.avif"},
-  googleId: { type: String },
 }, { timestamps: true });
 
 

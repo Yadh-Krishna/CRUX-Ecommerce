@@ -12,14 +12,18 @@ const userRoutes=require('./routes/user/userRoute');
 const methodOverride = require("method-override");
 const dotenv=require('dotenv');
 const cookieParser = require('cookie-parser');
+const passport = require('./config/passport')
+const jwt= require('jsonwebtoken');
+
+const googleAuth=require('./controller/authController')
 
 dotenv.config();
 
 const app= express();
 
 app.use(nocache());
-app.use(
-    session({
+
+app.use(session({
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: true,
@@ -27,13 +31,14 @@ app.use(
         mongoUrl: process.env.MONGO_URI, // Use your MongoDB connection string
         collectionName: "sessions",
     }),
-    cookie: {
-        maxAge: 1000 * 60 * 5, // 5 mins
-        httpOnly: true, // Prevents XSS attacks
-        secure: false, // Set to true in production with HTTPS
-    },
+
     })
   );//session management
+ 
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(express.static('public'));//Static file pointed
+
 
   app.use(methodOverride("_method"));
 
@@ -63,12 +68,11 @@ app.use((req, res, next) => {
 //view engine
 app.set('views',[path.join(__dirname,'views/admin'),path.join(__dirname,'views/user')]);
 app.set('view engine','ejs');
-app.use(express.static('public'));//Static file pointed
 
-// const userRoutes = require("./routes/userRoutes");
 
-// app.use('/user',userRoutes);
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"],session: false }));
 
+app.get("/auth/google/callback",  passport.authenticate("google", { failureRedirect: "/user/login",session: false }),googleAuth);
 
 app.use('/admin',nocache(),adminRoutes);
 app.use('/user',nocache(),userRoutes);

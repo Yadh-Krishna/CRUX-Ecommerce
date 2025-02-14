@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 // Define file filter for allowed types
 const fileFilter = function (req, file, cb) {
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml", "image/bmp"];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml", "image/bmp", "image/avif"];
   
   if (!allowedTypes.includes(file.mimetype)) {
     return cb(new Error("Only JPEG, PNG, GIF, WebP, SVG, and BMP files are allowed"), false);

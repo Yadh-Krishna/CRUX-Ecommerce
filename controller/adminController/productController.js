@@ -47,6 +47,15 @@ const productList= asyncHandler(async (req, res) => {
         .skip(skip)
         .limit(limit)
         .sort({ createdAt: -1 });
+
+        const formatDate = (date) => {
+          date=date.toString();
+          const d = new Date(date);
+          return `${d}`;
+      };
+      products.forEach(product => {
+        product.formattedDate = formatDate(product.createdAt);
+    });
   
       // Count total products for pagination
       let totalProducts = await Product.countDocuments(filter);
@@ -76,8 +85,9 @@ const productList= asyncHandler(async (req, res) => {
 
 const addProductLoad=asyncHandler(async(req,res)=>{
   try{
-   const categories=await Category.find();
-   const brands=await Brand.find();
+    const isDeleted=false;
+   const categories=await Category.find({isDeleted});
+   const brands=await Brand.find({isDeleted});
 
     res.render('add-product',{categories,brands});
   }catch (error) {
