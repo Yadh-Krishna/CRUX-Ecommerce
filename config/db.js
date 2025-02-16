@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 const dotenv=require('dotenv');
-const User=require('../models/dbuser')
+const User=require('../models/userModel')
 const bcrypt=require('bcryptjs');
 
 dotenv.config();

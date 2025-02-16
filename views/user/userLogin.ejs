@@ -21,9 +21,23 @@
             <div class="col-md-6 right-side">
                 <h2 class="text-center mb-3"><img src="/logo/logo-white.png" alt=""></h2>
                 <p class="text-center text-muted">Sign in to access your account</p>
-                <% if (error) { %>
+
+                <% if (messages.success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= messages.success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+                
+                <% if (messages.error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= messages.error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+                <!-- <% if (error) { %>
                     <div class="alert alert-danger"><%= error %></div>
-                <% } %>            
+                <% } %>             -->
                 <form id="loginForm" action="/user/login" method="POST" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
@@ -53,8 +67,8 @@
                 <div class="text-center mt-3">
                     <p>Don't have an account? <a href="/user/register" class="text-primary fw-bold">Create Account</a></p>
                     <div class="d-flex justify-content-center fw-bold">
-                        <p class="mx-3 "><a href="#" class="text-primary">Forgot Password</a></p>
-                        <p class="mx-3"><a href="/admin/login" class="text-primary">Admin Login</a></p></div>                    
+                        <p class="mx-3 "><a href="/user/forgot-password" class="text-primary">Forgot Password</a></p>
+                       </div>                    
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-const Category=require('../../models/dbcategory');
+const Category=require('../../models/categoryModal');
 const asyncHandler=require('express-async-handler');
 
 const categoryList= asyncHandler(async (req, res) => {

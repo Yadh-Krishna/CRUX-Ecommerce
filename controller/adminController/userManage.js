@@ -1,4 +1,4 @@
-const User=require('../../models/dbuser');
+const User=require('../../models/userModel');
 const bcrypt=require('bcrypt');
 const asyncHandler=require('express-async-handler');
 

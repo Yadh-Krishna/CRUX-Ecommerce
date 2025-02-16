@@ -1,4 +1,4 @@
-const Brand=require('../../models/dbrands');
+const Brand=require('../../models/brandModel');
 const asyncHandler=require('express-async-handler');
 
 const brandList= asyncHandler(async (req, res) => {

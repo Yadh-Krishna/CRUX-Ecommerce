@@ -5,6 +5,7 @@ const statusCodes=require('../utils/statusCodes');
 
 const verifyToken = (req, res, next) => {
     const token = req.cookies.userToken;
+    // console.log(token);
     
     if (!token) {
         return res.status(statusCodes.UNAUTHORIZED).redirect("/user/login"); // Unauthorized if no token
@@ -12,6 +13,7 @@ const verifyToken = (req, res, next) => {
 
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
+        // console.log("Verified : ",verified);
         req.user = verified; // Attach user data to request
         next();
     } catch (error) {

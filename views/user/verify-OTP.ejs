@@ -24,10 +24,24 @@
                 <div class="card-body">
                     <img class="d-block mx-auto mb-3" src="/logo/logo-white.png" alt="CRUX">
                     <h4 class="card-title mb-4 text-center">OTP Verification</h4>
+
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <%= messages.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
                     
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= messages.error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+<!--                     
                     <% if (error) { %>
                         <div class="alert alert-danger"><%= error %></div>
-                    <% } %>
+                    <% } %> -->
                     
                     <form id="otpForm" action="/user/verify-otp" method="post">
                         <div class="mb-3">
@@ -38,7 +52,7 @@
                         
                         <div class="mb-3 text-center">
                             <p id="timer" class="text-muted">Resend OTP in <span id="countdown">60</span> seconds</p>
-                            <button type="button" id="resendOtp" class="btn btn-link" onclick="resendOTP()" disabled>Resend OTP</button>
+                            <button type="button" id="resendOtp" class="btn btn-link"  disabled>Resend OTP</button>
                         </div>
                         
                         <div class="mb-4">
@@ -61,74 +75,90 @@
             <p class="font-xs mb-30">All rights reserved</p>
         </footer>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="/assets/js/main.js" type="text/javascript"></script>
+    
     <script>
 
-const errorAlert = document.querySelector(".alert-danger");
+document.addEventListener("DOMContentLoaded", function () {
+    const errorAlert = document.querySelector(".alert-danger");
 
-// If error alert exists, remove it after 3 seconds
-if (errorAlert) {
-    setTimeout(() => {
-        errorAlert.style.display = "none";
-    }, 5000); // Hides after 3 seconds
-}
+    // Remove error alert after 5 seconds
+    if (errorAlert) {
+        setTimeout(() => {
+            errorAlert.style.display = "none";
+        }, 5000);
+    }
 
-
-       let countdown = 60,timer;
+    let countdown = 60;
+    let timer;
     const countdownElement = document.getElementById("countdown");
     const resendButton = document.getElementById("resendOtp");
 
-    function resendOTP() {
-        fetch("/user/resend-otp", { method: "PATCH" })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    Swal.fire({
-                    icon:"success",
-                    text: data.message,                    
-                    showConfirmButton: true
-                });
-                    startTimer();
-                } else {
-                    Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Failed to resend OTP. Please try again."
-                });
-                resendButton.removeAttribute("disabled"); // Re-enable button if resend fails
-            }                
-            }) .catch(err => console.error(err));
-            }
-           
-    
-    
-    const interval = setInterval(() => {
-        countdown--;
-        countdownElement.textContent = countdown;
-        if (countdown === 0) {
-            clearInterval(interval);
-            resendButton.removeAttribute("disabled");
-        }
-    }, 1000);
-    
-    resendButton.addEventListener("click", function() {
-        resendButton.setAttribute("disabled", true);
+    // Function to start countdown timer
+    function startTimer() {
+        clearInterval(timer); // Prevent multiple timers
+
         countdown = 60;
         countdownElement.textContent = countdown;
-         timer=setInterval(() => {
+        resendButton.setAttribute("disabled", true);
+
+        timer = setInterval(() => {
             countdown--;
             countdownElement.textContent = countdown;
             if (countdown === 0) {
                 clearInterval(timer);
-                resendButton.removeAttribute("disabled");
+                resendButton.removeAttribute("disabled"); // Enable button when timer ends
             }
         }, 1000);
+    }
+
+    // Function to resend OTP
+    async function resendOTP() {
+        resendButton.setAttribute("disabled", true); // Disable button immediately
+        try {
+            const response = await fetch("/user/resend-otp", { method: "PATCH" });
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    text: data.message,
+                    showConfirmButton: true
+                }).then(() => {
+                    startTimer(); // Restart countdown after user dismisses Swal
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: data.error || "Failed to resend OTP. Please try again."
+                });
+                resendButton.removeAttribute("disabled"); // Enable button if resend fails
+            }
+        } catch (err) {
+            console.error("Error resending OTP:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong. Please try again later."
+            });
+            resendButton.removeAttribute("disabled"); // Ensure button is enabled on failure
+        }
+    }
+
+    // Attach event listener to the "Resend OTP" button
+    resendButton.addEventListener("click", function () {
+        resendOTP();
     });
 
+    // Start countdown when page loads
+    startTimer();
+});
 
     </script>
 </body>

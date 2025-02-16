@@ -75,7 +75,7 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 app.get("/auth/google/callback",  passport.authenticate("google", { failureRedirect: "/user/login",session: false }),googleAuth);
 
 app.use('/admin',nocache(),adminRoutes);
-app.use('/user',nocache(),userRoutes);
+app.use('/user',userRoutes);
 
 connectDB();
 const PORT = process.env.PORT;

@@ -9,12 +9,12 @@ const brandManage=require('../../controller/adminController/brandManage')
 const productController= require('../../controller/adminController/productController'); 
 
 const auth = require("../../middleware/adminAuth");
-const User = require("../../models/dbuser");
+const User = require("../../models/userModel");
 
-const Category = require("../../models/dbcategory");
+const Category = require("../../models/categoryModal");
 const upload = require("../../middleware/upload");  //multer
-const Brands = require("../../models/dbrands");
-const Product=require("../../models/dbproducts");
+const Brands = require("../../models/brandModel");
+const Product=require("../../models/productModel");
 
 //Login
 router.get('/login',adminDashboard.loadLogin);//Loading Login page
@@ -56,4 +56,5 @@ router.post('/products/add',auth,upload.array("images",5),productController.addP
 router.get('/products/edit/:id',auth,productController.editProduct);
 router.put('/products/edit/:id',auth,upload.array("replacedImages",5),productController.updateProduct);
 router.patch('/products/:id/toggle-status',auth,productController.blockProduct);
+
 module.exports=router;

@@ -1,6 +1,6 @@
-const Product=require('../../models/dbproducts');
-const Category=require('../../models/dbcategory');
-const Brand=require('../../models/dbrands');  
+const Product=require('../../models/productModel');
+const Category=require('../../models/categoryModal');
+const Brand=require('../../models/brandModel');  
 const asyncHandler = require('express-async-handler');
 
 const upload = require("../../middleware/upload");  //multer 
@@ -123,7 +123,7 @@ const addProduct= asyncHandler(async (req, res) => {
         // console.log("Processing image:", inputPath, "→", outputPath); // Debugging
     
         await sharp(inputPath)
-          .resize(500, 500, { fit: "cover" })
+          .resize(500, 1000, { fit: "cover" })  
           .toFormat("jpeg")
           .jpeg({ quality: 80 })
           .toFile(outputPath); // Save processed file with a new name

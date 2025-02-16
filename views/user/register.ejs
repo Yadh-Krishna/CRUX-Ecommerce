@@ -25,8 +25,18 @@
                 <div class="card-body">
                     <img class="d-block mx-auto mb-3" src="/logo/logo-white.png" alt="CRUX">
                     <h4 class="card-title mb-4 text-center">User Sign Up</h4>
-                    <% if (error) { %>
-                        <div class="alert alert-danger"><%= error %></div>
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <%= messages.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                    
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= messages.error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     <% } %>
                     <form id="registerForm" action="/user/register" method="post">
                         <div class="mb-3">

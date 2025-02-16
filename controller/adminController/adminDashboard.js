@@ -1,5 +1,5 @@
 const bcrypt=require('bcrypt');
-const Admin=require('../../models/dbadmin');
+const Admin=require('../../models/adminModal');
 const jwt = require("jsonwebtoken");
 
 const loadLogin = (req, res) => {

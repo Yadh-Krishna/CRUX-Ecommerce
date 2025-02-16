@@ -1,8 +1,8 @@
 const bcrypt=require('bcrypt');
-const User=require('../../models/dbuser');
+const User=require('../../models/userModel');
 const jwt = require("jsonwebtoken");
-const Product=require('../../models/dbproducts');
-const Brand=require('../../models/dbrands');
+const Product=require('../../models/productModel');
+const Brand=require('../../models/brandModel');
 const statusCodes=require('../../utils/statusCodes');
 const errorMessages=require('../../utils/errorMessages');
 
