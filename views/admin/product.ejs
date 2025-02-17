@@ -35,8 +35,8 @@
         <div class="card mb-4">
           <header class="card-header">
             <div class="d-flex align-items-center gap-2">
-              <form action="/admin/products" method="GET" class="d-flex gap-2 w-100">
-                <input type="text" name="search" placeholder="Search Product" class="form-control bg-grey" value="<%= search || '' %>">
+              <form action="#" method="GET" class="d-flex gap-2 w-100">
+                <input type="text" name="search" id="search" placeholder="Search Product" class="form-control bg-grey" value="<%= search || '' %>">
                 <select name="category" class="form-select">
                   <option value="">All Categories</option>
                   <% categories.forEach(category => { %>
@@ -88,63 +88,61 @@
             </div>
     
             <!-- ✅ PRODUCT LIST -->
-            <% if (products.length > 0) { %>
-              <% products.forEach((product, index) => { %>
-                <article class="itemlist">
-                  <div class="row align-items-center">
-                    <div class="col col-check flex-grow-0">
-                      <div class="form-check">
-                        <%= index + 1 %>.
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                      <a class="itemside" href="#">
-                        <div class="left">
-                          <img src="<%= product.images.length ? product.images[0] : '/assets/imgs/default.jpg' %>" class="img-sm img-thumbnail" alt="<%= product.name %>">
+             <div id="product-list">
+              <% if (products.length > 0) { %>
+                <% products.forEach((product, index) => { %>
+                    <article class="itemlist">
+                        <div class="row align-items-center">
+                            <div class="col-lg-1 col-sm-1 col-1"><%= index + 1 %>.</div>
+                            <div class="col-lg-4 col-sm-4 col-4">
+                                <a class="itemside" href="#">
+                                    <div class="left">
+                                        <img src="<%= product.images.length ? product.images[0] : '/assets/imgs/default.jpg' %>" class="img-sm img-thumbnail" alt="<%= product.name %>">
+                                    </div>
+                                    <div class="info">
+                                        <h6 class="mb-0"><%= product.name %></h6>
+                                        <small class="text-muted d-block">
+                                            <%= product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description %>
+                                        </small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-sm-2 col-2">₹<%= product.finalPrice || product.price %></div>
+                            <div class="col-lg-2 col-sm-2 col-1">
+                                <% if (!product.isDeleted) { %>
+                                    <span class="badge rounded-pill alert-success">Active</span>
+                                <% } else { %>
+                                    <span class="badge rounded-pill alert-danger">Disabled</span>
+                                <% } %>
+                            </div>
+                            <div class="col-lg-1 col-sm-2 col-1 text-nowrap">
+                                <span><%= new Intl.DateTimeFormat('en-GB').format(new Date(product.createdAt)).replace(/\//g, '-') %></span>
+                            </div>
+                            <div class="col-lg-2 col-sm-2 col-2 text-start text-nowrap">
+                                <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                    <i class="material-icons md-edit"></i> Edit
+                                </a>
+                                <a href="#" onclick="toggleProductStatus('<%= product._id %>')" class="btn btn-sm font-sm btn-light rounded">
+                                    <% if (!product.isDeleted) { %>
+                                        <i class="material-icons md-delete_forever"></i> Disable
+                                    <% } else { %>
+                                        <i class="material-icons md-check_circle"></i> Enable
+                                    <% } %>
+                                </a>
+                            </div>
                         </div>
-                        <div class="info">
-                          <h6 class="mb-0"><%= product.name %></h6>
-                          <small class="text-muted d-block">
-                            <%= product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description %>
-                          </small>
-                        </div>
-                      </a>
-                    </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>₹<%= product.finalPrice || product.price %></span> </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-status">
-                      <% if (!product.isDeleted) { %>
-                        <span class="badge rounded-pill alert-success">Active</span>
-                      <% } else { %>
-                        <span class="badge rounded-pill alert-danger">Disabled</span>
-                      <% } %>
-                    </div>
-                    <div class="col-lg-1 col-sm-2 col-4 col-date text-nowrap">
-                      <span><%=new Intl.DateTimeFormat('en-GB').format(new Date(product.createdAt)).replace(/\//g, '-')%></span>
-                    </div>
-                    <div class="col-lg-2 col-sm-2 col-4 col-action text-start text-nowrap">
-                      <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
-                        <i class="material-icons md-edit"></i> Edit
-                      </a>
-                      <a href="#" onclick="toggleProductStatus('<%= product._id %>')" class="btn btn-sm font-sm btn-light rounded">
-                        <% if (!product.isDeleted) { %>
-                          <i class="material-icons md-delete_forever"></i> Disable
-                        <% } else { %>
-                          <i class="material-icons md-check_circle"></i> Enable
-                        <% } %>
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              <% }) %>
+                    </article>
+                <% }) %>
             <% } else { %>
-              <div class="text-center py-4">
-                <h5>No products found.</h5>
-              </div>
+                <div class="text-center py-4">
+                    <h5>No products found.</h5>
+                </div>
             <% } %>
+             </div>         
           </div>
         </div>
     
-        <!-- ✅ PAGINATION -->
+        <!--  PAGINATION -->
         <div class="pagination-area mt-30 mb-50">
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-start">
@@ -154,7 +152,7 @@
     
               <% for (let i = 1; i <= totalPages; i++) { %>
                 <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a> 
                 </li>
               <% } %>
     
@@ -190,6 +188,77 @@
               }
             });
           }
+
+//           document.addEventListener("DOMContentLoaded", function () {
+//     const searchField = document.getElementById("search");
+//     const productContainer = document.getElementById("product-list"); // The table body where products are displayed
+
+//     function fetchProducts(searchValue = "") {
+//         fetch(`/admin/products?search=${searchValue}`,{method:"GET"})
+//             .then(response => response.json())
+//             .then(products => {
+//                 // Clear existing product list
+//                 productContainer.innerHTML = "";
+
+//                 if (products.length === 0) {
+//                     productContainer.innerHTML = `<div class="text-center py-4"><h5>No products found.</h5></div>`;
+//                     return;
+//                 }
+
+//                 // Populate new products in the table
+//                 products.forEach((product, index) => {
+//                     productContainer.innerHTML += `
+//                     <article class="itemlist">
+//                         <div class="row align-items-center">
+//                             <div class="col col-check flex-grow-0">${index + 1}.</div>
+//                             <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+//                                 <a class="itemside" href="#">
+//                                     <div class="left">
+//                                         <img src="${product.images.length ? product.images[0] : '/assets/imgs/default.jpg'}" class="img-sm img-thumbnail" alt="${product.name}">
+//                                     </div>
+//                                     <div class="info">
+//                                         <h6 class="mb-0">${product.name}</h6>
+//                                         <small class="text-muted d-block">
+//                                             ${product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description}
+//                                         </small>
+//                                     </div>
+//                                 </a>
+//                             </div>
+//                             <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>₹${product.finalPrice || product.price}</span> </div>
+//                             <div class="col-lg-2 col-sm-2 col-4 col-status">
+//                                 ${product.isDeleted 
+//                                     ? '<span class="badge rounded-pill alert-danger">Disabled</span>'
+//                                     : '<span class="badge rounded-pill alert-success">Active</span>'}
+//                             </div>
+//                             <div class="col-lg-1 col-sm-2 col-4 col-date text-nowrap">
+//                                 <span>${new Intl.DateTimeFormat('en-GB').format(new Date(product.createdAt)).replace(/\//g, '-')}</span>
+//                             </div>
+//                             <div class="col-lg-2 col-sm-2 col-4 col-action text-start text-nowrap">
+//                                 <a href="/admin/products/edit/${product._id}" class="btn btn-sm font-sm rounded btn-brand">
+//                                     <i class="material-icons md-edit"></i> Edit
+//                                 </a>
+//                                 <a href="#" onclick="toggleProductStatus('${product._id}')" class="btn btn-sm font-sm btn-light rounded">
+//                                     ${product.isDeleted 
+//                                         ? '<i class="material-icons md-check_circle"></i> Enable'
+//                                         : '<i class="material-icons md-delete_forever"></i> Disable'}
+//                                 </a>
+//                             </div>
+//                         </div>
+//                     </article>`;
+//                 });
+//             })
+//             .catch(err => console.error("Error fetching products:", err));
+//     }
+
+//     // Initial Fetch: Load all products when the page loads
+//     fetchProducts();
+
+//     // Listen for search input
+//     searchField.addEventListener("keyup", function () {
+//         const searchValue = searchField.value.trim().toLowerCase();
+//         fetchProducts(searchValue);
+//     });
+// });
       </script>      
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
