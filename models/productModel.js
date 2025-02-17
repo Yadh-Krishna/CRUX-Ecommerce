@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  slug: { type: String, unique: true }, // New Slug Field
   description: { type: String },
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 }, 
@@ -16,4 +17,22 @@ const ProductSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
   
+ProductSchema.pre("save", async function (next) {
+  if (this.isModified("name")) {
+    let slug = slugify(this.name, { lower: true, strict: true });
+
+    // Ensure uniqueness by appending a number if a duplicate exists
+    let existingProduct = await this.constructor.findOne({ slug });
+    let counter = 1;
+
+    while (existingProduct) {
+      slug = `${slug}-${counter}`;
+      existingProduct = await this.constructor.findOne({ slug });
+      counter++;
+    }
+
+    this.slug = slug;
+  }
+  next();
+});
   module.exports = mongoose.model('Product', ProductSchema);

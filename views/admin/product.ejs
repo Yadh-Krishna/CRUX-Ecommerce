@@ -189,76 +189,76 @@
             });
           }
 
-//           document.addEventListener("DOMContentLoaded", function () {
-//     const searchField = document.getElementById("search");
-//     const productContainer = document.getElementById("product-list"); // The table body where products are displayed
+    document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search");
+    const categorySelect = document.querySelector("select[name='category']");
+    const brandSelect = document.querySelector("select[name='brand']");
+    const statusSelect = document.querySelector("select[name='status']");
+    const productList = document.getElementById("product-list");
 
-//     function fetchProducts(searchValue = "") {
-//         fetch(`/admin/products?search=${searchValue}`,{method:"GET"})
-//             .then(response => response.json())
-//             .then(products => {
-//                 // Clear existing product list
-//                 productContainer.innerHTML = "";
+    function fetchProducts() {
+      const search = searchInput.value;
+      const category = categorySelect.value;
+      const brand = brandSelect.value;
+      const status = statusSelect.value;
 
-//                 if (products.length === 0) {
-//                     productContainer.innerHTML = `<div class="text-center py-4"><h5>No products found.</h5></div>`;
-//                     return;
-//                 }
+      fetch(`/admin/products/search?search=${search}&category=${category}&brand=${brand}&status=${status}`)
+        .then(response => response.json())
+        .then(data => {
+          productList.innerHTML = "";
 
-//                 // Populate new products in the table
-//                 products.forEach((product, index) => {
-//                     productContainer.innerHTML += `
-//                     <article class="itemlist">
-//                         <div class="row align-items-center">
-//                             <div class="col col-check flex-grow-0">${index + 1}.</div>
-//                             <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-//                                 <a class="itemside" href="#">
-//                                     <div class="left">
-//                                         <img src="${product.images.length ? product.images[0] : '/assets/imgs/default.jpg'}" class="img-sm img-thumbnail" alt="${product.name}">
-//                                     </div>
-//                                     <div class="info">
-//                                         <h6 class="mb-0">${product.name}</h6>
-//                                         <small class="text-muted d-block">
-//                                             ${product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description}
-//                                         </small>
-//                                     </div>
-//                                 </a>
-//                             </div>
-//                             <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>₹${product.finalPrice || product.price}</span> </div>
-//                             <div class="col-lg-2 col-sm-2 col-4 col-status">
-//                                 ${product.isDeleted 
-//                                     ? '<span class="badge rounded-pill alert-danger">Disabled</span>'
-//                                     : '<span class="badge rounded-pill alert-success">Active</span>'}
-//                             </div>
-//                             <div class="col-lg-1 col-sm-2 col-4 col-date text-nowrap">
-//                                 <span>${new Intl.DateTimeFormat('en-GB').format(new Date(product.createdAt)).replace(/\//g, '-')}</span>
-//                             </div>
-//                             <div class="col-lg-2 col-sm-2 col-4 col-action text-start text-nowrap">
-//                                 <a href="/admin/products/edit/${product._id}" class="btn btn-sm font-sm rounded btn-brand">
-//                                     <i class="material-icons md-edit"></i> Edit
-//                                 </a>
-//                                 <a href="#" onclick="toggleProductStatus('${product._id}')" class="btn btn-sm font-sm btn-light rounded">
-//                                     ${product.isDeleted 
-//                                         ? '<i class="material-icons md-check_circle"></i> Enable'
-//                                         : '<i class="material-icons md-delete_forever"></i> Disable'}
-//                                 </a>
-//                             </div>
-//                         </div>
-//                     </article>`;
-//                 });
-//             })
-//             .catch(err => console.error("Error fetching products:", err));
-//     }
+          if (data.products.length === 0) {
+            productList.innerHTML = `<div class="text-center py-4"><h5>No products found.</h5></div>`;
+            return;
+          }
 
-//     // Initial Fetch: Load all products when the page loads
-//     fetchProducts();
+          data.products.forEach((product, index) => {
+            const statusBadge = product.isDeleted
+              ? '<span class="badge rounded-pill alert-danger">Disabled</span>'
+              : '<span class="badge rounded-pill alert-success">Active</span>';
 
-//     // Listen for search input
-//     searchField.addEventListener("keyup", function () {
-//         const searchValue = searchField.value.trim().toLowerCase();
-//         fetchProducts(searchValue);
-//     });
-// });
+            productList.innerHTML += `
+              <article class="itemlist">
+                <div class="row align-items-center">
+                  <div class="col-lg-1 col-sm-1 col-1">${index + 1}.</div>
+                  <div class="col-lg-4 col-sm-4 col-4">
+                    <a class="itemside" href="#">
+                      <div class="left">
+                        <img src="${product.image}" class="img-sm img-thumbnail" alt="${product.name}">
+                      </div>
+                      <div class="info">
+                        <h6 class="mb-0">${product.name}</h6>
+                        <small class="text-muted d-block">${product.shortDescription}</small>
+                      </div>
+                    </a>
+                  </div>
+                  <div class="col-lg-2 col-sm-2 col-2">₹${product.finalPrice || product.price}</div>
+                  <div class="col-lg-2 col-sm-2 col-1">${statusBadge}</div>
+                  <div class="col-lg-1 col-sm-2 col-1 text-nowrap"><span>${product.formattedDate}</span></div>
+                  <div class="col-lg-2 col-sm-2 col-2 text-start text-nowrap">
+                    <a href="/admin/products/edit/${product._id}" class="btn btn-sm font-sm rounded btn-brand">
+                      <i class="material-icons md-edit"></i> Edit
+                    </a>
+                    <a href="#" onclick="toggleProductStatus('${product._id}')" class="btn btn-sm font-sm btn-light rounded">
+                      ${product.isDeleted 
+                        ? '<i class="material-icons md-check_circle"></i> Enable' 
+                        : '<i class="material-icons md-delete_forever"></i> Disable'}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            `;
+          });
+        })
+        .catch(error => console.error("Error fetching products:", error));
+    }
+
+    // Add event listeners for live search
+    searchInput.addEventListener("input", fetchProducts);
+    categorySelect.addEventListener("change", fetchProducts);
+    brandSelect.addEventListener("change", fetchProducts);
+    statusSelect.addEventListener("change", fetchProducts);
+  });
       </script>      
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>

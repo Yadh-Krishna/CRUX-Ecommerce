@@ -4,8 +4,8 @@ const bcrypt=require('bcrypt');
 
 const adminDashboard=require('../../controller/adminController/adminDashboard');
 const UserManagement=require('../../controller/adminController/userManage');
-const categoryManage=require('../../controller/adminController/categoryManage')
-const brandManage=require('../../controller/adminController/brandManage')
+const categoryManage=require('../../controller/adminController/categoryManage');
+const brandManage=require('../../controller/adminController/brandManage');
 const productController= require('../../controller/adminController/productController'); 
 
 const auth = require("../../middleware/adminAuth");
@@ -26,6 +26,7 @@ router.get("/logout",adminDashboard.logout);//logging out of admin management
 
 //user Management
 router.get("/users",auth, UserManagement.loadUsers);  //Customer User page  
+router.get("/users/search", UserManagement.liveSearchUsers);
 router.patch("/users/delete/:id",auth, UserManagement.blockUser);// Toggle user status (Block/Unblock)
 
 //Error Handling
@@ -51,6 +52,7 @@ router.patch("/brands/:id/toggle-status",auth,brandManage.blockBrand);
 
 //Product Management
 router.get('/products',auth,productController.productList);
+router.get("/products/search", productController.liveSearchProducts);
 router.get('/products/add',auth,productController.addProductLoad);
 router.post('/products/add',auth,upload.array("images",5),productController.addProduct);
 router.get('/products/edit/:id',auth,productController.editProduct);

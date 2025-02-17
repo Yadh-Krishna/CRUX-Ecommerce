@@ -83,6 +83,58 @@ const productList= asyncHandler(async (req, res) => {
     }
   });
 
+const liveSearchProducts = asyncHandler(async (req, res) => {
+    try {
+      let search = req.query.search || "";
+      let category = req.query.category || "";
+      let brand = req.query.brand || "";
+      let status = req.query.status || "";
+  
+      let filter = {};
+  
+      if (search) {
+        filter.name = { $regex: search, $options: "i" };
+      }
+  
+      if (category) {
+        filter.category = category;
+      }
+  
+      if (brand) {
+        filter.brands = brand;
+      }
+  
+      if (status === "Active") {
+        filter.isDeleted = false;
+      } else if (status === "Disabled") {
+        filter.isDeleted = true;
+      }
+  
+      let products = await Product.find(filter).populate("category brands").sort({ createdAt: -1 });
+  
+      const formatDate = (date) => {
+        const d = new Date(date);
+        return d.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+      };
+  
+      let formattedProducts = products.map((product) => ({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        finalPrice: product.finalPrice || product.price,
+        image: product.images.length ? product.images[0] : "/assets/imgs/default.jpg",
+        isDeleted: product.isDeleted,
+        formattedDate: formatDate(product.createdAt),
+        shortDescription: product.description.length > 50 ? product.description.substring(0, 50) + "..." : product.description,
+      }));
+  
+      res.json({ products: formattedProducts });
+    } catch (error) {
+      console.error("Error in live search:", error);
+      res.status(500).json({ error: "Failed to fetch products" });
+    }
+  });
+
 const addProductLoad=asyncHandler(async(req,res)=>{
   try{
     const isDeleted=false;
@@ -246,6 +298,7 @@ const blockProduct=asyncHandler(async(req,res)=>{
     
 module.exports={
     productList,
+    liveSearchProducts,
     addProductLoad,
     addProduct,
     editProduct,

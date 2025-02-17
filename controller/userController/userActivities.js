@@ -10,6 +10,9 @@ require("dotenv").config();
 
 const loadHome=async(req,res)=>{
     try {
+        const loginUser=req.user;        
+        const user= await User.find({loginUser});
+        // console.log(user);
         const isDeleted = false;
         const products = await Product.find({ isDeleted });
         const brands = await Brand.find({ isDeleted });

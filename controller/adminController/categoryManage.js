@@ -2,24 +2,34 @@ const Category=require('../../models/categoryModal');
 const asyncHandler=require('express-async-handler');
 
 const categoryList= asyncHandler(async (req, res) => {
-  const searchQuery = req.query.searchCategories || "";
-  const statusFilter = req.query.status || "Show all";
+    const searchQuery = req.query.searchCategories || "";
+    const statusFilter = req.query.status || "Show all";
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-  // Create a search condition for category name (case-insensitive)
-  let filter = {};
-  if (searchQuery) {
-      filter.name = { $regex: searchQuery,$options:'i' }; 
-  }
+    let filter = {};
+    if (searchQuery) {
+        filter.name = { $regex: searchQuery, $options: "i" };
+    }
 
-  // Apply status filter (if not "Show all")
-  if (statusFilter === "Active") {
-      filter.isDeleted = false;
-  } else if (statusFilter === "Inactive") {
-      filter.isDeleted = true;
-  }
+    if (statusFilter === "Active") {
+        filter.isDeleted = false;
+    } else if (statusFilter === "Inactive") {
+        filter.isDeleted = true;
+    }
 
-  const categories = await Category.find(filter);
-  res.render("category", { categories});
+    const totalCategories = await Category.countDocuments(filter);
+    const categories = await Category.find(filter).sort({name:1}).skip(skip).limit(limit);
+
+    res.render("category", {
+        categories,
+        currentPage: page,
+        totalPages: Math.ceil(totalCategories / limit),
+        searchQuery,
+        statusFilter,
+        limit,
+    });
 });
 
 const addCategoryLoad=asyncHandler((req,res)=>{

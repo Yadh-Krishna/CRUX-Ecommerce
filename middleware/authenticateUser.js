@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 
 const authenticateUser = async (req, res, next) => {
     try {
-        const token = req.header("Authorization")?.split(" ")[1]; // Extract token
+        const token = req.cookies.userToken;
 
         if (!token) {
             req.user = null; // No token, user not logged in
@@ -11,8 +11,8 @@ const authenticateUser = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token
-        const user = await User.findById(decoded.id).select("-password"); // Get user details
-
+        const user = await User.findById(decoded.userId).select("-password"); // Get user details
+        
         if (!user) {
             req.user = null; // Invalid user
             return next();

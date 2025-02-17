@@ -1,10 +1,12 @@
+<!--Product details tab-->
+
 <!DOCTYPE HTML>
 <html>
 	<head>
 	<title>Footwear - Free Bootstrap 4 Template by Colorlib</title>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
 	
@@ -35,7 +37,38 @@
 	<!-- Theme style  -->
 	<link rel="stylesheet" href="/front/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<style>			
+    .product-list {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding-bottom: 10px;
+    }
+    .scroll-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: white;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        padding: 10px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+    }
+    .left { left: -10px; }
+    .right { right: -10px; }
 
+	.main-image img {
+    width: 400px;  /* Fixed width */
+    height: 400px; /* Fixed height */
+    object-fit: contain; /* Ensures image fits without distortion */
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+}
+
+		</style>
 	</head>
 	<body>
 		
@@ -62,320 +95,149 @@
             </div>
         <% } %>
 
-		<div class="colorlib-product">
-			<div class="container">
-				<div class="row row-pb-lg product-detail-wrap">
-					<div class="col-sm-8">
-                        <% if (product && product.images && product.images.length > 0) { %>
-						<div class="owl-carousel">
-                            <% product.images.forEach(image => { %>
-							<div class="item">
-								<div class="product-entry border">
-									<a href="#" class="prod-img">
-										<img src="<%= image %>" class="img-fluid" alt="<%= product.name %>">
-									</a>
-								</div>
-							</div>
-                            <%});%>
-                            </div>
-                            <% } else { %>
-                                <div class="alert alert-warning">No images available for this product.</div>
-                            <% } %>					
-					</div>
-					<div class="col-sm-4">
-                        <% if (product) { %>
-						<div class="product-desc">
-							<h3><%=product.name%></h3>
-							<p class="price">
-								<span>₹<%=product.finalPrice%></span> 
-								<span class="rate">
-									<i class="icon-star-full"></i>
-									<i class="icon-star-full"></i>
-									<i class="icon-star-full"></i>
-									<i class="icon-star-full"></i>
-									<i class="icon-star-half"></i>
-									(74 Rating)
-								</span>
-							</p>
-							<p></p>
-                            <% } else { %>
-                                <div class="alert alert-danger">
-                                    <p>Product not found or is currently inactive.</p>
-                                </div>
-                                <% } %>
-							<div class="size-wrap">
-								<div class="block-26 mb-2">
-									<h4>Size</h4>
-				               <ul>
-				                  <li><a href="#">7</a></li>
-				                  <li><a href="#">7.5</a></li>
-				                  <li><a href="#">8</a></li>
-				                  <li><a href="#">8.5</a></li>
-				                  <li><a href="#">9</a></li>
-				                  <li><a href="#">9.5</a></li>
-				                  <li><a href="#">10</a></li>
-				                  <li><a href="#">10.5</a></li>
-				                  <li><a href="#">11</a></li>
-				                  <li><a href="#">11.5</a></li>
-				                  <li><a href="#">12</a></li>
-				                  <li><a href="#">12.5</a></li>
-				                  <li><a href="#">13</a></li>
-				                  <li><a href="#">13.5</a></li>
-				                  <li><a href="#">14</a></li>
-				               </ul>
-				            </div>
-				            <div class="block-26 mb-4">
-									<h4>Width</h4>
-				               <ul>
-				                  <li><a href="#">M</a></li>
-				                  <li><a href="#">W</a></li>
-				               </ul>
-				            </div>
-							</div>
-                     <div class="input-group mb-4">
-                     	<span class="input-group-btn">
-                        	<button type="button" class="quantity-left-minus btn"  data-type="minus" data-field="">
-                           <i class="icon-minus2"></i>
-                        	</button>
-                    		</span>
-                     	<input type="text" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
-                     	<span class="input-group-btn ml-1">
-                        	<button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
-                             <i class="icon-plus2"></i>
-                         </button>
-                     	</span>
-                  	</div>
-                  	<div class="row">
-	                  	<div class="col-sm-12 text-center">
-									<p class="addtocart"><a href="cart.html" class="btn btn-primary btn-addtocart"><i class="icon-shopping-cart"></i> Add to Cart</a></p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-sm-12">
+		          <div class="colorlib-product" style="padding:0;">
+			     <!-- Product Detail Section -->
+					<div class="container mt-4">
 						<div class="row">
-							<div class="col-md-12 pills">
-								<div class="bd-example bd-example-tabs">
-								  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+							<!-- Left: Image Gallery -->
+							<div class="col-md-6">
+								<% if (product && product.images && product.images.length > 0) { %>
+									<div class="main-image text-center">
+										<img id="mainImage" src="<%= product.images[0] %>" class="img-fluid rounded shadow" alt="<%= product.name %>">
+									</div>
+									<div class="thumbnail-images d-flex justify-content-center mt-3">
+										<% product.images.forEach((image, index) => { %>
+											<img src="<%= image %>" class="img-thumbnail mx-1" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage('<%= image %>')">
+										<% }) %>
+									</div>
+								<% } else { %>
+									<div class="alert alert-warning text-center">No images available for this product.</div>
+								<% } %>
+							</div>
 
-								    <li class="nav-item">
-								      <a class="nav-link active" id="pills-description-tab" data-toggle="pill" href="#pills-description" role="tab" aria-controls="pills-description" aria-expanded="true">Description</a>
-								    </li>
-								    <li class="nav-item">
-								      <a class="nav-link" id="pills-manufacturer-tab" data-toggle="pill" href="#pills-manufacturer" role="tab" aria-controls="pills-manufacturer" aria-expanded="true">Manufacturer</a>
-								    </li>
-								    <li class="nav-item">
-								      <a class="nav-link" id="pills-review-tab" data-toggle="pill" href="#pills-review" role="tab" aria-controls="pills-review" aria-expanded="true">Review</a>
-								    </li>
-								  </ul>
+							<!-- Right: Product Details -->
+							<div class="col-md-6">
+								<% if (product) { %>
+								<div class="product-desc">
+									<h2><%= product.name %></h2>
+									<p class="price">
+										<span>₹<%= product.finalPrice %></span>
+										<% if (product.discount) { %>
+											<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
+										<% } %>
+									</p>
+									<p class="rating">
+										<% for (let i = 1; i <= 5; i++) { %>
+											<i class="fa <%= i <= product.ratings ? 'fa-star text-warning' : 'fa-star text-muted' %>"></i>
+										<% } %>
+										<span>(<%= product.ratings %> Ratings)</span>
+									</p>
+									<p><%= product.description %></p>
 
-								  <div class="tab-content" id="pills-tabContent">
-								    <div class="tab-pane border fade show active" id="pills-description" role="tabpanel" aria-labelledby="pills-description-tab">
-								      <p><%=product.description%></p>
-										 </div>
+									<h5>Available Sizes:</h5>
+									<div class="btn-group mb-3">
+										<% ["7", "8", "9", "10", "11", "12"].forEach(size => { %>
+											<button class="btn btn-outline-dark"><%= size %></button>
+										<% }) %>
+									</div>
 
-								    <div class="tab-pane border fade" id="pills-manufacturer" role="tabpanel" aria-labelledby="pills-manufacturer-tab">
-								      <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
-										<p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then she continued her way.</p>
-								    </div>
-                                    
-                                    <div class="tab-pane border fade show active" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab">
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <h3 class="head">Reviews</h3>
-                                                <% if (reviews && reviews.length > 0) { %>
-                                                    <% reviews.forEach((review) => { %>
-                                                    <div class="review">
-                                                        <div class="user-img" style="background-image: url('/front/images/default-user.png')"></div>
-                                                        <div class="desc">
-                                                            <h4>
-                                                                <span class="text-left"><%= review.user.username %></span>
-                                                                <span class="text-right"><%= new Date(review.createdAt).toLocaleDateString() %></span>
-                                                            </h4>
-                                                            <p class="star">
-                                                                <span>
-                                                                    <% for (let i = 1; i <= 5; i++) { %>
-                                                                        <i class="icon-star<%= i <= review.rating ? '-full' : '-empty' %>"></i>
-                                                                    <% } %>
-                                                                </span>
-                                                            </p>
-                                                            <p><%= review.comment %></p>
-                                                        </div>
-                                                    </div>
-                                                <% }) %>
-                                                <% } else { %>
-                                                    <p>No reviews yet. Be the first to review this product!</p>
-                                                <% } %>
-                                            </div>
-                                            
-                                            <!-- Review Submission Form -->
-                                            <div class="col-md-4">
-                                                <% if (user) { %>
-                                                    <div class="rating-wrap">
-                                                        <h3 class="head">Give a Review</h3>
-                                                        <form action="/products/<%= product._id %>/review" method="POST">
-                                                            <div class="form-group">
-                                                                <label for="rating">Your Rating</label>
-                                                                <select name="rating" id="rating" class="form-control" required>
-                                                                    <option value="5">★★★★★</option>
-                                                                    <option value="4">★★★★☆</option>
-                                                                    <option value="3">★★★☆☆</option>
-                                                                    <option value="2">★★☆☆☆</option>
-                                                                    <option value="1">★☆☆☆☆</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="comment">Your Review</label>
-                                                                <textarea name="comment" id="comment" rows="3" class="form-control" required></textarea>
-                                                            </div>
-                                                            <button type="submit" class="btn btn-primary">Submit Review</button>
-                                                        </form>
-                                                    </div>
-                                                <% } else { %>
-                                                    <p><a href="/login">Log in</a> to leave a review.</p>
-                                                <% } %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>  
-								    <!-- <div class="tab-pane border fade" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab">
-								      <div class="row">
-								   		<div class="col-md-8">
-								   			<h3 class="head">23 Reviews</h3>
-								   			<div class="review">
-										   		<div class="user-img" style="background-image: url(/front/images/person1.jpg)"></div>
-										   		<div class="desc">
-										   			<h4>
-										   				<span class="text-left">Jacob Webb</span>
-										   				<span class="text-right">14 March 2018</span>
-										   			</h4>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-half"></i>
-										   					<i class="icon-star-empty"></i>
-									   					</span>
-									   					<span class="text-right"><a href="#" class="reply"><i class="icon-reply"></i></a></span>
-										   			</p>
-										   			<p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrov</p>
-										   		</div>
-										   	</div>
-										   	<div class="review">
-										   		<div class="user-img" style="background-image: url(/front/images/person2.jpg)"></div>
-										   		<div class="desc">
-										   			<h4>
-										   				<span class="text-left">Jacob Webb</span>
-										   				<span class="text-right">14 March 2018</span>
-										   			</h4>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-half"></i>
-										   					<i class="icon-star-empty"></i>
-									   					</span>
-									   					<span class="text-right"><a href="#" class="reply"><i class="icon-reply"></i></a></span>
-										   			</p>
-										   			<p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrov</p>
-										   		</div>
-										   	</div>
-										   	<div class="review">
-										   		<div class="user-img" style="background-image: url(/front/images/person3.jpg)"></div>
-										   		<div class="desc">
-										   			<h4>
-										   				<span class="text-left">Jacob Webb</span>
-										   				<span class="text-right">14 March 2018</span>
-										   			</h4>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-half"></i>
-										   					<i class="icon-star-empty"></i>
-									   					</span>
-									   					<span class="text-right"><a href="#" class="reply"><i class="icon-reply"></i></a></span>
-										   			</p>
-										   			<p>When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrov</p>
-										   		</div>
-										   	</div>
-								   		</div>
-								   		<div class="col-md-4">
-								   			<div class="rating-wrap">
-									   			<h3 class="head">Give a Review</h3>
-									   			<div class="wrap">
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					(98%)
-									   					</span>
-									   					<span>20 Reviews</span>
-										   			</p>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-empty"></i>
-										   					(85%)
-									   					</span>
-									   					<span>10 Reviews</span>
-										   			</p>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-empty"></i>
-										   					<i class="icon-star-empty"></i>
-										   					(70%)
-									   					</span>
-									   					<span>5 Reviews</span>
-										   			</p>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-empty"></i>
-										   					<i class="icon-star-empty"></i>
-										   					<i class="icon-star-empty"></i>
-										   					(10%)
-									   					</span>
-									   					<span>0 Reviews</span>
-										   			</p>
-										   			<p class="star">
-										   				<span>
-										   					<i class="icon-star-full"></i>
-										   					<i class="icon-star-empty"></i>
-										   					<i class="icon-star-empty"></i>
-										   					<i class="icon-star-empty"></i>
-										   					<i class="icon-star-empty"></i>
-										   					(0%)
-									   					</span>
-									   					<span>0 Reviews</span>
-										   			</p>
-										   		</div>
-									   		</div>
-								   		</div>
-								   	</div>
-								    </div> -->
-								  </div>
+									<div class="input-group mb-4">
+										<button class="btn btn-outline-dark quantity-left-minus">-</button>
+										<input type="text" id="quantity" class="form-control text-center" value="1" min="1" max="100">
+										<button class="btn btn-outline-dark quantity-right-plus">+</button>
+									</div>
+
+									<a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
 								</div>
-				         </div>
+								<% } else { %>
+									<div class="alert alert-danger text-center">Product not found or is currently inactive.</div>
+								<% } %>
+							</div>
 						</div>
 					</div>
+
+
+			  <!-- Product Tabs -->
+			  <div class="container mt-5">
+				<ul class="nav nav-tabs" id="productTabs">
+					<li class="nav-item">
+						<a class="nav-link active" data-bs-toggle="tab" href="#brand">Brand</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="tab" href="#description">Description</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="tab" href="#review">Reviews</a>
+					</li>
+				</ul>
+		
+				<div class="tab-content p-4 border bg-light">
+					<div class="tab-pane fade show active" id="brand">
+						<div class="d-flex align-items-center mb-3">
+							<img src="<%=brand.image%>" alt="<%=brand.name%>" class="rounded-circle" height="60">
+							<h4 class="ms-3 mb-0"><%=brand.name%></h4>
+						</div>
+						<p><%= brand.description %></p>
+					</div>
+					<div class="tab-pane fade" id="description">
+						<p><%= product.description %></p>
+					</div>
+					<div class="tab-pane fade" id="review">
+						<% if (reviews && reviews.length > 0) { %>
+							<% reviews.forEach(review => { %>
+								<div class="review mb-3">
+									<strong><%= review.user.username %></strong>
+									<span class="text-muted float-end"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+									<div class="text-warning">
+										<% for (let i = 1; i <= 5; i++) { %>
+											<i class="fa <%= i <= review.rating ? 'fa-star' : 'fa-star text-muted' %>"></i>
+										<% } %>
+									</div>
+									<p><%= review.comment %></p>
+								</div>
+							<% }) %>
+						<% } else { %>
+							<p>No reviews yet. Be the first to review this product.</p>
+						<% } %>
+					</div>
 				</div>
+			</div>
+				</div>
+				<!-- Similar Products Section -->
+					<div class="container mt-5 mb-5">
+						<h3>Similar Products</h3>
+						<div class="position-relative">
+							<!-- Scroll Buttons -->
+							<button class="scroll-btn left" onclick="scrollProducts(-1)">&#10094;</button>
+							<button class="scroll-btn right" onclick="scrollProducts(1)">&#10095;</button>
+
+							<div class="product-list d-flex overflow-auto">
+								<% relatedProducts.forEach(product => { %>
+									<div class="card mx-2" style="min-width: 180px; max-width: 200px;">
+										<div class="position-relative">
+											<a href="/user/products/<%=product._id%>"><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>"></a>
+											<button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
+												<i class="fa fa-heart"></i>
+											</button>
+										</div>
+										<div class="card-body p-2">
+											<a class="nav-link" href="/user/products/<%=product._id%>"><p class="card-title text-truncate mb-1"><%= product.name %></p></a>
+											<p class="card-text mb-1">
+												<strong>₹<%= product.finalPrice %></strong>
+												<% if (product.discount) { %>
+													<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
+													<span class="text-success"> <%= product.discount %>% off</span>
+												<% } %>
+											</p>
+											<!-- <div>
+												<img src="/front/images/assured-badge.png" alt="Assured" style="height: 16px;">
+											</div> -->
+										</div>
+									</div>
+								<% }) %>
+							</div>
+						</div>
+					</div>
 			</div>
 		</div>
 
@@ -411,6 +273,26 @@
 	<script src="/front/js/main.js"></script>
 
 	<script>
+		function scrollProducts(direction) {
+        const container = document.querySelector('.product-list');
+        const scrollAmount = 300; // Adjust for better UX
+        container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+		}
+
+	
+		function changeImage(src) {
+        document.getElementById('mainImage').src = src;
+    }
+
+    document.querySelector('.quantity-right-plus').addEventListener('click', () => {
+        let qty = parseInt(document.getElementById('quantity').value);
+        document.getElementById('quantity').value = qty + 1;
+    });
+
+    document.querySelector('.quantity-left-minus').addEventListener('click', () => {
+        let qty = parseInt(document.getElementById('quantity').value);
+        if (qty > 1) document.getElementById('quantity').value = qty - 1;
+    });
 		$(document).ready(function(){
 
 		var quantitiy=0;
