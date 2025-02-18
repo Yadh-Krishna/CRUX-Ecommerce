@@ -112,7 +112,7 @@
 			width: 1000px; /* Large image size for zoom */
 			height: auto;
 		}
-
+		
 
 		</style>
 	</head>
@@ -161,15 +161,7 @@
 											<% product.images.forEach((image, index) => { %>
 												<img src="<%= image %>" class="img-thumbnail mx-1" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage('<%= image %>')">
 											<% }) %>
-										</div>
-									<!-- <div class="main-image text-center">
-										<img id="mainImage" src="<%= product.images[0] %>" class="img-fluid rounded shadow" alt="<%= product.name %>">
-									</div>
-									<div class="thumbnail-images d-flex justify-content-center mt-3">
-										<% product.images.forEach((image, index) => { %>
-											<img src="<%= image %>" class="img-thumbnail mx-1" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage('<%= image %>')">
-										<% }) %>
-									</div> -->
+										</div>									
 								<% } else { %>
 									<div class="alert alert-warning text-center">No images available for this product.</div>
 								<% } %>
@@ -350,31 +342,59 @@
 		zoomPreview.style.display = "block";
 	});
 
-
-	mainImage.addEventListener('mousemove', function (event) {
-		const { left, top, width, height } = mainImage.getBoundingClientRect();
+	mainImage.addEventListener('mousemove', function(event) {
+    const { left, top, width, height } = mainImage.getBoundingClientRect();
+    
+    // Get cursor position relative to image
+    const x = event.pageX - left - window.scrollX;
+    const y = event.pageY - top - window.scrollY;
+    
+    // Position zoom lens
+    const lensSize = 100;
+    let lensX = x - lensSize / 2;
+    let lensY = y - lensSize / 2;
+    
+    // Keep lens inside image bounds
+    lensX = Math.max(0, Math.min(width - lensSize, lensX));
+    lensY = Math.max(0, Math.min(height - lensSize, lensY));
+    
+    zoomLens.style.left = `${lensX}px`;
+    zoomLens.style.top = `${lensY}px`;
+    
+    // Calculate the ratio between preview size and lens size
+    const xRatio = (zoomPreview.offsetWidth - zoomImage.offsetWidth) / (width - lensSize);
+    const yRatio = (zoomPreview.offsetHeight - zoomImage.offsetHeight) / (height - lensSize);
+    
+    // Position zoomed image preview with corrected calculations
+    const zoomX = lensX * xRatio;
+    const zoomY = lensY * yRatio;
+    
+    zoomImage.style.transform = `translate(${zoomX}px, ${zoomY}px)`;
+});
+	// mainImage.addEventListener('mousemove', function (event) {
+	// 	const { left, top, width, height } = mainImage.getBoundingClientRect();
 		
-		// Get cursor position relative to image
-		const x = event.pageX - left - window.scrollX;
-		const y = event.pageY - top - window.scrollY;
+	// 	// Get cursor position relative to image
+	// 	const x = event.pageX - left - window.scrollX;
+	// 	const y = event.pageY - top - window.scrollY;
 
-		// Position zoom lens
-		const lensSize = 100;  // Adjust zoom lens size
-		let lensX = x - lensSize / 2;
-		let lensY = y - lensSize / 2;
+	// 	// Position zoom lens
+	// 	const lensSize = 100;  // Adjust zoom lens size
+	// 	let lensX = x - lensSize / 2;
+	// 	let lensY = y - lensSize / 2;
 
-		// Keep lens inside image bounds
-		lensX = Math.max(0, Math.min(width - lensSize, lensX));
-		lensY = Math.max(0, Math.min(height - lensSize, lensY));
+	// 	// Keep lens inside image bounds
+	// 	lensX = Math.max(0, Math.min(width - lensSize, lensX));
+	// 	lensY = Math.max(0, Math.min(height - lensSize, lensY));
 
-		zoomLens.style.left = `${lensX}px`;
-		zoomLens.style.top = `${lensY}px`;
+	// 	zoomLens.style.left = `${lensX}px`;
+	// 	zoomLens.style.top = `${lensY}px`;
 
-		// Position zoomed image preview
-		const zoomX = (lensX / width) * 100;
-		const zoomY = (lensY / height) * 100;
-		zoomImage.style.transform = `translate(-${zoomX}%, -${zoomY}%)`;
-	});
+	// 	// Position zoomed image preview
+	// 	const zoomX = (lensX / width) * 100;
+	// 	const zoomY = (lensY / height) * 100;
+	// 	zoomImage.style.transform = `translate(-${zoomX}%, -${zoomY}%)`;
+	// });
 
 	mainImage.addEventListener('mouseleave', function () {
 		zoomLens.style.display = "none";
@@ -392,22 +412,7 @@
     };
 }
 
-	// Change main image and update zoom effect
-	// function changeImage(src) {
-	// 	mainImage.src = src;
-	// 	zoomImage.src = src;
-	// }
-
-		// Chnage image and shift to main image
-		// function changeImage(src) {
-		// 	mainImage.src = src;
-		// 	zoomFrame.style.backgroundImage = `url(${src})`;
-		// }
-
-	// 	function changeImage(src) {
-    //     document.getElementById('mainImage').src = src;
-    // }
-
+	
 		function scrollProducts(direction) {
         const container = document.querySelector('.product-list');
         const scrollAmount = 300; // Adjust for better UX
