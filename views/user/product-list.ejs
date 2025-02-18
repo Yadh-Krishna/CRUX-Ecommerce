@@ -1,0 +1,364 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>Footwear - Free Bootstrap 4 Template by Colorlib</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="/front/css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/icomoon.css">
+	<!-- Ion Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/ionicons.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="/front/css/magnific-popup.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="/front/css/flexslider.css">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+	
+	<!-- Date Picker -->
+	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+	<!-- Flaticons  -->
+	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="/front/css/style.css">
+        <style>
+           
+    .product-entry {
+        width: 100%;
+        max-width: 320px; /* Fixed width for consistent layout */
+        height: 420px; /* Fixed height */
+        margin: auto;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .prod-img img {
+        width: 100%;
+        height: 250px; /* Uniform image size */
+        object-fit: cover; /* Ensures image maintains aspect ratio */
+    }
+
+    .product-entry .desc {
+        height: 130px; /* Fixed height for text area */
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .product-entry h2 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-entry h2 a {
+        display: inline-block;
+        max-width: 90%;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .product-entry h2 a:hover {
+        text-decoration: underline;
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: red;
+        color: white;
+        padding: 5px 8px;
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+
+    .rating {
+        font-size: 14px;
+    }
+
+    .price {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .price .old-price {
+        text-decoration: line-through;
+        color: gray;
+        margin-right: 5px;
+    }
+
+        </style>
+	</head>
+	<body>
+		
+	<div class="colorlib-loader"></div>
+    <%- include('./userPartials/header') %>
+
+		<div class="breadcrumbs">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<p class="bread"><span><a href="index.html">Home</a></span> / <span>Shop</span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="breadcrumbs-two">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<div class="breadcrumbs-img" style="background-image: url(/logo/banner-Shop.webp);">
+							<h2>Checkout</h2>
+						</div>						
+					</div>
+				</div>
+			</div>
+		</div>
+
+          
+		
+
+		<div class="colorlib-product">
+            <div class="row mb-3">
+                <div class="col-md-6 col-lg-10 mx-auto">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search for products..." onkeyup="searchProducts()">
+                </div>
+            </div>
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-3 col-xl-3">
+						<form id="filterForm" action="/user/product-list" method="GET">
+                            <div class="row">
+                                 
+                                <!-- Gender Filter -->
+                                <div class="col-sm-12">
+                                    <div class="filter-section border mb-2">
+                                        <h3>Gender</h3>
+                                        <% ["Men", "Women", "Unisex"].forEach(g => { %>
+                                            <div>
+                                                <input type="checkbox" name="gender" value="<%= g %>" id="gender-<%= g %>"
+                                                    <%= (Array.isArray(gender) && gender.includes(g)) ? "checked" : "" %>>
+                                                <label for="gender-<%= g %>"><%= g %></label>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                        
+                                <!-- Brand Filter (Dynamic) -->
+                                <div class="col-sm-12">
+                                    <div class="filter-section border mb-2">
+                                        <h3>Brand</h3>
+                                        <% brands.forEach(brand => { %>
+                                            <div>
+                                                <input type="checkbox" name="brand" value="<%= brand._id %>" id="brand-<%= brand._id %>"
+                                                    <%= (Array.isArray(selectedBrands) && selectedBrands.includes(brand._id.toString())) ? "checked" : "" %>>
+                                                <label for="brand-<%= brand._id %>"><%= brand.name %></label>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                        
+                                <!-- Category Filter (Dynamic) -->
+                                <div class="col-sm-12">
+                                    <div class="filter-section border mb-2">
+                                        <h3>Category</h3>
+                                        <% categories.forEach(category => { %>
+                                            <div>
+                                                <input type="checkbox" name="category" value="<%= category._id %>" id="category-<%= category._id %>"
+                                                    <%= (Array.isArray(selectedCategories) && selectedCategories.includes(category._id.toString())) ? "checked" : "" %>>
+                                                <label for="category-<%= category._id %>"><%= category.name %></label>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                        
+                                <!-- Price Sorting -->
+                                <div class="col-sm-12">
+                                    <div class="filter-section border mb-2">
+                                        <h3>Sort by Price</h3>
+                                        <div>
+                                            <input type="radio" name="sort" value="priceLowToHigh" id="priceLowToHigh"
+                                                <%= sort === "priceLowToHigh" ? "checked" : "" %>>
+                                            <label for="priceLowToHigh">Low to High</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" name="sort" value="priceHighToLow" id="priceHighToLow"
+                                                <%= sort === "priceHighToLow" ? "checked" : "" %>>
+                                            <label for="priceHighToLow">High to Low</label>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <!-- Discount Sorting -->
+                                <div class="col-sm-12">
+                                    <div class="filter-section border mb-2">
+                                        <h3>Sort by Discount</h3>
+                                        <div>
+                                            <input type="radio" name="sort" value="discountHighToLow" id="discountHighToLow"
+                                                <%= sort === "discountHighToLow" ? "checked" : "" %>>
+                                            <label for="discountHighToLow">Highest Discount</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" name="sort" value="discountLowToHigh" id="discountLowToHigh"
+                                                <%= sort === "discountLowToHigh" ? "checked" : "" %>>
+                                            <label for="discountLowToHigh">Lowest Discount</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Apply Filter Button -->
+                                <div class="col-sm-12 d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    <button type="button" onclick="clearFilters()" class="btn btn-danger">Clear Filters</button>
+                                </div>
+                               
+                            </div>
+                        </form>
+					</div>
+					<div class="col-lg-9 col-xl-9">
+                        <div class="row row-pb-md">
+                            <%if(products.length>0){%>
+                            <% products.forEach(product => { %>
+                                <div class="col-md-4 col-sm-6 mb-4 text-center d-flex justify-content-center"> <!-- 3 items per row -->
+                                    <div class="product-entry border p-3">
+                                        <a href="/user/products/<%= product._id %>" class="prod-img d-block position-relative">
+                                            <img src="<%= product.images.length > 0 ? product.images[0] : '/default-image.jpg' %>" class="img-fluid" alt="<%= product.name %>">
+                                            <% if (product.discount > 0) { %>
+                                                <span class="discount-badge"><%= product.discount %>% OFF</span>
+                                            <% } %>
+                                        </a>
+                                        <div class="desc mt-3">
+                                            <h6 class="h6 text-truncate" title="<%= product.name %>">
+                                                <a href="/user/products/<%= product._id %>"><%= product.name %></a>
+                                            </h6>
+                                            <div class="rating mb-2">
+                                                <span class="text-warning">
+                                                    <% for (let i = 0; i < 5; i++) { %>
+                                                        <%- i < product.ratings ? "&#9733;" : "&#9734;" %>
+                                                    <% } %>
+                                                </span> <%= product.ratings %>
+                                            </div>
+                                            <div class="price">
+                                                <% if (product.discount > 0) { %>
+                                                    <span class="old-price">₹<%= product.price.toFixed(2) %></span>
+                                                <% } %>
+                                                <span class="text-dark">₹<%= product.finalPrice.toFixed(2) %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                            <%} else {%>
+                                <div class="col-md-4 col-sm-6 mb-4  d-flex justify-content-center ">No Products Available</div>
+                                <%}%>
+                        </div>
+						
+						
+					</div>
+				</div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="block-27">
+                            <ul>
+                                <!-- Previous Page -->
+                                <% if (currentPage > 1) { %>
+                                    <li><a href="/user/product-list?page=<%= currentPage - 1 %>&<%= queryParams %>"><i class="ion-ios-arrow-back"></i></a></li>
+                                <% } else { %>
+                                    <li class="disabled"><span><i class="ion-ios-arrow-back"></i></span></li>
+                                <% } %>
+                
+                                <!-- Page Numbers -->
+                                <% for(let i = 1; i <= totalPages; i++) { %>
+                                    <% if (i === currentPage) { %>
+                                        <li class="active"><span><%= i %></span></li>
+                                    <% } else { %>
+                                        <li><a href="/user/product-list?page=<%= i %>&<%= queryParams %>"><%= i %></a></li>
+                                    <% } %>
+                                <% } %>
+                
+                                <!-- Next Page -->
+                                <% if (currentPage < totalPages) { %>
+                                    <li><a href="/user/product-list?page=<%= currentPage + 1 %>&<%= queryParams %>"><i class="ion-ios-arrow-forward"></i></a></li>
+                                <% } else { %>
+                                    <li class="disabled"><span><i class="ion-ios-arrow-forward"></i></span></li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</div>
+
+		<div class="colorlib-partner mb-5" style="padding:0;">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
+						<h2>Trusted Partners</h2>
+					</div>
+				</div>
+				<div class="row">
+					<% brands.forEach(partner => { %>
+						<div class="col partner-col text-center">
+							<div class="brand-logo" style=" width: 200px; height: 150px;display: flex;align-items: center;justify-content: center;overflow: hidden;margin: auto;">
+							<img src="<%= partner.image %>" class="img-fluid" alt="<%= partner.name %>" height="100" style=" width: 100%;object-fit: contain;">
+						</div>
+							<p class="mt-2 fw-bold"><%= partner.name %></p>
+						</div>
+					<% }) %>
+				</div>
+			</div>
+		</div>
+
+		<%- include('./userPartials/footer') %>
+	</div>
+
+	<div class="gototop js-top">
+		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
+	</div>
+	<script>
+        function clearFilters() {
+            // Redirect to the base URL without query parameters
+            window.location.href = window.location.pathname;
+        }
+    </script>
+	<!-- jQuery -->
+	<script src="/front/js/jquery.min.js"></script>
+   <!-- popper -->
+   <script src="/front/js/popper.min.js"></script>
+   <!-- bootstrap 4.1 -->
+   <script src="/front/js/bootstrap.min.js"></script>
+   <!-- jQuery easing -->
+   <script src="js/jquery.easing.1.3.js"></script>
+	<!-- Waypoints -->
+	<script src="/front/js/jquery.waypoints.min.js"></script>
+	<!-- Flexslider -->
+	<script src="/front/js/jquery.flexslider-min.js"></script>
+	<!-- Owl carousel -->
+	<script src="/front/js/owl.carousel.min.js"></script>
+	<!-- Magnific Popup -->
+	<script src="/front/js/jquery.magnific-popup.min.js"></script>
+	<script src="/front/js/magnific-popup-options.js"></script>
+	<!-- Date Picker -->
+	<script src="/front/js/bootstrap-datepicker.js"></script>
+	<!-- Stellar Parallax -->
+	<script src="/front/js/jquery.stellar.min.js"></script>
+	<!-- Main -->
+	<script src="/front/js/main.js"></script>
+
+	</body>
+</html>
+
