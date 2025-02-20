@@ -107,6 +107,10 @@
     <!-- Main Script -->
     <script src="/assets/js/main.js" type="text/javascript"></script>
     <script>
+
+        if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
         document.addEventListener("DOMContentLoaded", function () {
 
             

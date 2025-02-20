@@ -38,7 +38,6 @@ const loadHome=async(req,res)=>{
             const products = await Product.find({ isDeleted });
             const brands = await Brand.find({ isDeleted });
             const category = await Category.find({ isDeleted });
-            console.log(req.user);
             // Check if either products or brands exist before rendering
             if (products.length > 0 || brands.length > 0 || category.length > 0) {
                 res.render('homePage', { products, brands,category, user:req.user});
@@ -55,84 +54,75 @@ const productList=async(req,res)=>{
 
     try {
         const user = req.user;
-        let { gender, brand, category, sort, page } = req.query;
+        let { search, gender, brand, category, sort, page } = req.query;
+        let query = { isDeleted: false }; // Exclude deleted products
 
-        let filter = { isDeleted: false };
-
-        // Convert to array if it's a single value
-        if (typeof gender === "string") gender = [gender];
-        if (typeof brand === "string") brand = [brand];
-        if (typeof category === "string") category = [category];
-
-        // Apply Filters
-        if (gender && gender.length > 0) filter.gender = { $in: gender };
-        if (brand && brand.length > 0) filter.brands = { $in: brand };
-        if (category && category.length > 0) filter.category = { $in: category };
-
-        // Sorting Logic
-        let sortOption = {};
-        switch (sort) {
-            case "priceLowToHigh":
-                sortOption.finalPrice = 1;
-                break;
-            case "priceHighToLow":
-                sortOption.finalPrice = -1;
-                break;
-            case "discountHighToLow":
-                sortOption.discount = -1;
-                break;
-            case "discountLowToHigh":
-                sortOption.discount = 1;
-                break;
+        // Search by name or description (case-insensitive)
+        if (search) {
+            query = { name: { $regex: search, $options: "i" } };
+               
+        
         }
 
-        // Pagination Logic
-        const limit = 6; // Number of products per page
+        // Filter by gender
+        if (gender) {
+            query.gender = Array.isArray(gender) ? { $in: gender } : [gender];
+        }
+
+        // Filter by brand
+        if (brand) {
+            query.brands = Array.isArray(brand) ? { $in: brand } : [brand];
+        }
+
+        // Filter by category
+        if (category) {
+            query.category = Array.isArray(category) ? { $in: category } : [category];
+        }
+
+        // Sorting
+        let sortOption = { createdAt: -1 }; // Default: Newest First
+        if (sort === "priceLowToHigh") {
+            sortOption = { finalPrice: 1 };
+        } else if (sort === "priceHighToLow") {
+            sortOption = { finalPrice: -1 };
+        }
+
+        // Pagination
+        const pageSize = 8; 
         const currentPage = parseInt(page) || 1;
-        const skip = (currentPage - 1) * limit;
+        const totalProducts = await Product.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts / pageSize);
 
-        // Fetch Total Products Count
-        const totalProducts = await Product.countDocuments(filter);
-
-        // Fetch Products with Pagination
-        const products = await Product.find(filter)
-            .populate("category")
-            .populate("brands")
+        // Fetch products
+        const products = await Product.find(query)
             .sort(sortOption)
-            .skip(skip)
-            .limit(limit);
+            .skip((currentPage - 1) * pageSize)
+            .limit(pageSize)
+            .populate("category brands");
 
-        // Fetch Brands & Categories
-        const brands = await Brand.find();
-        const categories = await Category.find();
+        // Fetch all brands and categories for the filter
+        const brands = await Brand.find({}, "name image _id");
+        const categories = await Category.find({}, "name _id");
 
-        // Calculate Total Pages
-        const totalPages = Math.ceil(totalProducts / limit);
-
-        // Construct Query String for Pagination Links
-        const queryParams = Object.entries(req.query)
-            .filter(([key]) => key !== "page") // Remove "page" from query params
-            .map(([key, value]) => `${key}=${value}`)
-            .join("&");
-
-        res.render("product-list", {
-            products,
-            brands,
-            categories,
-            gender,
-            selectedBrands: brand || [],
-            selectedCategories: category || [],
-            sort,
+        // Render updated product list
+        res.render("product-list", { 
+            products, 
+            currentPage, 
+            totalPages, 
+            queryParams: req.query,
             user,
-            currentPage,
-            totalPages,
-            queryParams
+            selectedBrands: brand ? (Array.isArray(brand) ? brand : [brand]) : [],
+            selectedCategories: category ? (Array.isArray(category) ? category : [category]) : [],
+            brands, 
+            categories,
+            gender: gender ? (Array.isArray(gender) ? gender : [gender]) : [],
+            sort
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching products:", error);
         res.status(500).send("Server Error");
-    }
+    }  
       
 }
 

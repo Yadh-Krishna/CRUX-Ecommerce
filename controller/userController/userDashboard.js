@@ -10,9 +10,9 @@ const sendOTP =require('../../utils/sendOTP');
 
 // Render login page
 const loadLogin = (req, res) => {    
-    if (req.cookies.token) {  // Check if the user token exists in the session
-        return res.redirect("/user/dashboard");  // Redirect to dashboard
-    }
+    // if(req.cookies.userToken)
+    //     return res.redirect('/user/dashboard');
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private"); 
     res.render("userLogin", { error: null });
 };
 
@@ -46,9 +46,9 @@ const loginUser = async (req, res) => {
 
 // Render Registration Page
 const registerPage = (req, res) => {
-    if (req.session.userToken) {  // Check if the user token exists in the session
-        return res.redirect("/user/dashboard");  // Redirect to dashboard
-    }
+    // if(req.cookies.userToken)
+    //     return res.redirect('/user/dashboard');
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
     res.render("register", { error: null });
 };
 
@@ -89,9 +89,7 @@ const registerUser = async (req, res) => {
 };
 
 const verifyOtp= async (req,res)=>{
-    if (req.session.userToken) {  // Check if the user token exists in the session
-        return res.redirect("/user/dashboard");  // Redirect to dashboard
-    }
+    
     res.render('verify-OTP',{error:null});
 }
 
