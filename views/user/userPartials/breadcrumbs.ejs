@@ -1,0 +1,20 @@
+<div class="breadcrumbs">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <p class="bread">
+            <span><a href="/">Home</a></span>
+            <% if (breadcrumbs.length > 0) { %>/<% } %>
+            <% breadcrumbs.forEach((breadcrumb, index) => { %>
+              <% if (index !== breadcrumbs.length - 1) { %>
+                <span><a href="<%= breadcrumb.url %>"><%= breadcrumb.name %></a></span> /
+              <% } else { %>
+                <span><%= breadcrumb.name %></span>
+              <% } %>
+            <% }) %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  

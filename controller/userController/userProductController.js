@@ -40,14 +40,15 @@ const productDetails = async (req, res) => {
                     reviews: [], 
                     user: null, 
                     brand: null, 
-                    relatedProducts: null 
+                    relatedProducts: null,                    
                 });
             }
     
             // Fetch related products (excluding blocked category/brand)
             const relatedProducts = await Product.find({
                 category: product.category._id, // Same category                
-                isDeleted: false // Exclude deleted products
+                isDeleted: false, // Exclude deleted products
+                slug:{$ne:slug}
             });         
     
             // Fetch product reviews
@@ -61,7 +62,10 @@ const productDetails = async (req, res) => {
                 user, 
                 message: null, 
                 brand: product.brands, 
-                relatedProducts 
+                relatedProducts,
+                breadcrumbs: [                    
+                    { name: "Shop", url: "/product-list" },
+                    { name: slug.toUpperCase(), url: `/product-list/${slug}`}]
             });
     
         } catch (error) {
@@ -85,10 +89,11 @@ const loadHome=async(req,res)=>{
 
         // 1️⃣ Get valid categories and brands (not blocked or deleted)
         const validCategories = await Category.find({ isDeleted: false }).select("_id");
-        const validBrands = await Brand.find({ isDeleted: false }).select("_id");
+        const validBrands = await Brand.find({ isDeleted: false }).select("_id image name");
 
         const validCategoryIds = validCategories.map(cat => cat._id);
         const validBrandIds = validBrands.map(brand => brand._id);
+        console.log(validBrandIds)
 
         // 2️⃣ Get only products with valid category & brand
         const products = await Product.find({
@@ -109,21 +114,7 @@ const loadHome=async(req,res)=>{
         console.error("Error loading home page:", error);
         res.status(statusCodes.SERVER_ERROR).send(errorMessages.SERVER.SERVER_ERROR);
     }
-        // try {                         
-        //     const isDeleted = false;
-        //     const products = await Product.find({ isDeleted });
-        //     const brands = await Brand.find({ isDeleted });
-        //     const category = await Category.find({ isDeleted });
-        //     // Check if either products or brands exist before rendering
-        //     if (products.length > 0 || brands.length > 0 || category.length > 0) {
-        //         res.render('homePage', { products, brands,category, user:req.user});
-        //     } else {
-        //         res.render('homePage', { products: [], brands: [] ,category:[], user:req.user.fullName}); // Render with empty arrays
-        //     }
-        // } catch (error) {
-        //     console.error("Error loading home page:", error);
-        //     res.status(statusCodes.SERVER_ERROR).send(errorMessages.SERVER.SERVER_ERROR);
-        // }
+        
     }
 
 const productList=async(req,res)=>{    
@@ -202,7 +193,8 @@ const productList=async(req,res)=>{
             brands, 
             categories,
             gender: gender ? (Array.isArray(gender) ? gender : [gender]) : [],
-            sort
+            sort,
+            breadcrumbs: [{ name: "Shop", url: "/product-list" }]
         });
 
     } catch (error) {
