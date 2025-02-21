@@ -238,7 +238,7 @@ const editProduct= asyncHandler(async (req, res) => {
   }
 });
 
-const updateProduct=asyncHandler(async (req, res) => {
+const updateProduct = asyncHandler(async (req, res) => {
   try {
       const { name, description, price, discount, stock, category, brands, gender, replacedIndexes } = req.body;
       const productId = req.params.id;
@@ -246,7 +246,19 @@ const updateProduct=asyncHandler(async (req, res) => {
       const product = await Product.findById(productId);
       if (!product) return res.status(404).json({ error: "Product not found" });
 
-      // Update text fields
+      let errors = {};
+
+      // **VALIDATION**
+      if (!name.trim()) errors.name = "Product name is required.";
+      if (!description.trim() || description.trim().split(/\s+/).length < 20) 
+          errors.description = "Description must be at least 20 words.";
+      if (price < 0) errors.price = "Price cannot be negative.";
+      if (discount < 0) errors.discount = "Discount cannot be negative.";
+      if (stock < 5) errors.stock = "Stock must be at least 5.";
+
+      if (Object.keys(errors).length > 0) return res.status(400).json({ errors });
+
+      // **UPDATE PRODUCT DETAILS**
       product.name = name;
       product.description = description;
       product.price = price;
@@ -258,24 +270,31 @@ const updateProduct=asyncHandler(async (req, res) => {
 
       let updatedImages = [...product.images]; // Copy existing images
 
-      // Replace images based on indexes provided from frontend
-      if (req.files && req.files.length > 0) {
-          const newImages = req.files.map(file => `/uploads/products/${file.filename}`);
-          
-          if (replacedIndexes) {
-              const indexes = JSON.parse(replacedIndexes); // Convert JSON string back to an array
-              indexes.forEach((index, i) => {
-                  if (index >= 0 && index < updatedImages.length) {
-                      updatedImages[index] = newImages[i]; // Replace existing image at the correct position
-                  }
-              });
-          } else {
-              updatedImages = [...updatedImages, ...newImages]; // Append new images if no indexes are provided
-          }
+      // **HANDLE IMAGE REPLACEMENT**
+      if (req.files?.replacedImages) {
+        const newImages = req.files.replacedImages.map(file => `/uploads/products/${file.filename}`);
+    
+        if (replacedIndexes) {
+            const indexes = JSON.parse(replacedIndexes);  // Ensure it's an array
+            indexes.forEach((index, i) => {
+                if (index >= 0 && index < updatedImages.length) {
+                    updatedImages[index] = newImages[i]; // Correctly replace existing image
+                }
+            });
+        }
+    }
+      // **HANDLE ADDITIONAL IMAGE UPLOADS**
+      if (req.files?.addImages) {
+        const additionalImages = req.files.addImages.map(file => `/uploads/products/${file.filename}`);
+        updatedImages = [...updatedImages, ...additionalImages]; // Append new images
+    }
+
+      // **IMAGE VALIDATION**
+      if (updatedImages.length > 5) {
+          return res.status(400).json({ errors: { addImage: "You can only upload a maximum of 5 images." } });
       }
 
-      // Ensure a maximum of 5 images
-      product.images = updatedImages.slice(0, 5);
+      product.images = updatedImages.slice(0, 5); // Ensure max 5 images
 
       await product.save();
 
@@ -285,6 +304,8 @@ const updateProduct=asyncHandler(async (req, res) => {
       res.status(500).json({ error: "Server error" });
   }
 });
+
+
 
 const blockProduct=asyncHandler(async(req,res)=>{
   const productId=req.params.id;

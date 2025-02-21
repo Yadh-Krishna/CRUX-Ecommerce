@@ -13,8 +13,8 @@ const User = require("../../models/userModel");
 
 const Category = require("../../models/categoryModal");
 const upload = require("../../middleware/upload");  //multer
-const Brands = require("../../models/brandModel");
-const Product=require("../../models/productModel");
+const Brands = require("../../models/brandModel"); //Brands model
+const Product=require("../../models/productModel");//products model
 
 //Login
 router.get('/login',adminDashboard.loadLogin);//Loading Login page
@@ -56,7 +56,10 @@ router.get("/products/search", productController.liveSearchProducts);
 router.get('/products/add',auth,productController.addProductLoad);
 router.post('/products/add',auth,upload.array("images",5),productController.addProduct);
 router.get('/products/edit/:id',auth,productController.editProduct);
-router.put('/products/edit/:id',auth,upload.array("replacedImages",5),productController.updateProduct);
+router.put('/products/edit/:id',auth,upload.fields([
+    { name: "replacedImages", maxCount: 5 }, 
+    { name: "addImages", maxCount: 2 }
+  ]),productController.updateProduct);
 router.patch('/products/:id/toggle-status',auth,productController.blockProduct);
 
 module.exports=router;

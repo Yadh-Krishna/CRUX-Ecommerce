@@ -144,7 +144,7 @@ const forgotPassword=async (req,res)=>{
 }
 const resendOtp = async(req,res)=>{ 
     try {
-        // Retrieve temp user data from cookies
+        
         const tempUser = req.cookies.tempUser ? JSON.parse(req.cookies.tempUser) : null;
         console.log(tempUser);
 
