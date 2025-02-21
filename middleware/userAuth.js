@@ -11,9 +11,10 @@ const verifyToken = (req, res, next) => {
         
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         // console.log("Verified : ",verified);
-        req.user = verified;                 
-          if (req.path === "/login" || req.path === "/register" || req.path === "/verify-OTP") {           
-            return res.redirect("/user/dashboard"); // Redirect to home or dashboard
+        req.user = verified;     
+        // console.log("Verified : ",req.path)            
+          if (req.path === "/login" || req.path === "/register" || req.path === "/verify-OTP") {               
+            return res.redirect("/"); // Redirect to home or dashboard
         }
         next();
     } catch (error) {

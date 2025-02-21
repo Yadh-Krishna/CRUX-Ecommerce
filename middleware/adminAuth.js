@@ -10,6 +10,8 @@ const verifyAdminToken = (req, res, next) => {
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         req.admin = verified;  // Attach admin data to request
+
+        
         next();
     } catch (error) {
         res.clearCookie("adminToken");

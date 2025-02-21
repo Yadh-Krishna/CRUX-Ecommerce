@@ -175,7 +175,7 @@ const addProduct= asyncHandler(async (req, res) => {
         // console.log("Processing image:", inputPath, "→", outputPath); // Debugging
     
         await sharp(inputPath)
-          .resize(500, 1000, { fit: "cover" })  
+          .resize(500, 500, { fit: "cover" })  
           .toFormat("jpeg")
           .jpeg({ quality: 80 })
           .toFile(outputPath); // Save processed file with a new name

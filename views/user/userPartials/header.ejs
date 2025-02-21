@@ -15,15 +15,15 @@
         <!-- Navbar Links -->
         <div class="collapse navbar-collapse justify-content-center text-white fw-bold" id="navbarNav">
             <ul class="navbar-nav mx-auto text-white fw-bold">
-                <li class="nav-item "><a class="nav-link me-4 " href="/user/dashboard">Home</a></li>
+                <li class="nav-item "><a class="nav-link me-4 " href="/">Home</a></li>
                 <li class="nav-item ">
-                    <a class="nav-link me-4" href="/user/product-list" id="navbarDropdown" role="button" aria-expanded="false">
+                    <a class="nav-link me-4" href="/product-list" id="navbarDropdown" role="button" aria-expanded="false">
                         Shop
                     </a>                 
                 </li>
-                <li class="nav-item"><a class="nav-link me-4" href="women.html">Women</a></li>
-                <li class="nav-item"><a class="nav-link me-4" href="about.html">About</a></li>
-                <li class="nav-item"><a class="nav-link me-4" href="contact.html">Contact</a></li>
+                <!-- <li class="nav-item"><a class="nav-link me-4" href="women.html">Women</a></li> -->
+                <li class="nav-item"><a class="nav-link me-4" href="/about">About</a></li>
+                <li class="nav-item"><a class="nav-link me-4" href="/contact">Contact</a></li>
             </ul>
         </div>
 
@@ -32,16 +32,16 @@
             <i class="icon-shopping-cart"></i> Cart
         </a>
         <% if (!user) { %>
-            <a href="/user/login" class="nav-link text-white ms-auto me-4"><i class="fas fa-sign-in-alt"></i>Login</a>
-            <a href="/user/register" class="nav-link text-white ms-auto me-4"><i class="fas fa-user-plus"></i> Register</a>
+            <a href="/login" class="nav-link text-white ms-auto me-4"><i class="fas fa-sign-in-alt"></i>Login</a>
+            <a href="/register" class="nav-link text-white ms-auto me-4"><i class="fas fa-user-plus"></i> Register</a>
         <% } else { %>
             <div class="dropdown ms-auto me-4">
                 <a class="nav-link text-white dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="far fa-user me-1"></i> <%= user.fullName %>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="/profile"><i class="far fa-user me-1"></i> Profile</a></li>
-                    <li><a class="dropdown-item text-danger" href="/user/logout"><i class="fa fa-power-off me-1"></i> Logout</a></li>
+                    <li><a class="dropdown-item" href="/profile/<%=user._id%>"><i class="far fa-user me-1"></i> Profile</a></li>
+                    <li><a class="dropdown-item text-danger" href="/logout"><i class="fa fa-power-off me-1"></i> Logout</a></li>
                 </ul>
             </div>            
         <% } %>

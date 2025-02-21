@@ -8,59 +8,143 @@ const Category=require('../../models/categoryModal')
 const Brand=require('../../models/brandModel')
 const Product = require('../../models/productModel');
 const Review=require('../../models/reviewModel')
-const productDetails = async (req, res) => {  
-   
-        try {
-            const user=req.user;
-            const product = await Product.findById(req.params.id)
+
+const productDetails = async (req, res) => {
+       try {
+            const user = req.user;
+            const slug = req.params.id; 
+    
+            // Find the product by slug only
+            const product = await Product.findOne({ slug })
                 .populate("category")
                 .populate("brands");
-            
     
+            // If product not found or marked as deleted
             if (!product || product.isDeleted) {
-                return res.render("products", { message: "Product not found or unavailable.", product: null, reviews: [], user: null });
+                return res.render("products", { 
+                    message: "Product not found or unavailable.", 
+                    product: null, 
+                    reviews: [], 
+                    user: null, 
+                    brand: null, 
+                    relatedProducts: null 
+                });
             }
-                //related products
-            const relatedProducts= await Product.find({category:product.category}).limit(5);
-            // Fetch reviews
-            const reviews = await Review.find({ product: req.params.id }).populate("user", "fullName").sort({ createdAt: -1 });
     
-            res.render("products", { product, reviews, user ,message:null,brand:product.brands,relatedProducts });
+            // Check if the product's category or brand is blocked
+            if ((product.category && product.category.isBlocked) || 
+                (product.brands && product.brands.isBlocked)) {
+                return res.render("products", { 
+                    message: "This product is currently unavailable.", 
+                    product: null, 
+                    reviews: [], 
+                    user: null, 
+                    brand: null, 
+                    relatedProducts: null 
+                });
+            }
+    
+            // Fetch related products (excluding blocked category/brand)
+            const relatedProducts = await Product.find({
+                category: product.category._id, // Same category                
+                isDeleted: false // Exclude deleted products
+            });         
+    
+            // Fetch product reviews
+            const reviews = await Review.find({ product: product._id })
+                .populate("user", "fullName")
+                .sort({ createdAt: -1 });
+           
+            res.render("products", { 
+                product, 
+                reviews, 
+                user, 
+                message: null, 
+                brand: product.brands, 
+                relatedProducts 
+            });
+    
         } catch (error) {
             console.error("Error fetching product:", error);
-            res.status(500).render("products", { message: "Server error.", product: null, reviews: [], user: null,brand:null,relatedProducts:null});
+            res.status(500).render("products", { 
+                message: "Server error.", 
+                product: null, 
+                reviews: [], 
+                user: null, 
+                brand: null, 
+                relatedProducts: null 
+            });
         }
+        
     };
 
 const loadHome=async(req,res)=>{
-        try {                         
-            const isDeleted = false;
-            const products = await Product.find({ isDeleted });
-            const brands = await Brand.find({ isDeleted });
-            const category = await Category.find({ isDeleted });
-            // Check if either products or brands exist before rendering
-            if (products.length > 0 || brands.length > 0 || category.length > 0) {
-                res.render('homePage', { products, brands,category, user:req.user});
-            } else {
-                res.render('homePage', { products: [], brands: [] ,category:[], user:req.user.fullName}); // Render with empty arrays
-            }
-        } catch (error) {
-            console.error("Error loading home page:", error);
-            res.status(statusCodes.SERVER_ERROR).send("Internal Server Error");
-        }
+
+    try {                         
+        const user = req.user;
+
+        // 1️⃣ Get valid categories and brands (not blocked or deleted)
+        const validCategories = await Category.find({ isDeleted: false }).select("_id");
+        const validBrands = await Brand.find({ isDeleted: false }).select("_id");
+
+        const validCategoryIds = validCategories.map(cat => cat._id);
+        const validBrandIds = validBrands.map(brand => brand._id);
+
+        // 2️⃣ Get only products with valid category & brand
+        const products = await Product.find({
+            isDeleted: false,
+            category: { $in: validCategoryIds },
+            brands: { $in: validBrandIds }
+        });
+
+        // 3️⃣ Render the home page
+        res.render('homePage', { 
+            products, 
+            brands: validBrands, 
+            category: validCategories, 
+            user 
+        });
+
+    } catch (error) {
+        console.error("Error loading home page:", error);
+        res.status(statusCodes.SERVER_ERROR).send(errorMessages.SERVER.SERVER_ERROR);
+    }
+        // try {                         
+        //     const isDeleted = false;
+        //     const products = await Product.find({ isDeleted });
+        //     const brands = await Brand.find({ isDeleted });
+        //     const category = await Category.find({ isDeleted });
+        //     // Check if either products or brands exist before rendering
+        //     if (products.length > 0 || brands.length > 0 || category.length > 0) {
+        //         res.render('homePage', { products, brands,category, user:req.user});
+        //     } else {
+        //         res.render('homePage', { products: [], brands: [] ,category:[], user:req.user.fullName}); // Render with empty arrays
+        //     }
+        // } catch (error) {
+        //     console.error("Error loading home page:", error);
+        //     res.status(statusCodes.SERVER_ERROR).send(errorMessages.SERVER.SERVER_ERROR);
+        // }
     }
 
-const productList=async(req,res)=>{
-
+const productList=async(req,res)=>{    
     try {
+
         const user = req.user;
         let { search, gender, brand, category, sort, page } = req.query;
         let query = { isDeleted: false }; // Exclude deleted products
 
+        const validCategories = await Category.find({ isDeleted: false }).select("_id");
+        const validBrands = await Brand.find({ isDeleted: false}).select("_id");
+
+        const validCategoryIds = validCategories.map(cat => cat._id.toString());
+        const validBrandIds = validBrands.map(brand => brand._id.toString());
+
+        query.category = { $in: validCategoryIds };
+        query.brands = { $in: validBrandIds };
+
         // Search by name or description (case-insensitive)
         if (search) {
-            query = { name: { $regex: search, $options: "i" } };
-               
+            query.name = { $regex: search, $options: "i" };               
         
         }
 
@@ -71,12 +155,14 @@ const productList=async(req,res)=>{
 
         // Filter by brand
         if (brand) {
-            query.brands = Array.isArray(brand) ? { $in: brand } : [brand];
+            const selectedBrands = Array.isArray(brand) ? brand : [brand];  
+            query.brands =  { $in: selectedBrands.filter(b => validBrandIds.includes(b)) }; 
         }
 
         // Filter by category
         if (category) {
-            query.category = Array.isArray(category) ? { $in: category } : [category];
+            const selectedCategories = Array.isArray(category) ? category : [category]; 
+            query.category =     { $in: selectedCategories.filter(c => validCategoryIds.includes(c)) };
         }
 
         // Sorting
@@ -100,9 +186,9 @@ const productList=async(req,res)=>{
             .limit(pageSize)
             .populate("category brands");
 
-        // Fetch all brands and categories for the filter
-        const brands = await Brand.find({}, "name image _id");
-        const categories = await Category.find({}, "name _id");
+       
+        const brands = await Brand.find({isDeleted:false}, "name image _id");
+        const categories = await Category.find({isDeleted:false}, "name _id");
 
         // Render updated product list
         res.render("product-list", { 

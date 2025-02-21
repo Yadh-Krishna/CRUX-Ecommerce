@@ -260,7 +260,8 @@
 				</div>
 				<!-- Similar Products Section -->
 					<div class="container mt-5 mb-5">
-						<h3>Similar Products</h3>
+						<h3 class="mb-5">Similar Products</h3>
+						<%if(relatedProducts.length>0){%>
 						<div class="position-relative">
 							<!-- Scroll Buttons -->
 							<button class="scroll-btn left" onclick="scrollProducts(-1)">&#10094;</button>
@@ -270,13 +271,13 @@
 								<% relatedProducts.forEach(product => { %>
 									<div class="card mx-2" style="min-width: 180px; max-width: 200px;">
 										<div class="position-relative">
-											<a href="/user/products/<%=product._id%>"><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>"></a>
+											<a href="/products/<%= product.slug%>"><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>"></a>
 											<button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
 												<i class="fa fa-heart"></i>
 											</button>
 										</div>
 										<div class="card-body p-2">
-											<a class="nav-link" href="/user/products/<%=product._id%>"><p class="card-title text-truncate mb-1"><%= product.name %></p></a>
+											<a class="nav-link" href="/products/<%= product.slug%>"><p class="card-title text-truncate mb-1"><%= product.name %></p></a>
 											<p class="card-text mb-1">
 												<strong>₹<%= product.finalPrice %></strong>
 												<% if (product.discount) { %>
@@ -287,6 +288,9 @@
 										</div>
 									</div>
 								<% }) %>
+								<%}else{%>
+									<div class="col-md-12 text-center">No Products Available</div>
+									<% } %>
 							</div>
 						</div>
 					</div>

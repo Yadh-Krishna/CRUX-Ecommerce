@@ -10,6 +10,7 @@ const verifyToken=require('../../middleware/userAuth');
 const userProductController=require('../../controller/userController/userProductController')
 
 //Login
+
 router.get("/login",verifyToken, userController.loadLogin);
 router.post("/login",  userController.loginUser);
 router.get("/register",verifyToken, userController.registerPage);
@@ -25,10 +26,13 @@ router.patch("/reset-password",userController.resetPassword);
 
 
 //Product 
-router.get('/products/:id',userAuthenticate,userProductController.productDetails);//product details
-router.get('/dashboard',userAuthenticate,userProductController.loadHome);//home page
-router.get('/product-list',userAuthenticate,userProductController.productList);//product listing
+// router.get('/dashboard',userAuthenticate,userProductController.loadHome);//home page
 
+router.get('/products/:id',userAuthenticate,userProductController.productDetails);//product details
+router.get('/product-list',userAuthenticate,userProductController.productList);//product listing
+router.get('/',userAuthenticate,userProductController.loadHome);//home page
+
+router.get('/profile/:id',verifyToken,userController.loadProfile);
 
 
 module.exports = router; 

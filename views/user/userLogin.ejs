@@ -38,7 +38,7 @@
                 <!-- <% if (error) { %>
                     <div class="alert alert-danger"><%= error %></div>
                 <% } %>             -->
-                <form id="loginForm" action="/user/login" method="POST" novalidate>
+                <form id="loginForm" action="/login" method="POST" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
@@ -65,9 +65,9 @@
 
                 <!-- Footer Links -->
                 <div class="text-center mt-3">
-                    <p>Don't have an account? <a href="/user/register" class="text-primary fw-bold">Create Account</a></p>
+                    <p>Don't have an account? <a href="/register" class="text-primary fw-bold">Create Account</a></p>
                     <div class="d-flex justify-content-center fw-bold">
-                        <p class="mx-3 "><a href="/user/forgot-password" class="text-primary">Forgot Password</a></p>
+                        <p class="mx-3 "><a href="/forgot-password" class="text-primary">Forgot Password</a></p>
                        </div>                    
                 </div>
             </div>

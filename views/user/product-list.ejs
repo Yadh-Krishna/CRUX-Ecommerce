@@ -229,7 +229,7 @@
                         <% products.forEach(product => { %>
                             <div class="col-md-3 col-sm-6 mb-4 text-center d-flex justify-content-center">
                                 <div class="product-entry border p-3">
-                                    <a href="/user/products/<%= product._id %>" class="prod-img d-block position-relative">
+                                    <a href="/products/<%= product.slug%>" class="prod-img d-block position-relative">
                                         <img src="<%= product.images.length > 0 ? product.images[0] : '/default-image.jpg' %>" class="img-fluid" alt="<%= product.name %>">
                                         <% if (product.discount > 0) { %>
                                             <span class="discount-badge"><%= product.discount %>% OFF</span>
@@ -237,7 +237,7 @@
                                     </a>
                                     <div class="desc mt-3">
                                         <h6 class="h6 text-truncate" title="<%= product.name %>">
-                                            <a class="nav-link" href="/user/products/<%= product._id %>"><%= product.name %></a>
+                                            <a class="nav-link" href="/products/<%= product.slug%>"><%= product.name %></a>
                                         </h6>
                                         <div class="rating mb-2">
                                             <span class="text-warning">
@@ -268,7 +268,7 @@
                             <ul>
                                 <!-- Previous Page -->
                                 <% if (currentPage > 1) { %>
-                                    <li><a href="/user/product-list?page=<%= currentPage - 1 %>&<%= queryParams %>"><i class="ion-ios-arrow-back"></i></a></li>
+                                    <li><a href="/product-list?page=<%= currentPage - 1 %>&<%= queryParams %>"><i class="ion-ios-arrow-back"></i></a></li>
                                 <% } else { %>
                                     <li class="disabled"><span><i class="ion-ios-arrow-back"></i></span></li>
                                 <% } %>
@@ -278,13 +278,13 @@
                                     <% if (i === currentPage) { %>
                                         <li class="active"><span><%= i %></span></li>
                                     <% } else { %>
-                                        <li><a href="/user/product-list?page=<%= i %>&<%= queryParams %>"><%= i %></a></li>
+                                        <li><a href="/product-list?page=<%= i %>&<%= queryParams %>"><%= i %></a></li>
                                     <% } %>
                                 <% } %>
         
                                 <!-- Next Page -->
                                 <% if (currentPage < totalPages) { %>
-                                    <li><a href="/user/product-list?page=<%= currentPage + 1 %>&<%= queryParams %>"><i class="ion-ios-arrow-forward"></i></a></li>
+                                    <li><a href="/product-list?page=<%= currentPage + 1 %>&<%= queryParams %>"><i class="ion-ios-arrow-forward"></i></a></li>
                                 <% } else { %>
                                     <li class="disabled"><span><i class="ion-ios-arrow-forward"></i></span></li>
                                 <% } %>
@@ -372,7 +372,7 @@
     // Function to fetch filtered products
     function fetchProducts(page = 1) {
         let queryString = buildQuery();
-        let url = `/user/product-list?page=${page}&${queryString}`;
+        let url = `/product-list?page=${page}&${queryString}`;
 
         fetch(url, { method: "GET" })
             .then(response => response.text())

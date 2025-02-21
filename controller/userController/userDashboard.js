@@ -1,17 +1,19 @@
 const bcrypt=require('bcrypt');
 const User=require('../../models/userModel');
 const jwt = require("jsonwebtoken");
-
+const statusCodes=require('../../utils/statusCodes');
+const errorMessages=require('../../utils/errorMessages')
 const crypto = require("crypto");
 require("dotenv").config();
+
+// const User=require('../../models/userModel')
 
 const sendOTP =require('../../utils/sendOTP');       
 
 
 // Render login page
 const loadLogin = (req, res) => {    
-    // if(req.cookies.userToken)
-    //     return res.redirect('/user/dashboard');
+    
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private"); 
     res.render("userLogin", { error: null });
 };
@@ -36,9 +38,9 @@ const loginUser = async (req, res) => {
        
         // Store token in HTTP-only Cookie
         res.cookie("userToken", token, { httpOnly: true, secure: false, sameSite: "lax" });
-        console.log("Generated Token:", token); // Debugging
+        
         res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-        res.redirect("/user/dashboard");
+        res.redirect("/");
     } catch (error) {
         res.render("userLogin", { error: "Server error. Please try again later." });
     }
@@ -46,8 +48,7 @@ const loginUser = async (req, res) => {
 
 // Render Registration Page
 const registerPage = (req, res) => {
-    // if(req.cookies.userToken)
-    //     return res.redirect('/user/dashboard');
+    
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
     res.render("register", { error: null });
 };
@@ -81,7 +82,7 @@ const registerUser = async (req, res) => {
         await sendOTP(email, otp,"signup");
 
         // Redirect to OTP verification page
-        res.redirect("/user/verify-otp");
+        res.redirect("/verify-otp");
     } catch (error) {
         console.error("Error in registerUser:", error);
         res.render("register", { error: "Server error. Try again later!" });
@@ -102,7 +103,7 @@ const authenticateOtp =  async (req, res) => {
 
         if (!tempUser) {
             req.flash("error", "Session expired. Please register again.");
-            return res.redirect("/user/register");
+            return res.redirect("/register");
         }
 
         const { name, email, mobile, password, otp: storedOTP, otpExpires } = tempUser;
@@ -110,7 +111,7 @@ const authenticateOtp =  async (req, res) => {
         // Validate OTP
         if (otp !== storedOTP || otpExpires < Date.now()) {
             req.flash("error", "Invalid or expired OTP!");
-            return res.redirect("/user/verify-OTP");
+            return res.redirect("/verify-OTP");
         }
 
         // Save user in the database after successful OTP verification
@@ -130,11 +131,11 @@ const authenticateOtp =  async (req, res) => {
         res.clearCookie("tempUser");
         // Redirect to dashboard
         req.flash("success","User Added Successfully, Try Logging In !!");
-        res.redirect("/user/login");
+        res.redirect("/login");
     } catch (error) {
         console.error("Error in verifyOTP:", error);
         req.flash("error", "Server error. Try again later!");
-        res.render("/user/register");
+        res.render("/register");
     }
 };
 
@@ -190,7 +191,7 @@ const resetPassVerify=async(req,res)=>{
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpires = Date.now() + 60 * 1000; // Expires in 1 min
-
+        console.log('OTP for reset password : ',otp);
         // Store OTP
         user.otp = otp;
         user.otpExpires = otpExpires;
@@ -252,11 +253,33 @@ const resetPassword = async (req, res) => {
     }
 }
 
+const loadProfile=async(req,res)=>{
+    try{
+        const user= await User.findById(req.user.userId);
+        console.log(user);
+        if(!user){
+            req.flash("error", "User not found");
+            return res.redirect("/login");
+        }
+        if(!user.isActive){
+            req.flash("error","User is Blocked");
+            res.redirect('/');
+        }
+        res.render('profile',{user});
+        
+           
+        
+    }catch(err){
+        console.error(err);
+        res.status(statusCodes.SERVER_ERROR).json(errorMessages.SERVER.SERVER_ERROR);
+    }
+    
+}
 
 // Logout User (Clear Cookie)
 const logoutUser = (req, res) => {
     res.clearCookie("userToken");
-    res.redirect("/user/login");
+    res.redirect("/login");
 };
 
 module.exports = {
@@ -271,5 +294,6 @@ module.exports = {
     forgotPassword,
     resetPassVerify,
     resetPassOtp,
-    resetPassword
+    resetPassword,
+    loadProfile
 };
