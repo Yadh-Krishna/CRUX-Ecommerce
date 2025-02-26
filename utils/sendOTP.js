@@ -16,7 +16,10 @@ const sendOTP = async (email, otp, purpose) => {
         text = `Your OTP for CRUX account verification is: ${otp}. It is valid for 1 minute.`;
     } else if (purpose === "reset-password") {
         subject = "CRUX : Your OTP for Password Reset";
-        text = `Your OTP for resetting your password is: ${otp}. It is valid for 5 minutes.`;
+        text = `Your OTP for resetting your password is: ${otp}. It is valid for 1 minute.`;
+    }else if (purpose === "verify-email"){
+        subject = "CRUX : Your OTP for Email Verification";
+        text = `Your OTP for emailverification  is: ${otp}. It is valid for 1 minute.`;
     }
 
     const mailOptions = {

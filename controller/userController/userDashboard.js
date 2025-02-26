@@ -6,8 +6,6 @@ const errorMessages=require('../../utils/errorMessages')
 const crypto = require("crypto");
 require("dotenv").config();
 
-// const User=require('../../models/userModel')
-
 const sendOTP =require('../../utils/sendOTP');       
 
 
@@ -26,11 +24,13 @@ const loginUser = async (req, res) => {
         // Check if user exists
         const user = await User.findOne({ email });
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.render("userLogin", { error: "Invalid email or password" });
+            req.flash("error","Invalid email or password");
+            return res.redirect("/login");
         }
 
         if (!user.isActive) {
-            return res.render("userLogin", { error: "Your account is blocked!" });
+            req.flash("error","User is blocked");
+            return res.redirect('/login');
         }
 
         // Generate JWT Token
@@ -182,10 +182,10 @@ const resendOtp = async(req,res)=>{
 
 const resetPassVerify=async(req,res)=>{
     try {
-        const { email } = req.body;
-
+        const { forgotEmail } = req.body;
+       
         // Check if user exists
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email:forgotEmail });
         if (!user) return res.status(400).json({ error: "User not found" });
 
         // Generate OTP
@@ -198,7 +198,7 @@ const resetPassVerify=async(req,res)=>{
         await user.save();
 
         // Send OTP using the updated sendOTP function
-        await sendOTP(email, otp, "reset-password");
+        await sendOTP(forgotEmail, otp, "reset-password");
 
         res.json({ success: true, message: "OTP sent for password reset" });
 
@@ -209,9 +209,9 @@ const resetPassVerify=async(req,res)=>{
 
 const resetPassOtp=async (req, res) => {
     try {
-        const { email, otp } = req.body;
+        const { forgotEmail, otp } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email:forgotEmail });
         if (!user) return res.status(400).json({ error: "User not found" });
 
         // Check OTP validity
@@ -253,28 +253,7 @@ const resetPassword = async (req, res) => {
     }
 }
 
-const loadProfile=async(req,res)=>{
-    try{
-        const user= await User.findById(req.user.userId);
-        console.log(user);
-        if(!user){
-            req.flash("error", "User not found");
-            return res.redirect("/login");
-        }
-        if(!user.isActive){
-            req.flash("error","User is Blocked");
-            res.redirect('/');
-        }
-        res.render('profile',{user});
-        
-           
-        
-    }catch(err){
-        console.error(err);
-        res.status(statusCodes.SERVER_ERROR).json(errorMessages.SERVER.SERVER_ERROR);
-    }
-    
-}
+
 
 // Logout User (Clear Cookie)
 const logoutUser = (req, res) => {
@@ -295,5 +274,5 @@ module.exports = {
     resetPassVerify,
     resetPassOtp,
     resetPassword,
-    loadProfile
+    
 };

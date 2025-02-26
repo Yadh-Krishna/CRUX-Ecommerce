@@ -6,8 +6,23 @@
     <title>CRUX Login</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/users/userLogin.css">
-       
+    <style>
+        .password-toggle-icon {
+        position: absolute;
+        right: 10px;
+        top: 70%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #6c757d; /* Grey color */
+    }
+
+    .password-toggle-icon:hover {
+        color: #000; /* Darker on hover */
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -22,19 +37,7 @@
                 <h2 class="text-center mb-3"><img src="/logo/logo-white.png" alt=""></h2>
                 <p class="text-center text-muted">Sign in to access your account</p>
 
-                <% if (messages.success) { %>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <%= messages.success %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <% } %>
                 
-                <% if (messages.error) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <%= messages.error %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <% } %>
                 <!-- <% if (error) { %>
                     <div class="alert alert-danger"><%= error %></div>
                 <% } %>             -->
@@ -45,12 +48,30 @@
                         <small class="text-danger" id="emailError"></small>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required >
+                    <div class="mb-3 user-box position-relative">
+                        <label for="password" class="form-label">Password</label>                        
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>                        
+                        <!-- Eye Icon for Toggling Password -->
+                        <span class="password-toggle-icon" onclick="togglePassword('password','eyeIcon')">
+                            <i class="fa fa-eye-slash"  id="eyeIcon" aria-hidden="true"></i>
+                        </span>                        
                         <small class="text-danger" id="passwordError"></small>
                     </div>
 
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <%= messages.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                    
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= messages.error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                   
                     <button type="submit" class="btn btn-primary w-100">Sign In</button>
                 </form>
 
@@ -67,8 +88,69 @@
                 <div class="text-center mt-3">
                     <p>Don't have an account? <a href="/register" class="text-primary fw-bold">Create Account</a></p>
                     <div class="d-flex justify-content-center fw-bold">
-                        <p class="mx-3 "><a href="/forgot-password" class="text-primary">Forgot Password</a></p>
-                       </div>                    
+                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#emailModal">Forgot Password</button>
+                        </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <!-- Step 1: Confirm Email Modal -->
+      <div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter Your Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="emailForm">
+                        <label>Email Address</label>
+                        <input type="email" name="forgotEmail" class="form-control" id="forgotEmail" required>
+                        <p id="validEmail" class="text-danger text-center"></p>
+                        <button type="button" id="otpSend" class="btn btn-primary w-100 mt-3" onclick="sendOTP()">Send OTP</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: OTP Verification Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter OTP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="otpForm">
+                        <input type="number" name="otp" class="form-control text-center" id="otp" placeholder="Enter 6-digit OTP" required>
+                        <p id="timer" class="text-muted mt-2">Resend OTP in <span id="countdown">60</span> seconds</p>
+                        <button type="button" class="btn btn-primary w-100 mt-3" onclick="verifyOTP()">Verify OTP</button>
+                        <button type="button" id="resendOtp" class="btn btn-link mt-2" onclick="sendOTP()" disabled>Resend OTP</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Reset Password Modal -->
+    <div class="modal fade" id="resetModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetForm">
+                        <label>New Password</label>
+                        <input type="password" class="form-control" id="newPassword" required>
+                        <label>Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                        <button type="button" class="btn btn-primary w-100 mt-3" onclick="resetPassword()">Reset Password</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -76,6 +158,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
 
@@ -128,6 +211,144 @@
         this.submit(); // Submit form if validation passes
     }
 });
+</script>
+
+<script>
+
+let userEmail = "";
+let countdownTimer;
+let timeLeft = 60;
+
+function startCountdown() {
+    timeLeft = 60;
+    document.getElementById("countdown").textContent = timeLeft;
+    document.getElementById("resendOtp").disabled = true;
+
+    countdownTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("countdown").textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(countdownTimer);
+            document.getElementById("resendOtp").disabled = false;
+        }
+    }, 1000);
+}
+
+function sendOTP() {
+    document.getElementById('resendOtp').disabled=true;
+    const emailInput = document.getElementById("forgotEmail");
+    userEmail = emailInput.value.trim();
+    const validEmailError = document.getElementById("validEmail");
+
+    if (userEmail === "") {
+        validEmailError.textContent = "Email field cannot be empty";
+        return;
+    }
+    
+    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userEmail)) {
+        validEmailError.textContent = "Enter a valid email address";
+        return;
+    }
+    
+    validEmailError.textContent = "";
+    document.getElementById("otpSend").disabled = true;
+
+    fetch("/forgot-password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forgotEmail: userEmail })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire("Success", "OTP sent to your email!", "success");
+            let emailModal = bootstrap.Modal.getInstance(document.getElementById("emailModal"));
+            emailModal.hide();
+            let otpModal = new bootstrap.Modal(document.getElementById("otpModal"));
+            otpModal.show();
+            startCountdown();
+        } else {
+            Swal.fire("Error", data.error, "error");
+            document.getElementById("otpSend").disabled = false;
+        }
+    })
+    .catch(error => console.error("Error sending OTP:", error));
+}
+
+function verifyOTP() {
+    let otp = document.getElementById("otp").value.trim();
+    if (otp.length !== 6) {
+        Swal.fire("Error", "Please enter a valid 6-digit OTP", "error");
+        return;
+    }
+    
+    fetch("/verify-otp", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forgotEmail: userEmail, otp })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire("Success", "OTP Verified!", "success");
+            let otpModal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+            otpModal.hide();
+            let resetModal = new bootstrap.Modal(document.getElementById("resetModal"));
+            resetModal.show();
+        } else {
+            Swal.fire("Error", data.error, "error");
+        }
+    })
+    .catch(error => console.error("Error verifying OTP:", error));
+}
+
+function resetPassword() {
+    let password = document.getElementById("newPassword").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (password.length < 6) {
+        Swal.fire("Error", "Password must be at least 6 characters long", "error");
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        Swal.fire("Error", "Passwords do not match!", "error");
+        return;
+    }
+
+    fetch("/reset-password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail, password, confirmPassword })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire("Success", "Password reset successfully!", "success")
+            .then(() => { window.location.href = "/login"; });
+        } else {
+            Swal.fire("Error", data.error, "error");
+        }
+    })
+    .catch(error => console.error("Error resetting password:", error));
+}
+
+    function togglePassword(password,icon){
+        const passwordInput = document.getElementById(password);
+        const passwordIcon = document.getElementById(icon);
+
+        if(passwordInput.getAttribute("type")=== "password"){
+            passwordInput.setAttribute("type","text");
+            passwordIcon.classList.remove("fa-eye-slash");
+            passwordIcon.classList.add("fa-eye");
+        }else{
+            passwordInput.setAttribute("type","password");
+            passwordIcon.classList.remove("fa-eye");
+            passwordIcon.classList.add("fa-eye-slash");
+        }
+    }
+
     </script>
 </body>
 </html>

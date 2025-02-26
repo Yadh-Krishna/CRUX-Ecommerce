@@ -11,7 +11,7 @@ const brandSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  image: {
+  image: {  
     type: String, // Store image URL or file path
     default: "/logo/category-brand-default-img.jpg", // Default failover image
   },

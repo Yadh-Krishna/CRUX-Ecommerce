@@ -13,7 +13,7 @@ const googleAuth = (req, res) => {
         maxAge: 3600000, // 1 hour
     });
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
-    res.redirect("/user/dashboard"); // Redirect user to dashboard after login
+    res.redirect("/"); // Redirect user to dashboard after login
 };
 
 module.exports=googleAuth;

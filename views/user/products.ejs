@@ -122,15 +122,7 @@
 
            
 
-		<!-- <div class="breadcrumbs">
-			<div class="container">
-				<div class="row">
-					<div class="col">
-						<p class="bread"><span><a href="index.html">Home</a></span> / <span>Product Details</span></p>
-					</div>
-				</div>
-			</div>
-		</div> -->
+	
 
 		<%- include('./userPartials/breadcrumbs') %>
 
@@ -201,9 +193,9 @@
 										<% } %>
 										</div>			
 
-									<a href="#" class="btn btn-primary mt-3"><i class="fa fa-shopping-cart"></i>
-										<%if(product.stock===0){%>disabled<%}%>
-										Add to Cart</a>
+									<a href="#" class="btn btn-primary mt-3 add-to-cart" data-id="<%= product._id %>"><i class="fa fa-shopping-cart"></i>
+										<!-- <%if(product.stock===0){%>disabled<%}%> -->
+										Add to Cart</a>	
 								</div>
 								<% } else { %>
 									<div class="alert alert-danger text-center">Product not found or is currently inactive.</div>
@@ -305,6 +297,7 @@
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
 	</div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- jQuery -->
 	<script src="/front/js/jquery.min.js"></script>
@@ -342,7 +335,7 @@
 		zoomPreview.style.display = "block";
 	});
 
-	mainImage.addEventListener('mousemove', function(event) {
+	mainImage.addEventListener('mousemove', function(event) {		
     const { left, top, width, height } = mainImage.getBoundingClientRect();
     
     // Get cursor position relative to image
@@ -396,51 +389,59 @@
 		}
 
 	
-	
+	document.addEventListener('DOMContentLoaded',function(){
+		const addToCartButton=document.querySelector(".add-to-cart");
 
-    document.querySelector('.quantity-right-plus').addEventListener('click', () => {
-        let qty = parseInt(document.getElementById('quantity').value);
-        document.getElementById('quantity').value = qty + 1;
-    });
+		if(addToCartButton){
+			addToCartButton.addEventListener('click',async function(event){
+				// event.preventdefault();
+				const productId=this.getAttribute('data-id');
+				try{
+					const response=await fetch('/cart/add',{
+						method:'POST',
+						headers:{
+							"Content-Type": "application/json"						
+						},
+						body: JSON.stringify({productId,quantity:1})
+				})
+				const result= await response.json();
+				if(result.success){
+					Swal.fire({
+                            icon: "success",
+                            title: "Added to Cart!",
+                            text: "The product has been successfully added to your cart.",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+					}else{
+						Swal.fire({
+                            icon: "warning",
+                            title: "Oops!",
+                            text: result.message,
+                        });
+					}
+				}catch(err){
+					console.error("Error adding to cart:", err);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Something went wrong while adding to cart. Please try again!",
+                    });	
+				}
+			})
+		}
+	})
 
-    document.querySelector('.quantity-left-minus').addEventListener('click', () => {
-        let qty = parseInt(document.getElementById('quantity').value);
-        if (qty > 1) document.getElementById('quantity').value = qty - 1;
-    });
-		$(document).ready(function(){
+    // document.querySelector('.quantity-right-plus').addEventListener('click', () => {
+    //     let qty = parseInt(document.getElementById('quantity').value);
+    //     document.getElementById('quantity').value = qty + 1;
+    // });
 
-		var quantitiy=0;
-		   $('.quantity-right-plus').click(function(e){
-		        
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		            
-		            $('#quantity').val(quantity + 1);
-
-		          
-		            // Increment
-		        
-		    });
-
-		     $('.quantity-left-minus').click(function(e){
-		        // Stop acting like a button
-		        e.preventDefault();
-		        // Get the field name
-		        var quantity = parseInt($('#quantity').val());
-		        
-		        // If is not undefined
-		      
-		            // Increment
-		            if(quantity>0){
-		            $('#quantity').val(quantity - 1);
-		            }
-		    });
-		    
-		});
+    // document.querySelector('.quantity-left-minus').addEventListener('click', () => {
+    //     let qty = parseInt(document.getElementById('quantity').value);
+    //     if (qty > 1) document.getElementById('quantity').value = qty - 1;
+    // });
+		
 	</script>
 
 
