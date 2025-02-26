@@ -256,14 +256,14 @@
             try{
 
             
-            const response = await fetch('/remove-product/itemId', {
+            const response = await fetch('/remove-product/'+itemId, {
                 method:"PATCH",
                 headers: {
                     "Content-Type": "application/json"
         }
     });
         const result= await response.json();
-        if(result.ok){
+        if(result.success){
             Swal.fire({
                 icon: 'success',
                 title: 'Product Removed',
@@ -275,7 +275,7 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Product not available in Cart',
+                text: result.message,
                 showConfirmButton: true
         });
     }

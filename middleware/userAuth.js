@@ -13,8 +13,8 @@ const verifyToken = (req, res, next) => {
         // console.log("Verified : ",verified);
         req.user = verified;     
         // console.log("Verified : ",req.path)            
-          if (req.path === "/login" || req.path === "/register" || req.path === "/verify-OTP") {               
-            return res.redirect("/"); // Redirect to home or dashboard
+        if (["/login", "/register", "/verify-OTP"].includes(req.path)) {
+            return res.redirect("/");
         }
         next();
     } catch (error) {

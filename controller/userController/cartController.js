@@ -79,67 +79,7 @@ const loadCart = async (req, res) => {
         res.status(500).send("Server Error");
     }
 };
-// const loadCart= async (req, res) => {
-//     try {
-        
-        
-//         const userId = req.user.userId;
-//         const user = await User.findById(userId);
-//         const cart = await Cart.findOne({ user: userId }).populate("items.product");
-//         // console.log(cart);
-//         if (!cart || cart.items.length === 0) {
-//             return res.render("cart", { 
-//                 user, 
-//                 cartItems: [], 
-//                 subtotal: 0,
-//                 discount: 0,
-//                 grandTotal: 0,
-//                 relatedProducts: [] 
-//             });
-//         }
 
-//         // Prepare cart items for rendering
-//         let subtotal = 0;
-//         const cartItems = cart.items.map(item => {
-//             const itemTotal = item.product.finalPrice * item.quantity;
-//             subtotal += itemTotal;
-//             return {
-//                 name: item.product.name,
-//                 image: item.product.images[0], 
-//                 price: item.product.finalPrice,
-//                 quantity: item.quantity,
-//                 total: itemTotal,
-//                 id: item.product._id
-//             };
-//         });
-//         // console.log(cartItems);
-
-        
-//         const discount = 0;
-//         const grandTotal = subtotal - discount;
-
-//         // Fetch related products based on first item's category
-//         const relatedProducts = await Product.find({ 
-//             category: cart.items[cart.items.length-1]?.product?.category,
-//             _id: { $ne: cart.items[cart.items.length-1]?.product?._id } // Exclude current product
-//         }).limit(4);
-
-//         // console.log(discount);
-
-//         res.render("cart", { 
-//             user, 
-//             cartItems, 
-//             subtotal, 
-//             discount, 
-//             grandTotal, 
-//             relatedProducts 
-//         });
-
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).send("Server Error");
-//     }
-// };
 
 const addToCart = async (req, res) => {
     try {
@@ -191,6 +131,11 @@ const updateCart = async (req, res) => {
     try {
         const { quantity, productId } = req.body;
         const userId = req.user.userId;
+
+        const user=await User.findById(userId);
+        if(!user){
+            return res.redirect('/login');
+        }
 
         // Fetch product to check stock availability
         const product = await Product.findById(productId);

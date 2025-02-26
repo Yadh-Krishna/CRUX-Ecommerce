@@ -33,16 +33,16 @@ router.get('/products/:id',userAuthenticate.authenticateUser,userProductControll
 router.get('/product-list',userAuthenticate.authenticateUser,userProductController.productList);//product listing
 router.get('/',userAuthenticate.authenticateUser,userProductController.loadHome);//home page
 
-router.get('/profile',verifyToken,manageUser.loadProfile);
-router.get('/profile/edit',verifyToken,manageUser.editProfile);
-router.get('/email-verify',verifyToken,manageUser.verifyEmail);
+router.get('/profile',userAuthenticate.isAuthenticated,manageUser.loadProfile);
+router.get('/profile/edit',userAuthenticate.isAuthenticated,manageUser.editProfile);
+router.get('/email-verify',userAuthenticate.isAuthenticated,manageUser.verifyEmail);
 
 //Cart 
-router.get('/cart',verifyToken,cartController.loadCart);
-router.post('/cart/add',verifyToken,cartController.addToCart);  
-router.put('/cart/update',verifyToken,cartController.updateCart);
+router.get('/cart',userAuthenticate.isAuthenticated,cartController.loadCart);
+router.post('/cart/add',userAuthenticate.isAuthenticated,cartController.addToCart);  
+router.put('/cart/update',userAuthenticate.isAuthenticated,cartController.updateCart);
 
-router.patch('/remove-product/:id',verifyToken,cartController.removeProduct)
+router.patch('/remove-product/:id',userAuthenticate.isAuthenticated,cartController.removeProduct)
 
 
 module.exports = router; 
