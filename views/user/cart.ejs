@@ -122,10 +122,10 @@
                         <div class="col-md-12">
                             <div class="total-wrap">
                                 <div class="row">
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-6">
                                         <form action="#">
                                             <div class="row form-group">
-                                                <div class="col-sm-9">
+                                                <div class="col-sm-12">
                                                     <input type="text" class="form-control input-number" placeholder="Your Coupon Code...">
                                                 </div>
                                                 <div class="col-sm-3">
@@ -134,16 +134,22 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="col-sm-4 text-center">
+                                    <div class="col-sm-5 text-center">
                                         <div class="total">
                                             <div class="sub">
                                                 <p><span>Subtotal:</span> <span id="subtotal">₹<%= subtotal.toFixed(2) %></span></p>
                                                 <p><span>Delivery:</span> <span>₹0.00</span></p>                                               
                                                 <p><span>Discount:</span> <span id="discount">₹<%= discount.toFixed(2) %></span></p>
                                             </div>
-                                            <div class="grand-total">                                               
+                                            <div class="grand-total pb-2">                                               
                                                 <p><span><strong>Total:</strong></span> <span id="grand-total">₹<%= grandTotal.toFixed(2) %></span></p>
                                             </div>
+                                            <div class="">  
+                                            <a href="/checkout"><button class="btn btn-md btn-primary">Proceed to Checkout</button></a>                                       
+                                        </div>
+                                        <div>
+                                            <a href="/product-list"><button  class="btn btn-sm btn-secondary">Continue Shopping</button></a>
+                                        </div>  
                                         </div>
                                     </div>
                                 </div>
@@ -153,7 +159,7 @@
         
                         <div class="row">
                             <div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
-                                <h2>Related Products</h2>
+                                <h2>People also bought</h2>
                             </div>
                         </div>
 

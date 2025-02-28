@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-	<title>CRUX | Product List</title>
+	<title>CRUX | Profile</title>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -72,6 +72,20 @@
     <body>
         <%- include('./userPartials/header') %> 
 
+        <% if (messages.success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= messages.success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+        
+        <% if (messages.error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= messages.error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
         <div class="container mt-5">
             <div class="row">
                 <!-- Sidebar -->
@@ -83,10 +97,10 @@
                         </div>
                         <ul class="list-group mt-3">
                             <li class="list-group-item active"><a href="/profile">Account Overview</a></li>
-                            <li class="list-group-item"><a href="/orders">My Orders</a></li>
-                            <li class="list-group-item"><a href="/addresses">Manage Addresses</a></li>
-                            <li class="list-group-item"><a href="/wallet">Wallet</a></li>
-                            <li class="list-group-item"><a href="/coupons">Coupons</a></li>
+                            <li class="list-group-item"><a href="/profile/orders">My Orders</a></li>
+                            <li class="list-group-item"><a href="/profile/addresses">Manage Addresses</a></li>
+                            <li class="list-group-item"><a href="/profile/wallet">Wallet</a></li>
+                            <li class="list-group-item"><a href="/profile/coupons">Coupons</a></li>
                             <li class="list-group-item"><a href="/logout">Logout</a></li>
                         </ul>
                     </div>
@@ -113,12 +127,19 @@
                                 <div class="col-md-4"><strong>Phone Number:</strong></div>
                                 <div class="col-md-8"><%= user.mobile %></div>
                             </div>
-                           
+                            <div class="row mb-2">
+                                <div class="col-md-4"><strong>Account Type:</strong></div>                                
+                                <div class="col-md-8"><%= user.googleId ?'Google Account':'Email Account' %></div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-4"><strong>Created On:</strong></div>                                
+                                <div class="col-md-8"><%= user.createdAt %></div>
+                            </div>
                         </div>
                         <a href="/profile/edit" class="btn btn-primary mt-3">Edit Profile</a>
                     </div>
         
-                    <div class="card p-4 mt-4">
+                    <div class="card p-4 mt-4 mb-3">
                         <h2>Change Password</h2>
                         <form action="/profile/change-password" method="POST">
                             <input type="password" class="form-control mb-2" name="currentPassword" placeholder="Current Password" required>
@@ -128,7 +149,7 @@
                         </form>
                     </div>
         
-                    <div class="card p-4 mt-4 mb-2">
+                    <!-- <div class="card p-4 mt-4 mb-2">
                         <h2>Saved Addresses</h2>
                         <ul class="list-group">
                             <% addresses.forEach(address => { %>
@@ -144,7 +165,7 @@
                             <% }) %>
                         </ul>
                         <a href="/address/add" class="btn btn-secondary mt-3">Add New Address</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>CRUX | Product List</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="/front/css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/icomoon.css">
+	<!-- Ion Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/ionicons.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="/front/css/magnific-popup.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="/front/css/flexslider.css">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+	
+	<!-- Date Picker -->
+	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+	<!-- Flaticons  -->
+	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="/front/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Profile Sidebar */
+    .profile-sidebar {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .profile-image img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+    .profile-sidebar .list-group-item {
+        border: none;
+        background: none;
+    }
+    .profile-sidebar .list-group-item a {
+        text-decoration: none;
+        color: #333;
+    }
+    .profile-sidebar .list-group-item.active a {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    /* Profile Content */
+    .card {
+        border-radius: 10px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    </style>
+
+    </head>
+    <body>
+        <%- include('./userPartials/header') %> 
+
+        <div class="container mt-5">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="profile-sidebar">
+                        <div class="profile-image text-center">
+                            <img src="<%= user.image %>" alt="Profile Picture" class="rounded-circle">
+                            <h3 class="mt-2"><%= user.fullName %></h3>
+                        </div>
+                        <ul class="list-group mt-3">
+                            <li class="list-group-item "><a href="/profile">Account Overview</a></li>
+                            <li class="list-group-item"><a href="/profile/orders">My Orders</a></li>
+                            <li class="list-group-item active"><a href="/profile/addresses">Manage Addresses</a></li>
+                            <li class="list-group-item"><a href="/profile/wallet">Wallet</a></li>
+                            <li class="list-group-item"><a href="/profile/coupons">Coupons</a></li>
+                            <li class="list-group-item"><a href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+        
+                <div class="col-md-9 mb-4">
+                    <div class="card p-4">
+                        <h2>Edit Address</h2>
+                        <form id="editAddressForm">
+                            <div class="mb-3">
+                                <input type="hidden" id="editAddressId" name="addressId" value="<%= address.id %>">
+                                <label class="form-label">Address Type</label>
+                                <select name="type" class="form-select" id="editType">
+                                    <option value="Home" <%= address.address_type === "Home" ? "selected" : "" %>>Home</option>
+                                    <option value="Work" <%= address.address_type === "Work" ? "selected" : "" %>>Work</option>
+                                    <option value="Other" <%= address.address_type === "Other" ? "selected" : "" %>>Other</option>
+                                </select>
+                                <small class="error-message"></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" name="name" id="editName" class="form-control" value="<%= address.name %>">
+                                <small class="error-message"></small>    
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">House Name</label>
+                                <input type="text" id="editHouse" name="hName" class="form-control" value="<%= address.hName %>">
+                                <small class="error-message"></small>    
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Street Address</label>
+                                <input type="text" id="editStreet" name="street" class="form-control" value="<%= address.street %>">
+                                <small class="error-message"></small>    
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label class="form-label">Country</label>
+                                    <input type="text" id="editCountry" name="country" class="form-control" value="<%= address.country %>" >
+                                    <small class="error-message"></small>    
+                                </div>
+
+                                <div class="col">
+                                    <label class="form-label">State</label>
+                                    <input type="text" id="editState" name="state" class="form-control" value="<%= address.state %>" >
+                                    <small class="error-message"></small>    
+                                </div>
+
+                                <div class="col">
+                                    <label class="form-label">City</label>
+                                    <input type="text" id="editCity" name="city" class="form-control" value="<%= address.city %>">
+                                    <small class="error-message"></small>
+    
+                                </div>    
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label class="form-label">ZIP Code</label>
+                                    <input type="text" id="editZip" name="zip" class="form-control" value="<%= address.pin %>">
+                                    <small class="error-message"></small>
+    
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" id="editPhone" name="phone" class="form-control" value="<%= address.mobile_number %>">
+                                    <small class="error-message"></small>    
+                                </div>
+                            </div>                            
+                        
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                        </form>
+                    </div>       
+        </div>
+    </div>
+</div>
+        <%- include('./userPartials/footer') %>    
+
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+          document.addEventListener("DOMContentLoaded", function () {
+    function setupFormValidation(formId) {
+        const form = document.getElementById(formId);
+        
+        if (!form ) return; 
+
+        const fields = form.querySelectorAll("input, select");
+
+        // Clear error messages & inputs when the modal opens        
+            form.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = "";
+            });         
+          
+
+        // Attach validation on input change
+        fields.forEach(field => {
+            field.addEventListener("input", () => validateField(field));
+        });
+
+        // Form submit validation
+        form.addEventListener("submit", function (event) {
+            let isValid = true;
+            fields.forEach(field => {
+                if (!validateField(field)) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    }
+
+    function validateField(field) {
+        const errorMessage = field.nextElementSibling;
+        const value = field.value.trim();
+
+        if (!errorMessage) return true; // Exit if error message element is not found
+
+        errorMessage.textContent = ""; // Clear previous errors
+        errorMessage.classList.remove('text-danger');
+
+        // Required field validation
+        if (!value) {
+            errorMessage.textContent = `${field.name.toUpperCase()} is required.`;
+            errorMessage.classList.add('text-danger');
+            return false;
+        }
+
+        // ZIP Code validation (6 digits)
+        if (field.name === "zip" && !/^\d{6}$/.test(value)) {
+            errorMessage.textContent = "ZIP Code must be 6 digits.";
+            errorMessage.classList.add('text-danger');
+            return false;
+        }
+
+        // Phone number validation (10 digits)
+        if (field.name === "phone" && !/^\d{10}$/.test(value)) {
+            errorMessage.textContent = "Phone number must be 10 digits.";
+            errorMessage.classList.add('text-danger');
+            return false;
+        }
+
+        return true; // Field is valid
+    }
+
+    // Setup validation for Add Address & Edit Address forms
+   
+    setupFormValidation("editAddressForm");
+
+
+    document.getElementById('editAddressForm').addEventListener('submit', async function(){ 
+    event.preventDefault();
+
+    const addressId=document.getElementById('editAddressId').value;
+    const formData = {
+        address_type: document.getElementById("editType").value,
+        name: document.getElementById("editName").value,
+        hName: document.getElementById("editHouse").value,
+        street: document.getElementById("editStreet").value,
+        country: document.getElementById("editCountry").value,
+        city: document.getElementById("editCity").value,
+        state: document.getElementById("editState").value,
+        pin: document.getElementById("editZip").value,
+        mobile_number: document.getElementById("editPhone").value,
+    };
+
+    try{
+        const response= await fetch(`/profile/addresses/${addressId}`,{
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body:JSON.stringify(formData)
+    })
+    const result= await response.json();
+    if(result.success){
+        Swal.fire({
+            icon: 'success',
+            title: 'Address Updated',
+            text: 'Your address has been updated successfully.',
+            confirmButtonText: "OK",
+        }).then(()=>{            
+            window.location.href='/profile/addresses';
+        })
+    }else {
+            Swal.fire({
+                title: "Error!",
+                text: result.message || "Failed to update address.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
+        }
+}catch(err){
+    console.error("Error updating address:", err);
+        Swal.fire({
+            title: "Oops!",
+            text: "Something went wrong!",
+            icon: "error",
+            confirmButtonText: "OK",
+        });
+}
+});
+});
+    </script>
+    </html>

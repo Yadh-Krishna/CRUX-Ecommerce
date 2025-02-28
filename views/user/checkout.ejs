@@ -1,0 +1,389 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>CRUX | Checkout</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="/front/css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/icomoon.css">
+	<!-- Ion Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/ionicons.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="/front/css/magnific-popup.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="/front/css/flexslider.css">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+	
+	<!-- Date Picker -->
+	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+	<!-- Flaticons  -->
+	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="/front/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	</head>
+	<div class="colorlib-loader"></div>
+
+<div id="page">
+  <%- include('./userPartials/header') %>
+
+  <div class="colorlib-product">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Address Selection Section -->
+          <div class="checkout-wrap">
+            <h2>Shipping Address</h2>
+            <div class="row mb-4">
+              <div class="col-md-12">
+                <% if (addresses && addresses.length > 0) { %>
+                  <div class="saved-addresses">
+                    <% addresses.forEach(function(address, index) { %>
+                      <div class="address-card mb-3 p-3 border <%= address.isDefault ? 'border-primary' : '' %>">
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="selectedAddress" id="address<%= index %>" 
+                            value="<%= address._id %>" <%= address.isDefault ? 'checked' : '' %>>
+                          <label class="form-check-label" for="address<%= index %>">
+                            <strong><%= address.name %></strong>
+                            <% if(address.isDefault) { %>
+                              <span class="badge bg-primary text-white ml-2">Default</span>
+                            <% } %>
+                            <p class="mb-1"><%= address.street %>, <%= address.city %></p>
+                            <p class="mb-1"><%= address.state %> - <%= address.zipCode %></p>
+                            <p class="mb-1">Phone: <%= address.phone %></p>
+                          </label>
+                        </div>
+                        <div class="address-actions mt-2">
+                          <button class="btn btn-sm btn-outline-secondary edit-address" data-id="<%= address._id %>">Edit</button>
+                          <% if(!address.isDefault) { %>
+                            <button class="btn btn-sm btn-outline-primary make-default" data-id="<%= address._id %>">Make Default</button>
+                          <% } %>
+                        </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                <% } else { %>
+                  <p>No saved addresses found.</p>
+                <% } %>
+                <button class="btn btn-outline-primary" id="addNewAddress">+ Add New Address</button>
+              </div>
+            </div>
+
+            <!-- New Address Form (Hidden by default) -->
+            <div class="row mb-4" id="addressForm" style="display: none;">
+              <div class="col-md-12">
+                <form id="shippingAddressForm">
+                  <input type="hidden" id="addressId" name="addressId" value="">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="name">Full Name</label>
+                      <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="phone">Phone Number</label>
+                      <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="street">Street Address</label>
+                    <input type="text" class="form-control" id="street" name="street" required>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label for="city">City</label>
+                      <input type="text" class="form-control" id="city" name="city" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label for="state">State</label>
+                      <input type="text" class="form-control" id="state" name="state" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label for="zipCode">Zip Code</label>
+                      <input type="text" class="form-control" id="zipCode" name="zipCode" required>
+                    </div>
+                  </div>
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="makeDefault" name="makeDefault">
+                    <label class="form-check-label" for="makeDefault">Make this my default address</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Save Address</button>
+                  <button type="button" class="btn btn-outline-secondary" id="cancelAddressForm">Cancel</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Product Summary Section -->
+            <h2>Order Summary</h2>
+            <div class="row mb-4">
+              <div class="col-md-12">
+                <div class="cart-list">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (cart && cart.items && cart.items.length > 0) { %>
+                        <% cart.items.forEach(function(item) { %>
+                          <tr>
+                            <td>
+                              <div class="product-img">
+                                <img src="<%= item.product.image %>" alt="<%= item.product.name %>" class="img-fluid" style="max-width: 80px;">
+                              </div>
+                            </td>
+                            <td>
+                              <div class="product-name">
+                                <h3><%= item.product.name %></h3>
+                                <% if (item.product.discount > 0) { %>
+                                  <span class="badge bg-success"><%=item.product.discount %>% OFF</span>
+                                <% } %>
+                              </div>
+                            </td>
+                            <td>
+                              <% if (item.product.discount > 0) { %>
+                                <div class="price">
+                                  <span class="original-price text-muted"><s>₹<%= item.product.price.toFixed(2) %></s></span>
+                                  <span class="discounted-price">₹<%= item.product.finalprice.toFixed(2) %></span>
+                                </div>
+                              <% } else { %>
+                                <div class="price">₹<%= item.product.price.toFixed(2) %></div>
+                              <% } %>
+                            </td>
+                            <td><%= item.quantity %></td>
+                            <td>$<%= (item.product.price * item.quantity).toFixed(2) %></td>
+                          </tr>
+                        <% }); %>
+                      <% } else { %>
+                        <tr>
+                          <td colspan="5" class="text-center">Your cart is empty</td>
+                        </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="cart-detail">
+                <h2>Cart Total</h2>
+                <ul>
+                  <li>
+                    <span>Subtotal</span> <span>₹<%= cart ? cart.subtotal.toFixed(2) : '0.00' %></span>
+                    <ul>
+                      <% if (cart && cart.items && cart.items.length > 0) { %>
+                        <% cart.items.forEach(function(item) { %>
+                          <li>
+                            <span><%= item.quantity %> x <%= item.product.name %></span> 
+                            <span>₹<%= (item.product.price * item.quantity).toFixed(2) %></span>
+                          </li>
+                        <% }); %>
+                      <% } %>
+                    </ul>
+                  </li>
+                  <% if (cart && cart.tax > 0) { %>
+                    <li><span>Tax</span> <span>₹<%= cart.tax.toFixed(2) %></span></li>
+                  <% } %>
+                  <li><span>Shipping</span> <span>₹<%= cart && cart.shipping ? cart.shipping.toFixed(2) : '0.00' %></span></li>
+                  <li><span>Order Total</span> <span>₹<%= cart ? cart.total.toFixed(2) : '0.00' %></span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="w-100"></div>
+
+            <div class="col-md-12">
+              <div class="cart-detail">
+                <h2>Payment Method</h2>
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <div class="radio">
+                      <label><input type="radio" name="optradio" value="bank"> Direct Bank Transfer</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <div class="radio">
+                      <label><input type="radio" name="optradio" value="check"> Check Payment</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <div class="radio">
+                      <label><input type="radio" name="optradio" value="paypal"> Paypal</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <div class="radio">
+                      <label><input type="radio" name="optradio" value="cod" checked> Cash on Delivery</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <div class="checkbox">
+                      <label><input type="checkbox" id="termsCheckbox" value=""> I have read and accept the terms and conditions</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <button id="placeOrderBtn" class="btn btn-primary" disabled>Place an order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('./userPartials/footer') %>
+</div>
+
+<div class="gototop js-top">
+  <a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Address form toggle
+      const addNewAddressBtn = document.getElementById('addNewAddress');
+      const addressForm = document.getElementById('addressForm');
+      const cancelAddressFormBtn = document.getElementById('cancelAddressForm');
+      
+      addNewAddressBtn.addEventListener('click', function() {
+        // Reset form
+        document.getElementById('shippingAddressForm').reset();
+        document.getElementById('addressId').value = '';
+        addressForm.style.display = 'block';
+      });
+      
+      cancelAddressFormBtn.addEventListener('click', function() {
+        addressForm.style.display = 'none';
+      });
+      
+      // Edit address buttons
+      const editButtons = document.querySelectorAll('.edit-address');
+      editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const addressId = this.getAttribute('data-id');
+          // Here you would typically fetch the address details from the server
+          // For now, we'll just show the form
+          document.getElementById('addressId').value = addressId;
+          addressForm.style.display = 'block';
+          
+          // In a real implementation, you would populate the form with the address details
+          // fetchAddressDetails(addressId).then(populateForm);
+        });
+      });
+      
+      // Make default address buttons
+      const defaultButtons = document.querySelectorAll('.make-default');
+      defaultButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const addressId = this.getAttribute('data-id');
+          // Here you would send a request to make this the default address
+          // makeDefaultAddress(addressId);
+        });
+      });
+      
+      // Terms checkbox and place order button
+      const termsCheckbox = document.getElementById('termsCheckbox');
+      const placeOrderBtn = document.getElementById('placeOrderBtn');
+      
+      termsCheckbox.addEventListener('change', function() {
+        placeOrderBtn.disabled = !this.checked;
+      });
+      
+      // Place order button
+      placeOrderBtn.addEventListener('click', function() {
+        // Validate that an address is selected
+        const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+        if (!selectedAddress) {
+          alert('Please select a shipping address');
+          return;
+        }
+        
+        // Validate that a payment method is selected
+        const selectedPayment = document.querySelector('input[name="optradio"]:checked');
+        if (!selectedPayment) {
+          alert('Please select a payment method');
+          return;
+        }
+        
+        // Create order object
+        const order = {
+          addressId: selectedAddress.value,
+          paymentMethod: selectedPayment.value
+        };
+        
+        // Submit order
+        // submitOrder(order).then(response => {
+        //   if (response.success) {
+        //     window.location.href = '/order-success?id=' + response.orderId;
+        //   }
+        // });
+        
+        // For demo purposes, redirect to success page
+        window.location.href = '/order-success?demo=true';
+      });
+    });
+  </script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- jQuery -->
+	<script src="/front/js/jquery.min.js"></script>
+   <!-- popper -->
+   <script src="/front/js/popper.min.js"></script>
+   <!-- bootstrap 4.1 -->
+   <script src="/front/js/bootstrap.min.js"></script>
+   <!-- jQuery easing -->
+   <script src="/front/js/jquery.easing.1.3.js"></script>
+	<!-- Waypoints -->
+	<script src="/front/js/jquery.waypoints.min.js"></script>
+	<!-- Flexslider -->
+	<script src="/front/js/jquery.flexslider-min.js"></script>
+	<!-- Owl carousel -->
+	<script src="/front/js/owl.carousel.min.js"></script>
+	<!-- Magnific Popup -->
+	<script src="/front/js/jquery.magnific-popup.min.js"></script>
+	<script src="/front/js/magnific-popup-options.js"></script>
+	<!-- Date Picker -->
+	<script src="/front/js/bootstrap-datepicker.js"></script>
+	<!-- Stellar Parallax -->
+	<script src="/front/js/jquery.stellar.min.js"></script>
+	<!-- Main -->
+	<script src="/front/js/main.js"></script>
+
+	</body>
+</html>
+

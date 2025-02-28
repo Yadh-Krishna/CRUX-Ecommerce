@@ -388,59 +388,61 @@
         container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
 		}
 
-	
-	document.addEventListener('DOMContentLoaded',function(){
-		const addToCartButton=document.querySelector(".add-to-cart");
 
-		if(addToCartButton){
-			addToCartButton.addEventListener('click',async function(event){
-				// event.preventdefault();
-				const productId=this.getAttribute('data-id');
-				try{
-					const response=await fetch('/cart/add',{
-						method:'POST',
-						headers:{
-							"Content-Type": "application/json"						
+			document.addEventListener('DOMContentLoaded', function () {
+		const addToCartButton = document.querySelector(".add-to-cart");
+
+		if (addToCartButton) {
+			addToCartButton.addEventListener('click', async function (event) {
+				const productId = this.getAttribute('data-id');
+
+				try {
+					const response = await fetch('/cart/add', {
+						method: 'POST',
+						headers: {
+							"Content-Type": "application/json",
+							 "Accept": "application/json"
 						},
-						body: JSON.stringify({productId,quantity:1})
-				})
-				const result= await response.json();
-				if(result.success){
-					Swal.fire({
-                            icon: "success",
-                            title: "Added to Cart!",
-                            text: "The product has been successfully added to your cart.",
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-					}else{
-						Swal.fire({
-                            icon: "warning",
-                            title: "Oops!",
-                            text: result.message,
-                        });
+						body: JSON.stringify({ productId, quantity: 1 })
+						
+					});
+					
+					if (response.status === 401) { 
+						console.log("Redirecting to login...");	
+						window.location.href = "/login"; // Redirect to login page
+						return;
 					}
-				}catch(err){
+
+					//  Check if the response is OK (200 or other expected statuses)
+					const result = await response.json();
+
+					if (result.success) {
+						Swal.fire({
+							icon: "success",
+							title: "Added to Cart!",
+							text: "The product has been successfully added to your cart.",
+							showConfirmButton: false,
+							timer: 1500
+						});
+					} else {
+						Swal.fire({
+							icon: "warning",
+							title: "Oops!",
+							text: result.message, // Show server message
+						});
+					}
+				} catch (err) {
 					console.error("Error adding to cart:", err);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error!",
-                        text: "Something went wrong while adding to cart. Please try again!",
-                    });	
+					Swal.fire({
+						icon: "error",
+						title: "Error!",
+						text: "Something went wrong while adding to cart. Please try again!",
+					});
 				}
-			})
+			});
 		}
-	})
-
-    // document.querySelector('.quantity-right-plus').addEventListener('click', () => {
-    //     let qty = parseInt(document.getElementById('quantity').value);
-    //     document.getElementById('quantity').value = qty + 1;
-    // });
-
-    // document.querySelector('.quantity-left-minus').addEventListener('click', () => {
-    //     let qty = parseInt(document.getElementById('quantity').value);
-    //     if (qty > 1) document.getElementById('quantity').value = qty - 1;
-    // });
+	});
+	
 		
 	</script>
 

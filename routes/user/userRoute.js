@@ -10,6 +10,9 @@ const manageUser=require('../../controller/userController/manageUser')
 const verifyToken=require('../../middleware/userAuth');
 const userProductController=require('../../controller/userController/userProductController')
 const cartController=require('../../controller/userController/cartController')
+const checkoutController=require('../../controller/userController/checkoutController')
+const profileRoutes=require('./profileRoutes');
+
 //Login
 router.use(userAuthenticate.blockCheck);
 router.get("/login",verifyToken, userController.loadLogin);
@@ -33,16 +36,18 @@ router.get('/products/:id',userAuthenticate.authenticateUser,userProductControll
 router.get('/product-list',userAuthenticate.authenticateUser,userProductController.productList);//product listing
 router.get('/',userAuthenticate.authenticateUser,userProductController.loadHome);//home page
 
-router.get('/profile',userAuthenticate.isAuthenticated,manageUser.loadProfile);
-router.get('/profile/edit',userAuthenticate.isAuthenticated,manageUser.editProfile);
-router.get('/email-verify',userAuthenticate.isAuthenticated,manageUser.verifyEmail);
+router.use(userAuthenticate.isAuthenticated);
+
+router.use('/profile',profileRoutes)
 
 //Cart 
-router.get('/cart',userAuthenticate.isAuthenticated,cartController.loadCart);
-router.post('/cart/add',userAuthenticate.isAuthenticated,cartController.addToCart);  
-router.put('/cart/update',userAuthenticate.isAuthenticated,cartController.updateCart);
+router.get('/cart',verifyToken,cartController.loadCart);
+router.post('/cart/add',verifyToken,cartController.addToCart);  
+router.put('/cart/update',verifyToken,cartController.updateCart);
+router.patch('/remove-product/:id',verifyToken,cartController.removeProduct)
 
-router.patch('/remove-product/:id',userAuthenticate.isAuthenticated,cartController.removeProduct)
+//Checkout
+router.get('/checkout',verifyToken,checkoutController.loadCheckout);
 
 
 module.exports = router; 
