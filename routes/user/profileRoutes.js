@@ -23,6 +23,6 @@ router.post('/addresses',verifyToken,manageUser.addAddress);
 router.get('/addresses/:id',verifyToken,manageUser.editPage);
 router.put('/addresses/:id',verifyToken,manageUser.updateAddress);  
 router.delete('/addresses/:id',verifyToken,manageUser.deleteAddress)
-
+router.patch('/addresses/:id',verifyToken,manageUser.defaultAddress)
 
 module.exports=router;

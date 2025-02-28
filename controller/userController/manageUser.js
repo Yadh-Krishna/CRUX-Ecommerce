@@ -121,18 +121,25 @@ const editPage=async(req,res)=>{
 }
 
 const addAddress=async(req,res)=>{
-    try{
-        const {name,hName,street,city,zip,country,state,type,phone}=req.body;
+    try{        
+        const {name,hName,street,city,zip,country,state,type,phone, makeDefault }=req.body;
         const user=await User.findById(req.user.userId);
         if(!user){
             req.flash("error","User not found");
             res.render('profile',{user:null});
         }
+
+        if (makeDefault) {
+            await Address.updateMany({ user: user._id, isDefault: true }, { isDefault: false });
+        }
+
+
         const address= new Address({
-            name,hName,street,city,pin:zip,country,state,address_type:type,mobile_number:phone,user:user._id});
+            name,hName,street,city,pin:zip,country,state,address_type:type,mobile_number:phone,user:user._id,isDefault:makeDefault ?true:false});
             await address.save();
             req.flash("success","Address Added Successfully");
-            res.redirect('/profile/addresses');
+            return res.redirect(req.get('Referer') || '/profile/addresses');
+            
 
     }catch(err){
         req.flash("error","Something Went Wrong");
@@ -181,6 +188,30 @@ const deleteAddress=async(req,res)=>{
     }
 }
 
+const defaultAddress= async(req,res)=>{
+    try{
+        const {id}=req.params;
+        const userId=req.user.userId;
+        const user=await User.findById(userId);
+        if(!user){
+            res.status(statusCodes.NOT_FOUND).json({success:false,message:"User not found"});
+        }
+        const address=await Address.findById(id);
+        if(!address){
+            res.status(statusCodes.NOT_FOUND).json({success:false,message:"Address not found"});
+        }
+        await Address.updateMany({user:userId},{$set:{isDefault:false}});
+        
+        address.isDefault=true;
+        await address.save();
+
+        res.status(statusCodes.SUCCESS).json({success:true,message:"Address defaulted successfully"});        
+    }catch(err){
+        console.log(err);
+        res.status(statusCodes.SERVER_ERROR).json({success:false,message:"Something Went Wrong!!"});
+    }
+}
+
 
 
 
@@ -192,6 +223,6 @@ module.exports={
     addAddress,
     updateAddress,
     editPage,
-    deleteAddress
-    
+    deleteAddress,
+    defaultAddress    
 }

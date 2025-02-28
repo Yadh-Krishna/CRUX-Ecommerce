@@ -274,8 +274,9 @@
             title: 'Address Updated',
             text: 'Your address has been updated successfully.',
             confirmButtonText: "OK",
-        }).then(()=>{            
-            window.location.href='/profile/addresses';
+        }).then(()=>{     
+            if(document.referrer) window.location.href=document.referrer;                 
+            else window.location.href='/profile/addresses';
         })
     }else {
             Swal.fire({

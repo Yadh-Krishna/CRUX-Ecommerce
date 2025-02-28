@@ -145,7 +145,7 @@
                                                 <p><span><strong>Total:</strong></span> <span id="grand-total">₹<%= grandTotal.toFixed(2) %></span></p>
                                             </div>
                                             <div class="">  
-                                            <a href="/checkout"><button class="btn btn-md btn-primary">Proceed to Checkout</button></a>                                       
+                                            <a href="#"><button class="btn btn-md btn-primary proceedCheckout">Proceed to Checkout</button></a>                                       
                                         </div>
                                         <div>
                                             <a href="/product-list"><button  class="btn btn-sm btn-secondary">Continue Shopping</button></a>
@@ -341,6 +341,20 @@
             }
         });
     });
+
+    document.querySelector('.proceedCheckout').addEventListener('click',function(){
+       const cartLength= '<%=cartItems.length%>';
+       if(cartLength>0){
+        window.location.href='/checkout';
+       }else{
+        Swal.fire({
+            icon: "warning",
+            title: "Your cart is empty!",
+            text: "Please add items to your cart before placing an order.",
+            confirmButtonText: "OK",
+        });
+       }
+    })
 
 });
 

@@ -2,7 +2,7 @@ const bcrypt=require('bcrypt');
 const User=require('../../models/userModel');
 const jwt = require("jsonwebtoken");
 const statusCodes=require('../../utils/statusCodes');
-const errorMessages=require('../../utils/errorMessages')
+const errorMessages=require('../../utils/errorMessages');
 const crypto = require("crypto");
 require("dotenv").config();
 
@@ -111,6 +111,9 @@ const addToCart = async (req, res) => {
             // If product already exists, update quantity (but don't exceed stock)
             if (existingItem.quantity + quantity > product.stock) {
                 return res.status(400).json({ success: false, message: "Not enough stock available" });
+            }
+            if(existingItem.quantity + quantity > 10){
+                return res.status(400).json({ success: false, message: "Only 10 quantities can be added per product" });
             }
             existingItem.quantity += quantity;
         } else {

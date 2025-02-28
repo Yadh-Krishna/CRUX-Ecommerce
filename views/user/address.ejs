@@ -170,7 +170,7 @@
                                                 Edit
                                             </button></a>
                                             <% if (!address.isDefault) { %>                                                
-                                                    <!-- <button type="submit" id="defaultaddress" class="btn btn-sm btn-success" data-id="<%=address._id%>">Make Default</button>                                             -->
+                                                    <button  id="defaultaddress" class="btn btn-sm btn-success defaultAddress" data-id="<%=address._id%>">Make Default</button>                                            
                                                 
                                                     <button id='deleteAddress' class="btn btn-sm btn-danger deleteAddress" data-id="<%=address._id%>">Delete</button>
                                                 
@@ -201,7 +201,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Address Type</label>
-                            <select name="type" class="form-select" >
+                            <select name="type" class="form-select">
                                 <option value="Home">Home</option>
                                 <option value="Work">Work</option>
                                 <option value="Other">Other</option>
@@ -260,6 +260,7 @@
                                 <small class="error-message"></small>
 
                             </div>
+                            <input type="hidden" class="form-label" id="makeDefault" name="makeDefault" value="false">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -408,6 +409,59 @@
     });
 })
 });
+
+        document.querySelectorAll('.defaultAddress').forEach( item  => {
+
+        item.addEventListener('click',function(){
+            const addressId=this.getAttribute('data-id');
+            Swal.fire({
+            title: "Are you sure?",
+            text: "This action will default this address.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, default it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/profile/addresses/${addressId}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Defaulted!",
+                            text: data.message ||"Your address has been defaulted successfully.",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            window.location.reload(); // Refresh the page
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error!",
+                            text: data.message || "Failed to default the address.",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error deleting address:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops!",
+                        text: data.message || "Something went wrong!",
+                        confirmButtonText: "OK"
+                    });
+                }
+            }
+        });
+        })
+        });
 
     });
   

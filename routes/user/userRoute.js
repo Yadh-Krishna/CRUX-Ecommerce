@@ -48,6 +48,8 @@ router.patch('/remove-product/:id',verifyToken,cartController.removeProduct)
 
 //Checkout
 router.get('/checkout',verifyToken,checkoutController.loadCheckout);
+router.get('/order',verifyToken,checkoutController.loadOrder);
+router.post('/order',verifyToken,checkoutController.placeOrder);
 
 
 module.exports = router; 
