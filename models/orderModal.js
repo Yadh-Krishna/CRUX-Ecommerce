@@ -9,7 +9,12 @@ const OrderSchema = new mongoose.Schema({
       quantity: { type: Number, required: true },
       price: { type: Number, required: true }, // Price at the time of purchase
       discount: { type: Number, default: 0 }, // Discount on the product
-      finalPrice: { type: Number, required: true } // Price after discount
+      finalPrice: { type: Number, required: true }, // Price after discount
+      status: { 
+        type: String, 
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested", "Returned"], 
+        default: "Pending" 
+    }
     }
   ],
   totalAmount: { type: Number, required: true }, // Final order total
@@ -21,10 +26,10 @@ const OrderSchema = new mongoose.Schema({
   }, // Payment status
   orderStatus: { 
     type: String, 
-    enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returned"], 
+    enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Request","Returned"], 
     default: "Pending" 
   }, // Order status
-  address: { type: mongoose.Schema.Types.ObjectId, ref: "Address", required: true }, // Shipping address
+  address: { type: mongoose.Schema.Types.ObjectId, ref: "address", required: true }, // Shipping address
   deliveredAt: { type: Date }, // When the order was delivered
   cancellationReason: { type: String,default:null }, // Reason if order is cancelled
   returnReason: { type: String }, // Reason if order is returned

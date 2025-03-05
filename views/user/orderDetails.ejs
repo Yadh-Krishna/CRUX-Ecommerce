@@ -1,0 +1,444 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>CRUX | Order Details</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/front/css/style.css">
+    <style>
+        /* Custom CSS for Order Details Page */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .profile-container {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-sidebar {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            padding: 2rem 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .profile-image {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-image img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            object-fit: cover;
+        }
+        
+        .profile-image .edit-avatar {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366F1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .profile-image .edit-avatar:hover {
+            background: #f0f0f0;
+        }
+        
+        .nav-menu {
+            padding: 1rem 0;
+        }
+        
+        .nav-menu .nav-item {
+            padding: 0;
+        }
+        
+        .nav-menu .nav-link {
+            padding: 0.75rem 1.5rem;
+            color: #4B5563;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-menu .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-menu .nav-link:hover {
+            background-color: #F3F4F6;
+            color: #6366F1;
+        }
+        
+        .nav-menu .nav-link.active {
+            background-color: #F3F4F6;
+            color: #6366F1;
+            border-left: 3px solid #6366F1;
+            font-weight: 500;
+        }
+
+        .content-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .content-card h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .order-status .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+        .order-status .badge-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .order-status .badge-processing {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .order-status .badge-shipped {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .order-status .badge-delivered {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .order-status .badge-cancelled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .order-status .badge-return-requested {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .order-status .badge-returned {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .order-actions {
+            margin-bottom: 20px;
+        }
+
+        .order-actions .btn {
+            margin-right: 10px;
+        }
+
+        .order-products {
+            margin-top: 20px;
+        }
+
+        .order-products .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .order-products .card-img-top {
+            border-radius: 10px 10px 0 0;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .order-products .card-body {
+            padding: 15px;
+        }
+
+        .order-products .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .order-products .card-text {
+            font-size: 16px;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .order-products .product-status {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+    .badge-pending { background-color: #6c757d; color: white; }  /* Pending */
+    .badge-processing { background-color: #007bff; color: white; }  /* Processing */
+    .badge-shipped { background-color: #6f42c1; color: white; }  /* Shipped */
+    .badge-delivered { background-color: #28a745; color: white; }  /* Delivered */
+    .badge-cancelled { background-color: #dc3545; color: white; }  /* Cancelled */
+    .badge-return-requested { background-color: #fd7e14; color: white; }  /* Return Requested */
+    .badge-returned { background-color: #ffc107; color: black; }  /* Returned */
+    </style>
+</head>
+<body>
+    <%- include('./userPartials/header') %> 
+
+    <div class="container profile-container">
+        <div class="row">
+            <!-- Sidebar -->
+             <div class="col-lg-3 col-md-4">
+                <div class="profile-sidebar">
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            <img src="<%= user.image %>" alt="<%= user.fullName %>" class="img-fluid">
+                            <a href="/profile/edit" class="edit-avatar">
+                                <i class="fas fa-camera"></i>
+                            </a>
+                        </div>
+                        <h4 class="mt-3 mb-1"><%= user.fullName %></h4>
+                        <p class="mb-0"><%= user.email %></p>
+                    </div>
+                    
+                    <ul class="nav flex-column nav-menu">
+                        <li class="nav-item">
+                            <a class="nav-link " href="/profile">
+                                <i class="fas fa-user"></i> Account Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/profile/my-orders">
+                                <i class="fas fa-shopping-bag"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile/addresses">
+                                <i class="fas fa-map-marker-alt"></i> Manage Addresses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile/wallet">
+                                <i class="fas fa-wallet"></i> Wallet
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile/coupons">
+                                <i class="fas fa-ticket-alt"></i> Coupons
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="/profile/wishlist">
+                                <i class="fas fa-heart"></i> Wishlist
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- <div class="container my-4">
+                <div class="row"> -->
+                    <!-- Sidebar -->
+                    <!-- <div class="col-lg-3 col-md-4">
+                        <div class="list-group">
+                            <a href="/orders" class="list-group-item list-group-item-action">Back to Orders</a>
+                        </div>
+                    </div> -->
+            
+                    <!-- Order Details Content -->
+                    <div class="col-lg-9 col-md-8">
+                        <div class="content-card">
+                            <h2>
+                                <i class="fas fa-shopping-bag me-2"></i>
+                                Order Details - <%= order.orderId %>
+                            </h2>
+            
+                            <!-- Order Status -->
+                            <div class="order-status my-3">
+                                <h5>Order Status: 
+                                    <span class="badge <%= order.orderStatus === 'Pending' ? 'badge-pending' : 
+                                                          order.orderStatus === 'Processing' ? 'badge-processing' : 
+                                                          order.orderStatus === 'Shipped' ? 'badge-shipped' : 
+                                                          order.orderStatus === 'Delivered' ? 'badge-delivered' : 
+                                                          order.orderStatus === 'Cancelled' ? 'badge-cancelled' : 
+                                                          order.orderStatus === 'Return Request' ? 'badge-return-requested' : 
+                                                          'badge-returned' %>">
+                                        <%= order.orderStatus %>
+                                    </span>
+                                </h5>
+            
+                                <% if (order.orderStatus === 'Pending' || order.orderStatus === 'Processing' || order.orderStatus === 'Shipped') { %>
+                                    <a href="/order/cancel/<%= order._id %>" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-times-circle me-1"></i> Cancel Order
+                                    </a>
+                                <% } %>
+            
+                                <% if (order.orderStatus === 'Delivered') { %>
+                                    <a href="/order/return/<%= order._id %>" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-undo-alt me-1"></i> Request Return
+                                    </a>
+                                <% } %>
+                            </div>
+            
+                            <!-- Order Details -->
+                            <div class="order-info mb-4">
+                                <h5>Order Information:</h5>
+                                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+                                <p><strong>Total Amount:</strong> ₹<%= order.totalAmount.toFixed(2) %></p>
+                                <% if (order.expectedDelivery) { %>
+                                    <p><strong>Expected Delivery:</strong> <%= new Date(order.expectedDelivery).toDateString() %></p>
+                                <% } %>
+                                <% if (order.invoiceUrl) { %>
+                                    <a href="<%= order.invoiceUrl %>" class="btn btn-info btn-sm" target="_blank">
+                                        <i class="fas fa-file-invoice"></i> Download Invoice
+                                    </a>
+                                <% } %>
+                            </div>
+            
+                            <!-- Shipping Address -->
+                            <div class="order-address mb-4">
+                                <h5>Shipping Address:</h5>
+                                <p><strong>Name:</strong> <%= order.address.name %></p>
+                                <p><strong>Address:</strong> <%= order.address.hName %>,<%= order.address.street %>,<%= order.address.city %>, <%= order.address.state %>, <%= order.address.zip %></p>
+                                <p><strong>Phone:</strong> <%= order.address.mobile_number %></p>
+                            </div>
+            
+                            <!-- Order Products -->
+                            <div class="order-products">
+                                <h5>Ordered Items:</h5>
+                                <div class="row">
+                                    <% order.items.forEach(item => { %>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="card h-100">
+                                                <img src="<%= item.product.images[0] %>" class="card-img-top" alt="<%= item.product.name %>">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h5 class="card-title"><%= item.product.name %></h5>
+                                                    <p class="card-text">Price: ₹<%= item.finalPrice.toFixed(2) %></p>
+                                                    <p class="card-text">Quantity: <%= item.quantity %></p>                                                        
+                            
+                                                    <p class="product-status">
+                                                        Status: 
+                                                        <span class="badge <%= item.status === 'Pending' ? 'badge-pending' : 
+                                                                              item.status === 'Processing' ? 'badge-processing' : 
+                                                                              item.status === 'Shipped' ? 'badge-shipped' : 
+                                                                              item.status === 'Delivered' ? 'badge-delivered' : 
+                                                                              item.status === 'Cancelled' ? 'badge-cancelled' : 
+                                                                              item.status === 'Return Requested' ? 'badge-return-requested' : 
+                                                                              'badge-returned' %>">
+                                                            <%= item.status %>
+                                                        </span>
+                                                    </p>
+                            
+                                                    <!-- Product Level Actions -->
+                                                    <div class="mt-auto">
+                                                        <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
+                                                            <a href="/order/cancel-item/<%= order._id %>/<%= item._id %>" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-times-circle me-1"></i> Cancel Item
+                                                            </a>
+                                                        <% } %>
+                            
+                                                        <% if (item.status === 'Delivered') { %>
+                                                            <a href="/order/return-item/<%= order._id %>/<%= item._id %>" class="btn btn-warning btn-sm">
+                                                                <i class="fas fa-undo-alt me-1"></i> Return Item
+                                                            </a>
+                                                        <% } %>
+                                                    </div>
+                            
+                                                    <div class="mt-auto">
+                                                        <% if (item.status === 'Delivered') { %>
+                                                            <a href="/product/review/<%= item.product._id %>" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-star"></i> Write a Review
+                                                            </a>
+                                                        <% } %>
+                                                    </div>
+                            
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    <% }); %> <!-- 🚀 Correctly closing the forEach loop here -->
+                                </div>
+                            </div>
+                            <!-- <div class="order-products">
+                                <h5>Ordered Items:</h5>
+                                <div class="row">
+                                    <% order.items.forEach(item => { %>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="card h-100">
+                                                <img src="<%= item.product.images[0] %>" class="card-img-top" alt="<%= item.product.name %>">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h5 class="card-title"><%= item.product.name %></h5>
+                                                    <p class="card-text">Price: ₹<%= item.finalPrice.toFixed(2) %></p>
+                                                    <p class="card-text">Quantity: <%= item.quantity %></p>                                                           
+                                                    
+                                                         <div class="mt-auto">
+                                                        <% if (order.orderStatus === 'Delivered') { %>
+                                                            <a href="/product/review/<%= item.product._id %>" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-star"></i> Write a Review
+                                                            </a>
+                                                        <% } %>
+                                                        <% }); %> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                    
+                                </div>
+                            </div> -->
+
+                        </div>
+                    </div>
+                <!-- </div>
+            </div> -->
+             
+           
+        </div>
+    </div>
+
+    <%- include('./userPartials/footer') %> 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

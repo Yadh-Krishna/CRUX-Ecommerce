@@ -14,6 +14,7 @@ const AddressSchema = new mongoose.Schema({
       enum: ["Home", "Work", "Other"], 
       default: "Home" 
   },
+    isDeleted: { type: Boolean, default: false }, 
     isDefault:{type:Boolean,default:false},
      mobile_number: { type: String, required: true },
      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }

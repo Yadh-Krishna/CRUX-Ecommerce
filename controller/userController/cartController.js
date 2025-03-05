@@ -5,6 +5,7 @@ const statusCodes=require('../../utils/statusCodes');
 const errorMessages=require('../../utils/errorMessages');
 const crypto = require("crypto");
 require("dotenv").config();
+const Wishlist=require('../../models/wishlistModel');
 
 const sendOTP =require('../../utils/sendOTP'); 
 const Product=require('../../models/productModel')
@@ -94,7 +95,7 @@ const addToCart = async (req, res) => {
         const product = await Product.findById(productId);
         if (!product || product.stock === 0) {
             return res.status(400).json({ success: false, message: "Product is out of stock" });
-        }
+        }        
 
         //  Check if user already has a cart
         let cart = await Cart.findOne({ user: userId }).populate('items.product');
@@ -103,8 +104,7 @@ const addToCart = async (req, res) => {
             // If no cart exists, create a new one
             cart = new Cart({ user: userId, items: [] });
         }
-
-        //  Check if product is already in cart
+        
         const existingItem = cart.items.find(item => item.product.id.toString() === productId);
 
         if (existingItem) {
@@ -116,12 +116,22 @@ const addToCart = async (req, res) => {
                 return res.status(400).json({ success: false, message: "Only 10 quantities can be added per product" });
             }
             existingItem.quantity += quantity;
-        } else {
-            // Otherwise, add new product to cart
+        } else {            
             cart.items.push({ product: productId, quantity });
         }
 
         await cart.save();
+
+        const wishlist=await Wishlist.findOne({userId});
+        if(wishlist){
+        let index= wishlist.products.findIndex(p=>p.productId.toString()===productId.toString());
+
+        if(index!==-1){ 
+            wishlist.products.splice(index,1);
+            await wishlist.save();
+        }
+        }
+
         return res.status(200).json({ success: true, message: "Product added to cart" });
 
     } catch (error) {

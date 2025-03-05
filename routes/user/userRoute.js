@@ -2,6 +2,7 @@ const express= require('express');
 const router= express.Router();         
 const bcrypt=require('bcrypt');
 const nocache = require('nocache');
+const upload=require('../../middleware/upload')
 
 const userAuthenticate=require('../../middleware/authenticateUser')
 
@@ -29,8 +30,7 @@ router.patch("/verify-otp",userController.resetPassOtp);
 router.patch("/reset-password",userController.resetPassword);
 
 
-//Product 
-// router.get('/dashboard',userAuthenticate,userProductController.loadHome);//home page
+//Product
 
 router.get('/products/:id',userAuthenticate.authenticateUser,userProductController.productDetails);//product details
 router.get('/product-list',userAuthenticate.authenticateUser,userProductController.productList);//product listing

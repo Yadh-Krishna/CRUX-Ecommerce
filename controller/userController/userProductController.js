@@ -3,6 +3,7 @@ const User=require('../../models/userModel');
 const jwt = require("jsonwebtoken");
 const statusCodes=require("../../utils/statusCodes");
 const errorMessages=require('../../utils/errorMessages')
+const Wishlist=require('../../models/wishlistModel')
 
 const Category=require('../../models/categoryModal')
 const Brand=require('../../models/brandModel')
@@ -55,8 +56,19 @@ const productDetails = async (req, res) => {
             const reviews = await Review.find({ product: product._id })
                 .populate("user", "fullName")
                 .sort({ createdAt: -1 });
+            
+                let wishlistProductIds = null;
+                if (user) {
+                     const wishlist = await Wishlist.findOne({ userId: user._id });
+                    
+                    // Explicit null or empty array check
+                    if (wishlist && wishlist.products && wishlist.products.length > 0) {
+                        wishlistProductIds = wishlist.products.map(item => item.productId.toString());
+                    }
+                }
            
             res.render("products", { 
+                userWishlist:wishlistProductIds,
                 product, 
                 reviews, 
                 user, 
@@ -85,25 +97,33 @@ const productDetails = async (req, res) => {
 const loadHome=async(req,res)=>{
 
     try {                         
-        const user = req.user;
-
-        // 1️⃣ Get valid categories and brands (not blocked or deleted)
+        const user = req.user;     
         const validCategories = await Category.find({ isDeleted: false }).select("_id");
         const validBrands = await Brand.find({ isDeleted: false }).select("_id image name");
 
         const validCategoryIds = validCategories.map(cat => cat._id);
-        const validBrandIds = validBrands.map(brand => brand._id);
-        console.log(validBrandIds)
+        const validBrandIds = validBrands.map(brand => brand._id);        
 
-        // 2️⃣ Get only products with valid category & brand
+        // Get only products with valid category & brand
         const products = await Product.find({
             isDeleted: false,
             category: { $in: validCategoryIds },
             brands: { $in: validBrandIds }
         });
+      
+        let wishlistProductIds = null;
+        if (user) {
+             const wishlist = await Wishlist.findOne({ userId: user._id });
+            
+            // Explicit null or empty array check
+            if (wishlist && wishlist.products && wishlist.products.length > 0) {
+                wishlistProductIds = wishlist.products.map(item => item.productId.toString());
+            }
+        }
 
-        // 3️⃣ Render the home page
+        // Render the home page
         res.render('homePage', { 
+            userWishlist: wishlistProductIds,
             products, 
             brands: validBrands, 
             category: validCategories, 
@@ -180,9 +200,21 @@ const productList=async(req,res)=>{
        
         const brands = await Brand.find({isDeleted:false}, "name image _id");
         const categories = await Category.find({isDeleted:false}, "name _id");
+        
+        let wishlistProductIds = null;
+        if (user) {
+             const wishlist = await Wishlist.findOne({ userId: user._id });
+            
+            // Explicit null or empty array check
+            if (wishlist && wishlist.products && wishlist.products.length > 0) {
+                wishlistProductIds = wishlist.products.map(item => item.productId.toString());
+            }
+        }
+
 
         // Render updated product list
         res.render("product-list", { 
+            userWishlist:wishlistProductIds,
             products, 
             currentPage, 
             totalPages, 
@@ -203,6 +235,8 @@ const productList=async(req,res)=>{
     }  
       
 }
+
+
 
 module.exports={
     productDetails,

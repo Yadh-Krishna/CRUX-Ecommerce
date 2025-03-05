@@ -109,8 +109,262 @@
 			position: absolute;
 			width: 1000px; /* Large image size for zoom */
 			height: auto;
-		}		
+		}	
+		
+		/* Product Details Page - Aligned with Home Page */
+	.product-desc h2 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.5rem;
+		color: var(--primary-color);
+		margin-bottom: 20px;
+	}
 
+	.product-desc p {
+		font-size: 1.1rem;
+		line-height: 1.8;
+		color: var(--secondary-color);
+		margin-bottom: 20px;
+	}
+
+	.price {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--accent-color);
+		margin-bottom: 20px;
+	}
+
+	.price .text-muted {
+		font-size: 1.2rem;
+		color: #999;
+		margin-left: 10px;
+	}
+
+	.price .text-success {
+		font-size: 1.2rem;
+		margin-left: 10px;
+	}
+
+	.rating {
+		margin-bottom: 20px;
+	}
+
+	.rating .fa-star {
+		font-size: 1.2rem;
+	}
+
+	.stock {
+		font-size: 1.2rem;
+		margin-bottom: 20px;
+	}
+
+	.stock .text-success,
+	.stock .text-warning,
+	.stock .text-danger {
+		font-weight: 600;
+	}
+
+	.btn-primary {
+		background-color: var(--accent-color);
+		border: none;
+		padding: 10px 25px;
+		font-weight: 600;
+		border-radius: 30px;
+		transition: all 0.3s;
+	}
+
+	.btn-primary:hover {
+		background-color: var(--primary-color);
+		color: #fff;
+		transform: translateY(-3px);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Image Gallery */
+	.image-container {
+		border-radius: 10px;
+		overflow: hidden;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	}
+
+	.thumbnail-images img {
+		border-radius: 10px;
+		transition: all 0.3s;
+	}
+
+	.thumbnail-images img:hover {
+		transform: scale(1.1);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+	}
+
+	/* Tabs Section */
+	.nav-tabs .nav-link {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		border: none;
+		padding: 10px 20px;
+		transition: all 0.3s;
+	}
+
+	.nav-tabs .nav-link.active {
+		color: var(--accent-color);
+		border-bottom: 2px solid var(--accent-color);
+	}
+
+	.nav-tabs .nav-link:hover {
+		color: var(--accent-color);
+	}
+
+	.tab-content {
+		padding: 20px;
+		border-radius: 10px;
+		background-color: var(--light-gray);
+		margin-top: 20px;
+	}
+
+	/* Similar Products Section */
+	.similar-products h3 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2rem;
+		color: var(--primary-color);
+		margin-bottom: 30px;
+	}
+
+	.product-list {
+		display: flex;
+		overflow-x: auto;
+		scroll-behavior: smooth;
+		padding-bottom: 10px;
+	}
+
+	.product-list .card {
+		min-width: 200px;
+		max-width: 220px;
+		border: none;
+		border-radius: 10px;
+		overflow: hidden;
+		transition: all 0.3s;
+		margin-right: 15px;
+	}
+
+	.product-list .card:hover {
+		transform: translateY(-10px);
+		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+	}
+
+	.product-list .card img {
+		height: 200px;
+		object-fit: cover;
+	}
+
+	.product-list .card-body {
+		padding: 15px;
+	}
+
+	.product-list .card-title {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		margin-bottom: 10px;
+	}
+
+	.product-list .card-text {
+		font-size: 1rem;
+		font-weight: 700;
+		color: var(--accent-color);
+	}
+
+	.product-list .text-muted {
+		font-size: 0.9rem;
+		color: #999;
+	}
+
+	.product-list .text-success {
+		font-size: 0.9rem;
+	}
+
+	/* Scroll Buttons */
+	.scroll-btn {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		background: rgb(80, 79, 79); 
+		border: none;
+		cursor: pointer;
+		font-size: 24px;
+		padding: 10px;
+		border-radius: 50%;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		z-index: 10;
+		color: #fff;
+	}
+
+	.scroll-btn:hover {
+		background: var(--primary-color);
+	}
+
+	.left {
+		left: -20px;
+	}
+
+	.right {
+		right: -20px;
+	}
+
+	/* Responsive Adjustments */
+	@media (max-width: 767px) {
+		.product-desc h2 {
+			font-size: 2rem;
+		}
+
+		.price {
+			font-size: 1.5rem;
+		}
+
+		.thumbnail-images img {
+			width: 60px;
+			height: 60px;
+		}
+
+		.product-list .card {
+			min-width: 150px;
+			max-width: 160px;
+		}
+
+		.product-list .card img {
+			height: 150px;
+		}
+	}
+	/* Ensure buttons have the same height */
+	.product-actions .btn {
+		height: 40px; /* Adjust height as needed */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Style for the wishlist button */
+	.wishlist-toggle {
+		width: 40px; /* Make it square */
+		background-color: #f8f9fa; /* Light background */
+		border: 1px solid #ddd; /* Add a border */
+		color: #0c0c0c; /* Red color for the heart icon */
+	}
+
+	.wishlist-toggle:hover {
+		background-color: #e9ecef; /* Slightly darker on hover */
+	}
+
+	/* Style for the Add to Cart button */
+	.add-to-cart {
+		background-color: #434444; /* Blue background */
+		color: #fff; /* White text */
+		border: none; /* Remove default border */
+	}
+
+	.add-to-cart:hover {
+		background-color: #7f7f80; /* Darker blue on hover */
+	}
 		</style>
 	</head>
 	<body>
@@ -118,11 +372,7 @@
 	<div class="colorlib-loader"></div>
 
 	<div id="page">
-		<%- include('./userPartials/header') %>
-
-           
-
-	
+		<%- include('./userPartials/header') %>    
 
 		<%- include('./userPartials/breadcrumbs') %>
 
@@ -132,160 +382,167 @@
             </div>
         <% } %>
 
-		          <div class="colorlib-product" style="padding:0;">
-			     <!-- Product Detail Section -->
-					<div class="container mt-4">
-						<div class="row">
-							<!-- Left: Image Gallery -->
-							<div class="col-md-6 position-relative">
-								<% if (product && product.images && product.images.length > 0) { %>		
-									<div class="image-container">
-										<img id="mainImage" src="<%= product.images[0] %>" class="img-fluid rounded shadow" alt="<%= product.name %>">
-										
-										<!-- Zoom Lens -->
-										<div class="zoom-lens" id="zoomLens"></div>
-									</div>
-
-									 
-									
-										<div class="thumbnail-images d-flex justify-content-center mt-3">
-											<% product.images.forEach((image, index) => { %>
-												<img src="<%= image %>" class="img-thumbnail mx-1" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage('<%= image %>')">
-											<% }) %>
-										</div>									
-								<% } else { %>
-									<div class="alert alert-warning text-center">No images available for this product.</div>
-								<% } %>
-							</div>							
-							
-
-							<!-- Right: Product Details -->
-							<div class="col-md-6">
-									<!-- Hidden Zoom Preview -->
-								<div class="zoom-preview" id="zoomPreview">
-									<img id="zoomImage" src="<%= product.images[0] %>">
-								</div>
-								<% if (product) { %>
-								<div class="product-desc">
-									<h2><%= product.name %></h2>
-
-									<p><%= product.description %></p>
-									<p class="price fs-1">
-										<span>₹<%= product.finalPrice %></span>
-										<% if (product.discount) { %>
-											<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
-										<% } %>
-										<span class="text-success "><%= product.discount %>% Off</span>
-									</p>
-									<p class="rating">
-										<% for (let i = 1; i <= 5; i++) { %>
-											<i class="fa <%= i <= product.ratings ? 'fa-star text-warning' : 'fa-star text-muted' %>"></i>
-										<% } %>
-										<span>(<%= product.ratings %> Ratings)</span>
-									</p>
-									<div class="stock fs-4">
-										<% if(product.stock > 5) { %>
-										  <span class="text-success">In Stock  <%=product.stock%> left</span>
-										<% } else if (product.stock === 0) { %>
-										  <span class="text-danger">Out of Stock</span>
-										<% } else { %>
-										  <span class="text-warning">Only <%= product.stock %> Left</span>
-										<% } %>
-										</div>			
-
-									<a href="#" class="btn btn-primary mt-3 add-to-cart" data-id="<%= product._id %>"><i class="fa fa-shopping-cart"></i>
-										<!-- <%if(product.stock===0){%>disabled<%}%> -->
-										Add to Cart</a>	
-								</div>
-								<% } else { %>
-									<div class="alert alert-danger text-center">Product not found or is currently inactive.</div>
-								<% } %>
+		<div class="colorlib-product" style="padding:0;">
+			<!-- Product Detail Section -->
+			<div class="container mt-4">
+				<div class="row">
+					<!-- Left: Image Gallery -->
+					<div class="col-md-6 position-relative">
+						<% if (product && product.images && product.images.length > 0) { %>
+							<div class="image-container">
+								<img id="mainImage" src="<%= product.images[0] %>" class="img-fluid rounded shadow" alt="<%= product.name %>">
+								<!-- Zoom Lens -->
+								<div class="zoom-lens" id="zoomLens"></div>
 							</div>
-						</div>
-					</div>
-				</div>
-
-
-			  <!-- Product Tabs -->
-			  <div class="container mt-5">
-				<ul class="nav nav-tabs" id="productTabs">
-					<li class="nav-item">
-						<a class="nav-link active" data-bs-toggle="tab" href="#brand">Brand</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" data-bs-toggle="tab" href="#description">Description</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" data-bs-toggle="tab" href="#review">Reviews</a>
-					</li>
-				</ul>
-		
-				<div class="tab-content p-4 border bg-light">
-					<div class="tab-pane fade show active" id="brand">
-						<div class="d-flex align-items-center mb-3">
-							<img src="<%=brand.image%>" alt="<%=brand.name%>" class="rounded-circle" height="60">
-							<h4 class="ms-3 mb-0"><%=brand.name%></h4>
-						</div>
-						<p><%= brand.description %></p>
-					</div>
-					<div class="tab-pane fade" id="description">
-						<p><%= product.description %></p>
-					</div>
-					<div class="tab-pane fade" id="review">
-						<% if (reviews && reviews.length > 0) { %>
-							<% reviews.forEach(review => { %>
-								<div class="review mb-3">
-									<strong><%= review.user.fullName %></strong>
-									<span class="text-muted float-end"><%= new Date(review.createdAt).toLocaleDateString() %></span>
-									<div class="text-warning">
-										<% for (let i = 1; i <= 5; i++) { %>
-											<i class="fa <%= i <= review.rating ? 'fa-star' : 'fa-star text-muted' %>"></i>
-										<% } %>
-									</div>
-									<p><%= review.comment %></p>
-								</div>
-							<% }) %>
+							<div class="thumbnail-images d-flex justify-content-center mt-3">
+								<% product.images.forEach((image, index) => { %>
+									<img src="<%= image %>" class="img-thumbnail mx-1" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage('<%= image %>')">
+								<% }) %>
+							</div>
 						<% } else { %>
-							<p>No reviews yet. Be the first to review this product.</p>
+							<div class="alert alert-warning text-center">No images available for this product.</div>
+						<% } %>
+					</div>
+		
+					<!-- Right: Product Details -->
+					<div class="col-md-6">
+						<!-- Hidden Zoom Preview -->
+						<div class="zoom-preview" id="zoomPreview">
+							<img id="zoomImage" src="<%= product.images[0] %>">
+						</div>
+						<% if (product) { %>
+							<div class="product-desc">
+								<h2><%= product.name %></h2>
+								<p><%= product.description %></p>
+								<p class="price">
+									<span>₹<%= product.finalPrice %></span>
+									<% if (product.discount) { %>
+										<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
+										<span class="text-success"><%= product.discount %>% Off</span>
+									<% } %>
+								</p>
+								<p class="rating">
+									<% for (let i = 1; i <= 5; i++) { %>
+										<i class="fa <%= i <= product.ratings ? 'fa-star text-warning' : 'fa-star text-muted' %>"></i>
+									<% } %>
+									<span>(<%= product.ratings %> Ratings)</span>
+								</p>
+								<div class="stock">
+									<% if(product.stock > 5) { %>
+										<span class="text-success">In Stock (<%= product.stock %> left)</span>
+									<% } else if (product.stock === 0) { %>
+										<span class="text-danger">Out of Stock</span>
+									<% } else { %>
+										<span class="text-warning">Only <%= product.stock %> Left</span>
+									<% } %>
+								</div>
+								<div class="product-actions d-flex justify-content-start mt-2">
+									<!-- Wishlist Button -->
+									<% if (user) { %> <!-- Show wishlist only if user is logged in -->
+										<button class="btn btn-light wishlist-toggle" data-product-id="<%= product._id %>">
+											<i class="<%= (userWishlist && userWishlist.some(p => p.toString() === product._id.toString())) ? 'fas' : 'far' %> fa-heart"></i>
+										</button>
+									<% } %>
+									<!-- Add to Cart Button -->
+									<button class="btn btn-secondary rounded-pill add-to-cart" data-id="<%= product._id %>">
+										<i class="fas fa-shopping-cart"></i> Add to Cart
+									</button>
+								</div>
+							
+							</div>
+						<% } else { %>
+							<div class="alert alert-danger text-center">Product not found or is currently inactive.</div>
 						<% } %>
 					</div>
 				</div>
 			</div>
+		</div>
+		
+		<!-- Product Tabs -->
+		<div class="container mt-5">
+			<ul class="nav nav-tabs" id="productTabs">
+				<li class="nav-item">
+					<a class="nav-link active" data-bs-toggle="tab" href="#brand">Brand</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bs-toggle="tab" href="#description">Description</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bs-toggle="tab" href="#review">Reviews</a>
+				</li>
+			</ul>
+			<div class="tab-content p-4 border bg-light">
+				<div class="tab-pane fade show active" id="brand">
+					<div class="d-flex align-items-center mb-3">
+						<img src="<%= brand.image %>" alt="<%= brand.name %>" class="rounded-circle" height="60">
+						<h4 class="ms-3 mb-0"><%= brand.name %></h4>
+					</div>
+					<p><%= brand.description %></p>
 				</div>
-				<!-- Similar Products Section -->
-					<div class="container mt-5 mb-5">
-						<h3 class="mb-5">Similar Products</h3>
-						<%if(relatedProducts.length>0){%>
-						<div class="position-relative">
-							<!-- Scroll Buttons -->
-							<button class="scroll-btn left" onclick="scrollProducts(-1)">&#10094;</button>
-							<button class="scroll-btn right" onclick="scrollProducts(1)">&#10095;</button>
-
-							<div class="product-list d-flex overflow-auto">
-								<% relatedProducts.forEach(product => { %>
-									<div class="card mx-2" style="min-width: 180px; max-width: 200px;">
-										<div class="position-relative">
-											<a href="/products/<%= product.slug%>"><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>"></a>
-											<button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
-												<i class="fa fa-heart"></i>
-											</button>
-										</div>
-										<div class="card-body p-2">
-											<a class="nav-link" href="/products/<%= product.slug%>"><p class="card-title text-truncate mb-1"><%= product.name %></p></a>
-											<p class="card-text mb-1">
-												<strong>₹<%= product.finalPrice %></strong>
-												<% if (product.discount) { %>
-													<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
-													<span class="text-success"> <%= product.discount %>% off</span>
-												<% } %>
-											</p>
-										</div>
-									</div>
-								<% }) %>
-								<%}else{%>
-									<div class="col-md-12 text-center">No Products Available</div>
+				<div class="tab-pane fade" id="description">
+					<p><%= product.description %></p>
+				</div>
+				<div class="tab-pane fade" id="review">
+					<% if (reviews && reviews.length > 0) { %>
+						<% reviews.forEach(review => { %>
+							<div class="review mb-3">
+								<strong><%= review.user.fullName %></strong>
+								<span class="text-muted float-end"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+								<div class="text-warning">
+									<% for (let i = 1; i <= 5; i++) { %>
+										<i class="fa <%= i <= review.rating ? 'fa-star' : 'fa-star text-muted' %>"></i>
 									<% } %>
+								</div>
+								<p><%= review.comment %></p>
 							</div>
+						<% }) %>
+					<% } else { %>
+						<p>No reviews yet. Be the first to review this product.</p>
+					<% } %>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Similar Products Section -->
+		<div class="container mt-5 mb-5">
+			<h3 class="similar-products">Similar Products</h3>
+			<% if (relatedProducts.length > 0) { %>
+				<div class="position-relative">
+					<!-- Scroll Buttons -->
+					<button class="scroll-btn left" onclick="scrollProducts(-1)">&#10094;</button>
+					<button class="scroll-btn right" onclick="scrollProducts(1)">&#10095;</button>
+					<div class="product-list">
+						<% relatedProducts.forEach(product => { %>
+							<div class="card">
+								<div class="position-relative">
+									<a href="/products/<%= product.slug %>"><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>"></a>
+									<% if (user) { %>
+										<button class="btn btn-light wishlist-toggle position-absolute top-0 end-0" data-product-id="<%= product._id %>">
+											<i class="<%= (userWishlist && userWishlist.some(p => p.toString() === product._id.toString())) ? 'fas' : 'far' %> fa-heart"></i>
+										</button>
+									<!-- <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
+										<i class="fa fa-heart"></i>
+									</button> -->
+									<% } %>
+								</div>
+								<div class="card-body">
+									<a class="nav-link" href="/products/<%= product.slug %>"><p class="card-title"><%= product.name %></p></a>
+									<p class="card-text">
+										<strong>₹<%= product.finalPrice %></strong>
+										<% if (product.discount) { %>
+											<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
+											<span class="text-success"><%= product.discount %>% off</span>
+										<% } %>
+									</p>
+								</div>
+							</div>
+						<% }) %>
+					</div>
+				</div>
+			<% } else { %>
+				<div class="col-md-12 text-center">No Products Available</div>
+			<% } %>
+		</div>
 						</div>
 					</div>
 			</div>
@@ -441,6 +698,46 @@
 				}
 			});
 		}
+
+		document.querySelectorAll('.wishlist-toggle').forEach(button=>{
+			button.addEventListener('click',async function(){
+
+				const productId = this.getAttribute('data-product-id');
+				try{
+					const response=await fetch(`/profile/wishlist/add`,{
+						method:"POST",
+						headers:{"Content-Type":"application/json"},
+						body:JSON.stringify({productId}),
+					});
+
+					const result=await response.json();
+					if(result.success){
+
+						Swal.fire({
+							icon:"success",
+							title:"Added to wishlist",
+							text:result.message,
+							confirmButtonText:"OK"
+						}).then(()=>location.reload())
+					}else{	
+							Swal.fire({
+							icon:"error",
+							title:"Error",
+							text:result.message,
+							confirmButtonText:"OK"
+						})
+						}
+					}catch(err){
+						console.error(err);
+						Swal.fire({
+							icon:"error",
+							title:"Error!!",
+							text:"Something went Wrong!!",
+							confirmButtonText:"OK"
+						})
+					}
+				})
+			})
 	});
 	
 		

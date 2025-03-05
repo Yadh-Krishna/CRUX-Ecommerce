@@ -5,7 +5,7 @@ const session = require("express-session");
 const connectDB=require('./config/db'); 
 const path=require('path');
 const flash = require("connect-flash");
-const bcrypt=require('bcryptjs');
+const bcrypt=require('bcrypt');
 const nocache=require('nocache');
 const adminRoutes=require('./routes/admin/adminRoute');
 const userRoutes=require('./routes/user/userRoute');
@@ -14,6 +14,7 @@ const dotenv=require('dotenv');
 const cookieParser = require('cookie-parser');
 const passport = require('./config/passport')
 const jwt= require('jsonwebtoken');
+const upload=require('./middleware/upload')
 
 const googleAuth=require('./controller/authController')
 

@@ -61,7 +61,7 @@
             req.user = user;    
             next();
         } catch (err) {
-            console.error("BlockCheck Error:", err.message);
+            // console.error("BlockCheck Error:", err.message);
             res.clearCookie("userToken");
             req.flash("error", "Session expired. Please log in again.");
             return res.redirect("/login");
@@ -71,7 +71,7 @@
     const isAuthenticated = (req, res, next) => {    
         if (!req.user) {                
             if (req.xhr || req.headers.accept.includes("json")) {                
-                // API request (like fetch)
+               
                 return res.status(401).json({ success: false, message: "Please log in to continue." });
             }   
             return res.redirect("/login"); // Redirect guest users to login

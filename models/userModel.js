@@ -6,6 +6,15 @@ const userSchema = new mongoose.Schema({
   mobile: { type: String, required: function() { return !this.googleId; } },
   password: { type: String, required: function() { return !this.googleId;}},
   isActive: { type: Boolean, default: true },
+  dateOfBirth: {
+    type: Date,
+    required: false  // Optional field, can be updated later
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other'],
+    required: false  // Optional field, can be updated later
+  },
   otp: { type: String },
   googleId: { type: String, unique: true, sparse: true }, // Allow users without Google OAuth
   isVerified: { type: Boolean, default: false },

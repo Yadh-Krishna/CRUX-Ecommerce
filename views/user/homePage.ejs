@@ -1,260 +1,796 @@
 <!DOCTYPE HTML>
-<html>
-	<head>
-	<title>CRUX | Home</title>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+<html lang="en">
+<head>
+    <title>CRUX | Home</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Existing CSS -->
+    <link rel="stylesheet" href="/front/css/animate.css">
+    <link rel="stylesheet" href="/front/css/icomoon.css">
+    <link rel="stylesheet" href="/front/css/ionicons.min.css">
+    <link rel="stylesheet" href="/front/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/front/css/magnific-popup.css">
+    <link rel="stylesheet" href="/front/css/flexslider.css">
+    <link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+    <link rel="stylesheet" href="/front/css/style.css">
+    
+    <style>
+        :root {
+            --primary-color: #333;
+            --secondary-color: #555;
+            --accent-color: #d4af37;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #333333;
+            --footer-gray: #2a2a2a;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            background-color: #fff;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Header styling */
+        /* .crux-header {
+            background-color: var(--dark-gray);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+        } */
+        
+        /* .crux-header .nav-link {
+            color: #fff;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 10px 15px;
+        } */
+        
+        .crux-header .nav-link:hover {
+            color: var(--accent-color);
+        }
+        
+        /* Hero slider fixes */
+        #colorlib-hero, .flexslider {
+            height: 700px;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .flexslider .slides {
+            height: 700px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .flexslider .slides li {
+            height: 700px;
+            position: relative;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+        
+        .flexslider .flex-control-nav {
+            bottom: 20px;
+            z-index: 100;
+            position: relative;
+        }
+        
+        .flexslider .flex-control-nav li a {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: none;
+            width: 12px;
+            height: 12px;
+        }
+        
+        .flexslider .flex-control-nav li a.flex-active {
+            background: var(--accent-color);
+        }
+        
+        .flexslider .flex-direction-nav a {
+            opacity: 1;
+            text-shadow: none;
+            color: rgba(255, 255, 255, 0.8);
+            height: 60px;
+            width: 60px;
+            margin: -30px 0 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 60px;
+        }
+        
+        .flexslider .flex-direction-nav a:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .flexslider .flex-direction-nav a:before {
+            font-family: 'icomoon';
+            /* speak: none; */
+            font-size: 30px;
+            line-height: 60px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .flexslider .flex-direction-nav a.flex-next:before {
+            content: '\e874';
+        }
+        
+        .flexslider .flex-direction-nav a.flex-prev:before {
+            content: '\e875';
+        }
+        
+        .slider-text {
+            display: table;
+            width: 100%;
+            height: 700px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .slider-text-inner {
+            display: table-cell;
+            vertical-align: middle;
+            height: 700px;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 3;
+        }
+        
+        .hero-text {
+            position: relative;
+            z-index: 10;
+            padding: 30px;
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .hero-text h1, .hero-text h2 {
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .hero-text .head-1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+        
+        .hero-text .head-2 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .hero-text .head-3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+        
+        .hero-text .category {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .btn-crux {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            font-weight: 600;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn-crux:hover {
+            background-color: #fff;
+            color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Intro section */
+        .intro-section {
+            padding: 60px 0;
+            background-color: var(--light-gray);
+        }
+        
+        .intro-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: var(--secondary-color);
+            font-style: italic;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* Collection section */
+        .collection-section {
+            padding: 60px 0;
+        }
+        
+        .collection-card {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .collection-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .collection-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        
+        .collection-card:hover .collection-img {
+            transform: scale(1.05);
+        }
+        
+        .collection-card:hover .collection-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
+        }
+        
+        .collection-title {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        
+        .collection-card:hover .collection-title {
+            transform: translateY(-10px);
+        }
+        
+        /* Product section */
+        .product-section {
+            padding: 60px 0;
+            background-color: #fff;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+        
+        .product-card {
+            border: 1px solid var(--medium-gray);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .product-img-container {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.1);
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-name {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .product-rating {
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-weight: 700;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        
+        /* Partners section */
+        .partners-section {
+            padding: 60px 0;
+            background-color: var(--light-gray);
+        }
+        
+        .partner-logo-container {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .partner-logo-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .partner-logo {
+            max-width: 100%;
+            max-height: 100px;
+            object-fit: contain;
+        }
+        
+        .partner-name {
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        /* Footer */
+        /* .crux-footer {
+            background-color: var(--footer-gray);
+            color: #fff;
+            padding: 60px 0 30px;
+        } */
+        
+        /* .footer-heading {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .footer-link {
+            color: #ccc;
+            transition: color 0.3s;
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+        } */
+        
+        .footer-link:hover {
+            color: var(--accent-color);
+        }
+        
+        .social-icons a {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            transition: color 0.3s;
+        }
+        
+        .social-icons a:hover {
+            color: var(--accent-color);
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            text-align: center;
+            color: #aaa;
+        }
+        
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-color);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            #colorlib-hero, .flexslider, .flexslider .slides, .flexslider .slides li, .slider-text, .slider-text-inner {
+                height: 600px;
+            }
+            
+            .hero-text .head-1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-text .head-2 {
+                font-size: 2rem;
+            }
+            
+            .hero-text .head-3 {
+                font-size: 1.5rem;
+            }
+            
+            .collection-card {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            #colorlib-hero, .flexslider, .flexslider .slides, .flexslider .slides li, .slider-text, .slider-text-inner {
+                height: 500px;
+            }
+            
+            .hero-text {
+                max-width: 90%;
+            }
+            
+            .hero-text .head-1 {
+                font-size: 2rem;
+            }
+            
+            .hero-text .head-2 {
+                font-size: 1.5rem;
+            }
+            
+            .hero-text .head-3 {
+                font-size: 1.2rem;
+            }
+            
+            .collection-card {
+                height: 300px;
+                margin-bottom: 20px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (using the existing partial but with new styling class) -->
+    <header class="crux-header">
+        <%- include('./userPartials/header') %>
+    </header>
+
+    <!-- Hero Slider Section - Using the original structure but with improved styling -->
+    <aside id="colorlib-hero">
+        <div class="flexslider">
+            <ul class="slides">
+                <li style="background-image: url(/logo/BlackMamba_Page_bk.jpg);">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                                <div class="slider-text-inner">
+                                    <div class="hero-text">
+                                        <h1 class="head-1">Men's</h1>
+                                        <h2 class="head-2">Chains & Rings</h2>
+                                        <h2 class="head-3">Collection</h2>
+                                        <p class="category"><span>Trending in <strong>CRUX</strong></span></p>
+                                        <p><a href="/product-list" class="btn btn-crux">Shop Collection</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li style="background-image: url(/logo/salty_banner.webp);">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                                <div class="slider-text-inner">
+                                    <div class="hero-text">
+                                        <h1 class="head-1">Huge</h1>
+                                        <h2 class="head-2">Sale</h2>
+                                        <h2 class="head-3"><strong class="font-weight-bold">50%</strong> Off</h2>
+                                        <p class="category"><span>Big sale</span></p>
+                                        <p><a href="/product-list" class="btn btn-crux">Shop Collection</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li style="background-image: url(/logo/giva_bg.webp);">
+                    <div class="overlay"></div>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                                <div class="slider-text-inner">
+                                    <div class="hero-text">
+                                        <h1 class="head-1">New</h1>
+                                        <h2 class="head-2">Arrival</h2>
+                                        <h2 class="head-3">up to <strong class="font-weight-bold">30%</strong> off</h2>
+                                        <p class="category"><span>New stylish collections</span></p>
+                                        <p><a href="/product-list" class="btn btn-crux">Shop Collection</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Intro Section -->
+    <section class="intro-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="intro-text">
+                        At CRUX, we believe that jewelry is more than just an accessory—it's an expression of who you are. Every piece in our collection is crafted with precision, using premium materials to ensure elegance, durability, and timeless appeal.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collection Section -->
+    <section class="collection-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="collection-card">
+                        <img src="/logo/bgforMen.webp" alt="Men's Collection" class="collection-img">
+                        <div class="collection-overlay">
+                            <h3 class="collection-title">Men's Collection</h3>
+                            <a href="/product-list?gender=Men" class="btn btn-crux">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="collection-card">
+                        <img src="/logo/women-collec.jpg" alt="Women's Collection" class="collection-img">
+                        <div class="collection-overlay">
+                            <h3 class="collection-title">Women's Collection</h3>
+                            <a href="/product-list?gender=Women" class="btn btn-crux">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Product Section -->
+<section class="product-section">
+    <div class="container">
+        <h2 class="section-title">Product List</h2>
+        <div class="row">
+            <% products.forEach(product => { %>
+                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <div class="product-card">
+                        <div class="product-img-container">
+                            <a href="/products/<%= product.slug %>">
+                                <img src="<%= product.images[1] %>" class="product-img" alt="<%= product.name %>">
+                                <% if (product.discount > 0) { %>
+                                    <span class="discount-badge"><%= product.discount %>% OFF</span>
+                                <% } %>
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">
+                                <a href="/products/<%= product.slug %>" class="text-decoration-none"><%= product.name %></a>
+                            </h3>
+                            <div class="product-rating">
+                                <span class="text-warning">
+                                    <% for (let i = 0; i < 5; i++) { %>
+                                        <%- i < product.rating ? "&#9733;" : "&#9734;" %>
+                                    <% } %>
+                                </span>
+                                <span class="ms-1"><%= product.ratings %></span>
+                            </div>
+                            <div class="product-price">
+                                <% if (product.discount > 0) { %>
+                                    <span class="original-price">₹<%= product.price.toFixed(2) %></span>
+                                <% } %>
+                                <span>₹<%= product.finalPrice.toFixed(2) %></span>
+                            </div>    
+							<div class="product-actions d-flex justify-content-center mt-2">
+								<% if (user) { %> <!-- Show wishlist only if user is logged in -->
+									<button class="btn btn-light wishlist-toggle" data-product-id="<%= product._id %>">
+										<i class="<%= (userWishlist && userWishlist.some(p => p.toString() === product._id.toString())) ? 'fas' : 'far' %> fa-heart"></i>
+									</button>
+								<% } %>
+							</div>           
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        <div class="text-center mt-5">
+            <a href="/product-list" class="btn btn-crux btn-lg">All Products</a>
+        </div>
+    </div>
+</section>    
+
+    <!-- Partners Section -->
+    <section class="partners-section">
+        <div class="container">
+            <h2 class="section-title">Trusted Partners</h2>
+            <div class="row">
+                <% brands.forEach(partner => { %>
+                    <div class="col-6 col-md-4 col-lg-2 mb-4">
+                        <div class="partner-logo-container">
+                            <img src="<%= partner.image %>" class="partner-logo" alt="<%= partner.name %>">
+                        </div>
+                        <p class="partner-name text-center"><%= partner.name %></p>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (using the existing partial but with new styling class) -->
+    <footer class="crux-footer">
+        <%- include('./userPartials/footer') %>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top js-gotop">
+        <i class="ion-ios-arrow-up"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/front/js/jquery.min.js"></script>
+    <script src="/front/js/popper.min.js"></script>
+    <script src="/front/js/bootstrap.min.js"></script>
+    <script src="/front/js/jquery.easing.1.3.js"></script>
+    <script src="/front/js/jquery.waypoints.min.js"></script>
+    <script src="/front/js/jquery.flexslider-min.js"></script>
+    <script src="/front/js/owl.carousel.min.js"></script>
+    <script src="/front/js/jquery.magnific-popup.min.js"></script>
+    <script src="/front/js/magnific-popup-options.js"></script>
+    <script src="/front/js/bootstrap-datepicker.js"></script>
+    <script src="/front/js/jquery.stellar.min.js"></script>
+    <script src="/front/js/main.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	    <script>
+		document.querySelectorAll('.wishlist-toggle').forEach(button=>{
+			button.addEventListener('click',async function(){
+
+				const productId = this.getAttribute('data-product-id');
+				try{
+					const response=await fetch(`/profile/wishlist/add`,{
+						method:"POST",
+						headers:{"Content-Type":"application/json"},
+						body:JSON.stringify({productId}),
+					});
+
+					const result=await response.json();
+					if(result.success){
+
+						Swal.fire({
+							icon:"success",
+							title:"Added to wishlist",
+							text:result.message,
+							confirmButtonText:"OK"
+						}).then(()=>location.reload())
+					}else{	
+							Swal.fire({
+							icon:"error",
+							title:"Error",
+							text:result.message,
+							confirmButtonText:"OK"
+						})
+						}
+					}catch(err){
+						console.error(err);
+						Swal.fire({
+							icon:"error",
+							title:"Error!!",
+							text:"Something went Wrong!!",
+							confirmButtonText:"OK"
+						})
+					}
+				})
+			})
 	
-	<!-- Animate.css -->
-	<link rel="stylesheet" href="/front/css/animate.css">
-	<!-- Icomoon Icon Fonts-->
-	<link rel="stylesheet" href="/front/css/icomoon.css">
-	<!-- Ion Icon Fonts-->
-	<link rel="stylesheet" href="/front/css/ionicons.min.css">
-	<!-- Bootstrap  -->
-	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
 
-	<!-- Magnific Popup -->
-	<link rel="stylesheet" href="/front/css/magnific-popup.css">
-
-	<!-- Flexslider  -->
-	<link rel="stylesheet" href="/front/css/flexslider.css">
-
-	<!-- Owl Carousel -->
-	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
-	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
-	
-	<!-- Date Picker -->
-	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
-	<!-- Flaticons  -->
-	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
-
-	<!-- Theme style  -->
-	<link rel="stylesheet" href="/front/css/style.css">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	
-	</head>
-	<body>
-		
-		<%- include('./userPartials/header') %>
-
-		<aside id="colorlib-hero">
-			<div class="flexslider">
-				<ul class="slides">
-			   	<li style="background-image: url(/logo/BlackMamba_Page_bk.jpg);">
-			   		<div class="overlay"></div>
-			   		<div class="container-fluid">
-			   			<div class="row">
-				   			<div class="col-sm-6 offset-sm-3 text-center slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-					   					<h1 class="head-1">Men's</h1>
-					   					<h2 class="head-2">Chains & Rings</h2>
-					   					<h2 class="head-3">Collection</h2>
-					   					<p class="category"><span>Trending in <strong>CRUX</strong></span></p>
-					   					<p><a href="/product-list" class="btn btn-primary">Shop Collection</a></p>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			   	<li style="background-image: url(/logo/salty_banner.webp);">
-			   		<div class="overlay"></div>
-			   		<div class="container-fluid">
-			   			<div class="row">
-				   			<div class="col-sm-6 offset-sm-3 text-center slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-					   					<h1 class="head-1">Huge</h1>
-					   					<h2 class="head-2">Sale</h2>
-					   					<h2 class="head-3"><strong class="font-weight-bold">50%</strong> Off</h2>
-					   					<p class="category"><span>Big sale</span></p>
-					   					<p><a href="/product-list" class="btn btn-primary">Shop Collection</a></p>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			   	<li style="background-image: url(/logo/giva_bg.webp);">
-			   		<div class="overlay"></div>
-			   		<div class="container-fluid">
-			   			<div class="row">
-				   			<div class="col-sm-6 offset-sm-3 text-center slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-					   					<h1 class="head-1">New</h1>
-					   					<h2 class="head-2">Arrival</h2>
-					   					<h2 class="head-3">up to <strong class="font-weight-bold">30%</strong> off</h2>
-					   					<p class="category"><span>New stylish collections</span></p>
-					   					<p><a href="/product-list" class="btn btn-primary">Shop Collection</a></p>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			  	</ul>
-		  	</div>
-		</aside>
-		<div class="colorlib-intro">
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-12 text-center">
-						<h2 class="intro">At CRUX, we believe that jewelry is more than just an accessory—it’s an expression of who you are. Every piece in our collection is crafted with precision, using premium materials to ensure elegance, durability, and timeless appeal.</h2>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="colorlib-product">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-sm-6 text-center">
-						<div class="featured">
-							<a href="/product-list?gender=Men" class="featured-img" style="background-image: url(/logo/bgforMen.webp);"></a>
-							<div class="desc nav-link">
-								<h2><a class="nav-link" href="/product-list?gender=Men">Shop Men's Collection</a></h2>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-6 text-center">
-						<div class="featured">
-							<a href="/product-list?gender=Women" class="featured-img" style="background-image: url(/logo/women-collec.jpg);"></a>
-							<div class="desc nav-link">
-								<h2><a class="nav-link" href="/product-list?gender=Women">Shop Women's Collection</a></h2>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- <div class="colorlib-partner" style="padding:0">
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm ">
-						<h2>Featured Categories</h2>
-					</div>
-				</div>
-				<div class="row">
-					<% category.forEach(partner => { %>
-						<div class="col partner-col text-center">	
-							<div class="category-logo" style=" width: 200px; height: 150px;display: flex;align-items: center;justify-content: center;overflow: hidden;margin: auto;">
-							<img src="<%= partner.image %>" class="img-fluid" alt="<%= partner.name %>" height="100" style=" width: 100%;object-fit: contain;">
-						</div>
-							<p class="mt-2 fw-bold"><%= partner.name %></p>
-						</div>
-					<% }) %>	
-				</div>
-			</div>
-		</div> -->
-
-		<div class="colorlib-product">
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-8 offset-sm-2 text-center colorlib-heading">
-						<h2>Product List</h2>
-					</div>
-				</div>
-				<div class="row row-pb-md">
-					<% products.forEach(product => { %>
-						<div class="col-lg-3 mb-4 text-center">							
-							<div class="product-entry border p-3">
-								<a href="/products/<%= product.slug%>"  class="prod-img d-block position-relative">
-									<img src="<%= product.images[1] %>" class="img-fluid" alt="<%= product.name %> ">
-									<% if (product.discount > 0) { %>
-										<span class="badge badge-danger position-absolute top-0 start-0 m-2">
-											<%= product.discount %>% OFF
-										</span>
-									<% } %>
-								</a>
-								<div class="desc mt-3">
-									<h2 class="h5"><a href="/products/<%= product.slug%>"><%= product.name %></a></h2>
-									<div class="rating mb-2">
-										<span class="text-warning">
-											<% for (let i = 0; i < 5; i++) { %>
-												<%- i < product.rating ? "&#9733;" : "&#9734;" %>
-											<% } %>											
-										</span> <%= product.ratings %>
-									</div>
-									<div class="price">
-										<% if (product.discount > 0) { %>
-											<span class="text-muted text-decoration-line-through">
-												₹<%= product.price.toFixed(2) %>
-											</span>
-										<% } %>
-										<span class="text-dark fw-bold">₹<%= product.finalPrice.toFixed(2) %></span>
-									</div>
-								</div>
-							</div>
-						</div>
-					<% }) %>
-				</div>
-				<div class="row">
-					<div class="col-md-12 text-center">
-						<p><a href="/product-list" class="btn btn-primary btn-lg">All Products</a></p>
-					</div>
-				</div>
-			</div>
-		</div>	
-		
-		 
-		<div class="colorlib-partner mb-5" style="padding:0;">
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-8 offset-sm-2 text-center colorlib-heading colorlib-heading-sm">
-						<h2>Trusted Partners</h2>
-					</div>
-				</div>
-				<div class="row">
-					<% brands.forEach(partner => { %>
-						<div class="col partner-col text-center">
-							<div class="brand-logo" style=" width: 200px; height: 150px;display: flex;align-items: center;justify-content: center;overflow: hidden;margin: auto;">
-							<img src="<%= partner.image %>" class="img-fluid" alt="<%= partner.name %>" height="100" style=" width: 100%;object-fit: contain;">
-						</div>
-							<p class="mt-2 fw-bold"><%= partner.name %></p>
-						</div>
-					<% }) %>
-				</div>
-			</div>
-		</div>
-		
-		<%- include('./userPartials/footer') %>
-	</div>
-
-	<div class="gototop js-top">
-		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
-	</div>
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<!-- jQuery -->
-	<script src="/front/js/jquery.min.js"></script>
-   <!-- popper -->
-   <script src="/front/js/popper.min.js"></script>
-   <!-- bootstrap 4.1 -->
-   <script src="/front/js/bootstrap.min.js"></script>
-   <!-- jQuery easing -->
-   <script src="/front/js/jquery.easing.1.3.js"></script>
-	<!-- Waypoints -->
-	<script src="/front/js/jquery.waypoints.min.js"></script>
-	<!-- Flexslider -->
-	<script src="/front/js/jquery.flexslider-min.js"></script>
-	<!-- Owl carousel -->
-	<script src="/front/js/owl.carousel.min.js"></script>
-	<!-- Magnific Popup -->
-	<script src="/front/js/jquery.magnific-popup.min.js"></script>
-	<script src="/front/js/magnific-popup-options.js"></script>
-	<!-- Date Picker -->
-	<script src="/front/js/bootstrap-datepicker.js"></script>
-	<!-- Stellar Parallax -->
-	<script src="/front/js/jquery.stellar.min.js"></script>
-	<!-- Main -->
-	<script src="/front/js/main.js"></script>
-
-	</body>
+        $(document).ready(function() {
+            // Reinitialize flexslider with specific settings
+            $('.flexslider').flexslider({
+                animation: "fade",
+                directionNav: true,
+                controlNav: true,
+                pauseOnHover: true,
+                slideshowSpeed: 5000,
+                animationSpeed: 1000,
+                start: function(slider) {
+                    $('body').removeClass('loading');
+                }
+            });
+        });
+    </script>
+</body>
 </html>
-

@@ -37,69 +37,120 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
            
+  /* Product Listing Section - Aligned with Home Page */
+  body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            background-color: #fff;
+        }
+       
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+        /*Product Section*/
+             .product-entry {
+                border: 1px solid var(--medium-gray);
+                border-radius: 10px;
+                overflow: hidden;
+                transition: all 0.3s;
+                height: 100%;
+                margin-bottom: 20px;
+                background-color: #fff;
+            }
+
+            .product-entry:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            .prod-img {
+                position: relative;
+                overflow: hidden;
+                height: 250px;
+            }
+
+            .prod-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s;
+            }
+
+            .product-entry:hover .prod-img img {
+                transform: scale(1.1);
+            }
+
+            .discount-badge {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: #e74c3c;
+                color: #fff;
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-weight: 600;
+                font-size: 0.8rem;
+            }
+
+            .desc {
+                padding: 20px;
+                text-align: center;
+            }
+
+            .desc h6 {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+                font-weight: 600;
+                color: var(--primary-color);
+            }
+
+            .desc h6 a {
+                color: var(--primary-color);
+                text-decoration: none;
+            }
+
+            .desc h6 a:hover {
+                color: var(--accent-color);
+            }
+
+            .rating {
+                margin-bottom: 10px;
+            }
+
+            .rating .text-warning {
+                color: #ffc107;
+            }
+
+            .price {
+                font-weight: 700;
+                color: var(--accent-color);
+                font-size: 1.2rem;
+            }
+
+            .price .old-price {
+                text-decoration: line-through;
+                color: #999;
+                font-size: 0.9rem;
+                margin-right: 10px;
+            }   
+/* Responsive Adjustments */
+@media (max-width: 767px) {
     .product-entry {
-        width: 100%;
-        max-width: 320px; /* Fixed width for consistent layout */
-        height: 420px; /* Fixed height */
-        margin: auto;
-        overflow: hidden;
-        position: relative;
+        margin-bottom: 15px;
     }
 
-    .prod-img img {
-        width: 100%;
-        height: 250px; /* Uniform image size */
-        object-fit: cover; /* Ensures image maintains aspect ratio */
+    .prod-img {
+        height: 200px;
     }
 
-    .product-entry .desc {
-        height: 130px; /* Fixed height for text area */
-        overflow: hidden;
-        text-align: center;
-    }
-
-    .product-entry h2 {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .product-entry h2 a {
-        display: inline-block;
-        max-width: 90%;
-        text-decoration: none;
-        color: #333;
-    }
-
-    .product-entry h2 a:hover {
-        text-decoration: underline;
-    }
-
-    .discount-badge {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: red;
-        color: white;
-        padding: 5px 8px;
-        font-size: 12px;
-        font-weight: bold;
-        border-radius: 5px;
-    }
-
-    .rating {
-        font-size: 14px;
+    .desc h6 {
+        font-size: 1rem;
     }
 
     .price {
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 1rem;
     }
-
-    .price .old-price {
-        text-decoration: line-through;
-        color: gray;
-        margin-right: 5px;
     }
 
         </style>
@@ -109,16 +160,7 @@
 	<div class="colorlib-loader"></div>
     <%- include('./userPartials/header') %>
 
-		<!-- <div class="breadcrumbs">
-			<div class="container">
-				<div class="row">
-					<div class="col">
-						<p class="bread"><span><a href="index.html">Home</a></span> / <span>Shop</span></p>
-					</div>
-				</div>
-			</div>
-		</div> -->
-
+		
         <%- include('./userPartials/breadcrumbs') %>
 
 		<div class="breadcrumbs-two">
@@ -157,17 +199,7 @@
                                 </div>
                             <% }) %>
                         </div>
-                        <!-- <div class="filter-section border mb-2">
-                            <h3>Gender</h3>
-                            <% ["Men", "Women", "Unisex"].forEach(g => { %>
-                                <div>
-                                    <input type="checkbox" name="gender" value="<%= g %>" id="gender-<%= g %>"
-                                        <%= (Array.isArray(gender) && gender.includes(g)) ? "checked" : "" %>>
-                                    <label for="gender-<%= g %>"><%= g %></label>
-                                </div>
-                            <% }) %>
-                        </div> -->
-                    </div>
+                        </div>
         
                     <!-- Brand Filter (Column 2) -->
                     <div class="col-md-3">
@@ -221,27 +253,87 @@
                 <div class="row">
                     <div class="col-md-12 d-flex justify-content-center mb-3">
                         <!-- <button type="submit" class="btn btn-primary">Apply Filters</button> -->
-                        <button type="button" onclick="clearFilters()" class="btn btn-danger">Clear Filters</button>
+                        <button type="button" onclick="clearFilters()" class="btn btn-danger mb-2">Clear Filters</button>
                     </div>
                 </div>
         
                 <!-- Product Listing Section -->
-                <div class="row row-pb-md">
+
+                <section class="product-section">
+                    <div class="container">
+                        <h2 class="section-title text-center fw-bold mb-5">Product List</h2>
+                        <div class="row row-pb-md">
+                            <% if (products.length > 0) { %>
+                                <% products.forEach(product => { %>
+                                    <div class="col-md-3 col-sm-6 mb-4 text-center">
+                                        <div class="product-entry">
+                                            <a href="/products/<%= product.slug %>" class="prod-img">
+                                                <img src="<%= product.images.length > 0 ? product.images[0] : '/default-image.jpg' %>" class="img-fluid" alt="<%= product.name %>">
+                                                <% if (product.discount > 0) { %>
+                                                    <span class="discount-badge"><%= product.discount %>% OFF</span>
+                                                <% } %>
+                                            </a>
+                                            <div class="desc">
+                                                <h6>
+                                                    <a href="/products/<%= product.slug %>"><%= product.name %></a>
+                                                </h6>
+                                                <div class="rating">
+                                                    <span class="text-warning">
+                                                        <% for (let i = 0; i < 5; i++) { %>
+                                                            <%- i < product.ratings ? "&#9733;" : "&#9734;" %>
+                                                        <% } %>
+                                                    </span>
+                                                    <span class="ms-1"><%= product.ratings %></span>
+                                                </div>
+                                                <div class="price">
+                                                    <% if (product.discount > 0) { %>
+                                                        <span class="old-price">₹<%= product.price.toFixed(2) %></span>
+                                                    <% } %>
+                                                    <span>₹<%= product.finalPrice.toFixed(2) %></span>
+                                                </div>
+                                               <!-- Wishlist & Add to Cart Buttons -->
+                                            <div class="product-actions d-flex justify-content-center mt-2">
+                                                <!-- Wishlist Button -->
+                                                <% if (user) { %> <!-- Show wishlist only if user is logged in -->
+                                                    <button class="btn btn-light wishlist-toggle" data-product-id="<%= product._id %>">
+                                                        <i class="<%= (userWishlist && userWishlist.some(p => p.toString() === product._id.toString())) ? 'fas' : 'far' %> fa-heart"></i>
+                                                    </button>
+                                                <% } %>
+                                                <!-- Add to Cart Button -->
+                                                <button class="btn btn-secondary rounded-pill add-to-cart" data-id="<%= product._id %>">
+                                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                                </button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="col-md-12 text-center">No Products Available</div>
+                            <% } %>
+                        </div>
+                        <div class="text-center mt-5">
+                            <a href="/product-list" class="btn btn-crux btn-lg">All Products</a>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- <div class="row row-pb-md">
                     <% if (products.length > 0) { %>
                         <% products.forEach(product => { %>
-                            <div class="col-md-3 col-sm-6 mb-4 text-center d-flex justify-content-center">
-                                <div class="product-entry border p-3">
-                                    <a href="/products/<%= product.slug%>" class="prod-img d-block position-relative">
+                            <div class="col-md-3 col-sm-6 mb-4 text-center">
+                                <div class="product-entry">
+                                    <a href="/products/<%= product.slug%>" class="prod-img">
                                         <img src="<%= product.images.length > 0 ? product.images[0] : '/default-image.jpg' %>" class="img-fluid" alt="<%= product.name %>">
                                         <% if (product.discount > 0) { %>
                                             <span class="discount-badge"><%= product.discount %>% OFF</span>
                                         <% } %>
                                     </a>
-                                    <div class="desc mt-3">
-                                        <h6 class="h6 text-truncate" title="<%= product.name %>">
-                                            <a class="nav-link" href="/products/<%= product.slug%>"><%= product.name %></a>
+                                    <div class="desc">
+                                        <h6>
+                                            <a href="/products/<%= product.slug%>"><%= product.name %></a>
                                         </h6>
-                                        <div class="rating mb-2">
+                                        <div class="rating">
                                             <span class="text-warning">
                                                 <% for (let i = 0; i < 5; i++) { %>
                                                     <%- i < product.ratings ? "&#9733;" : "&#9734;" %>
@@ -252,7 +344,7 @@
                                             <% if (product.discount > 0) { %>
                                                 <span class="old-price">₹<%= product.price.toFixed(2) %></span>
                                             <% } %>
-                                            <span class="text-dark">₹<%= product.finalPrice.toFixed(2) %></span>
+                                            <span>₹<%= product.finalPrice.toFixed(2) %></span>
                                         </div>
                                     </div>
                                 </div>
@@ -261,7 +353,7 @@
                     <% } else { %>
                         <div class="col-md-12 text-center">No Products Available</div>
                     <% } %>
-                </div>
+                </div> -->               
         
                 <!-- Pagination -->
                 <div class="row">
@@ -324,6 +416,7 @@
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
 	</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
 
         function clearFilters() {
@@ -332,7 +425,7 @@
         }
 
 
-        document.addEventListener("DOMContentLoaded", function () {
+     document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const filters = document.querySelectorAll("input[name='gender'], input[name='brand'], input[name='category'], input[name='sort']");
     const productContainer = document.querySelector(".row.row-pb-md"); // Product list container
@@ -416,7 +509,102 @@
 
     // Attach initial pagination events
     attachPaginationEvents();
-});
+
+    
+		// Add to Cart Functionality
+        const addToCartButtons = document.querySelectorAll(".add-to-cart");
+        addToCartButtons.forEach(button => {
+        button.addEventListener('click', async function (event) {
+        event.preventDefault(); // Prevent default behavior (e.g., navigation)
+
+        const productId = this.getAttribute('data-id'); // Get product ID
+
+        try {
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({ productId, quantity: 1 })
+            });
+
+            if (response.status === 401) {
+                // Redirect to login if user is not authenticated
+                window.location.href = "/login";
+                return;
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Added to Cart!",
+                    text: "The product has been successfully added to your cart.",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Oops!",
+                    text: result.message, // Show server message
+                });
+            }
+        } catch (err) {
+            console.error("Error adding to cart:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Something went wrong while adding to cart. Please try again!",
+            });
+        }
+    });
+    });
+
+    document.querySelectorAll('.wishlist-toggle').forEach(button=>{
+			button.addEventListener('click',async function(){
+
+				const productId = this.getAttribute('data-product-id');
+				try{
+					const response=await fetch(`/profile/wishlist/add`,{
+						method:"POST",
+						headers:{"Content-Type":"application/json"},
+						body:JSON.stringify({productId}),
+					});
+
+					const result=await response.json();
+					if(result.success){
+
+						Swal.fire({
+							icon:"success",
+							title:"Added to wishlist",
+							text:result.message,
+							confirmButtonText:"OK"
+						}).then(()=>location.reload())
+					}else{	
+							Swal.fire({
+							icon:"error",
+							title:"Error",
+							text:result.message,
+							confirmButtonText:"OK"
+						})
+						}
+					}catch(err){
+						console.error(err);
+						Swal.fire({
+							icon:"error",
+							title:"Error!!",
+							text:"Something went Wrong!!",
+							confirmButtonText:"OK"
+						})
+					}
+				})
+			})
+
+
+	});
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

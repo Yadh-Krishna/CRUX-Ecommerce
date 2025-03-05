@@ -91,11 +91,16 @@ const placeOrder= async (req, res) => {
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ error: "Your cart is empty" });   
         }
+        
+        for(const x of cart.items){
+            if(x.quantity>x.product.stock)
+                return res.status(400).json({error:`Not enough Stock for ${x.product.name}`});
+        }
 
         const address = await Address.findById(addressId);
         if (!address) {
             return res.status(400).json({ error: "Invalid address" });
-        }
+        }        
 
         let subtotal = cart.items.reduce((acc, item) => acc + item.product.finalPrice * item.quantity, 0);
         let tax = subtotal * 0.1;  // Assuming 5% tax
@@ -122,6 +127,7 @@ const placeOrder= async (req, res) => {
             expectedDelivery: new Date(new Date().setDate(new Date().getDate() + 7)) // Estimated 7 days delivery
         });
 
+
         await newOrder.save();
 
         for (let item of cart.items) {
@@ -139,8 +145,6 @@ const placeOrder= async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
         }
     }
-
-
 
     module.exports={
         loadCheckout,

@@ -7,7 +7,7 @@ const UserManagement=require('../../controller/adminController/userManage');
 const categoryManage=require('../../controller/adminController/categoryManage');
 const brandManage=require('../../controller/adminController/brandManage');
 const productController= require('../../controller/adminController/productController'); 
-
+const orderController= require('../../controller/adminController/orderController');
 const auth = require("../../middleware/adminAuth");
 const User = require("../../models/userModel");
 
@@ -61,5 +61,8 @@ router.put('/products/edit/:id',auth,upload.fields([
     { name: "addImages", maxCount: 2 }
   ]),productController.updateProduct);
 router.patch('/products/:id/toggle-status',auth,productController.blockProduct);
+
+//Order Management
+router.get('/orders',auth,orderController.orderList)
 
 module.exports=router;
