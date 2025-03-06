@@ -20,5 +20,5 @@ const wishlistSchema = new Schema({
     }]
 }, { timestamps: true });
 
-const Wishlist = mongoose.model("Wishlist", wishlistSchema); // ✅ Fix typo in model name
+const Wishlist = mongoose.model("Wishlist", wishlistSchema);
 module.exports = Wishlist;

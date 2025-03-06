@@ -1,11 +1,13 @@
 const bcrypt=require('bcrypt');
 const User=require('../../models/userModel');
 const Wishlist=require('../../models/wishlistModel')
+const Wallet=require('../../models/walletModel');
 const jwt = require("jsonwebtoken");
 const statusCodes=require('../../utils/statusCodes');
 const errorMessages=require('../../utils/errorMessages')
 const crypto = require("crypto");
 require("dotenv").config();
+const { v4: uuidv4 } = require("uuid");
 
 const Order=require('../../models/orderModal');
 const Address= require('../../models/addressModal');
@@ -389,7 +391,13 @@ const loadWishlist=async(req,res)=>{
         const user= await User.findById(userId);
         
 
-        const wishlist= await Wishlist.findOne({userId:user._id}).populate('products.productId');
+        let wishlist= await Wishlist.findOne({userId:user._id}).populate('products.productId');
+        if(!wishlist){
+            wishlist=new Wishlist({
+                userId,
+                products:[]
+            })
+        }
         // console.log(wishlist.products);
         res.render('wishlist',{user,wishlist:wishlist.products});
 
@@ -458,6 +466,60 @@ const loadOrderDetails = async (req, res) => {
         }
     };
 
+const loadWallet = async (req, res) => {
+        try {
+            const userId = req.user.userId;
+            const user = await User.findById(userId);
+            let wallet = await Wallet.findOne({ userId });
+    
+            if (!wallet) {
+                wallet = new Wallet({ userId,transactions:[]});
+               await wallet.save();
+            }
+            const balance = wallet.calculatedBalance;
+            // Fetch transactions with pagination
+            const page = parseInt(req.query.page) || 1;
+            const limit = 10;
+            const transactions = wallet.transactions.slice((page - 1) * limit, page * limit);
+    
+            res.render('wallet', { user, wallet,balance, transactions, currentPage: page, totalPages: Math.ceil(wallet.transactions.length / limit) });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json(errorMessages.SERVER.SERVER_ERROR);
+        }
+    };
+
+    const addMoney = async (req, res) => {
+        try {
+            const userId = req.user.userId;
+            const { amount, paymentMethod } = req.body;
+    
+            const wallet = await Wallet.findOne({ userId });
+            if (!wallet) {
+                return res.status(404).json({ error: 'Wallet not found' });
+            }
+    
+            // Simulate payment processing
+            const transaction = {
+                transactionId: uuidv4(),
+                transactionType: 'credit',
+                transactionAmount: amount,
+                transactionDate: new Date(),
+                transactionStatus: 'completed',
+                transactionDescription: `Added via ${paymentMethod}`
+            };
+    
+            wallet.transactions.push(transaction);
+            await wallet.save();
+    
+            res.redirect('/profile/wallet');
+        } catch (err) {
+            console.error(err);
+            res.status(500).json(errorMessages.SERVER.SERVER_ERROR);
+        }
+    };
+
+
 
     module.exports={
         loadProfile,
@@ -475,5 +537,7 @@ const loadOrderDetails = async (req, res) => {
         changePassword ,
         addWishlist,
         loadWishlist,
-        loadOrderDetails 
+        loadOrderDetails,
+        loadWallet,
+        addMoney 
     }

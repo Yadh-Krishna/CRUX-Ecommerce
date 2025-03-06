@@ -495,7 +495,7 @@
                 title: 'Product Removed',
                 text: 'Product removed successfully',
                 showConfirmButton: true                
-            });
+            }).then(()=>location.reload());
             updateCartTotal();
         }else{
             Swal.fire({

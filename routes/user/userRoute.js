@@ -24,6 +24,7 @@ router.get("/logout",  userController.logoutUser);
 router.get('/verify-OTP', verifyToken, userController.verifyOtp);
 router.post('/verify-OTP',userController.authenticateOtp);
 router.patch('/resend-otp',userController.resendOtp);
+
 // router.get('/forgot-password',userController.forgotPassword);        
 router.patch("/forgot-password",userController.resetPassVerify);
 router.patch("/verify-otp",userController.resetPassOtp);
@@ -31,7 +32,6 @@ router.patch("/reset-password",userController.resetPassword);
 
 
 //Product
-
 router.get('/products/:id',userAuthenticate.authenticateUser,userProductController.productDetails);//product details
 router.get('/product-list',userAuthenticate.authenticateUser,userProductController.productList);//product listing
 router.get('/',userAuthenticate.authenticateUser,userProductController.loadHome);//home page
@@ -44,7 +44,7 @@ router.use('/profile',profileRoutes)
 router.get('/cart',verifyToken,cartController.loadCart);
 router.post('/cart/add',verifyToken,cartController.addToCart);  
 router.put('/cart/update',verifyToken,cartController.updateCart);
-router.patch('/remove-product/:id',verifyToken,cartController.removeProduct)
+router.patch('/remove-product/:id',verifyToken,cartController.removeProduct);
 
 //Checkout
 router.get('/checkout',verifyToken,checkoutController.loadCheckout);

@@ -63,6 +63,7 @@ router.put('/products/edit/:id',auth,upload.fields([
 router.patch('/products/:id/toggle-status',auth,productController.blockProduct);
 
 //Order Management
-router.get('/orders',auth,orderController.orderList)
+router.get('/orders',auth,orderController.orderList);
+router.get('/orders/:id',auth,orderController.orderDetails);
 
 module.exports=router;

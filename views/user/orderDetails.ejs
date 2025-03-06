@@ -279,15 +279,7 @@
                     </ul>
                 </div>
             </div>
-            <!-- <div class="container my-4">
-                <div class="row"> -->
-                    <!-- Sidebar -->
-                    <!-- <div class="col-lg-3 col-md-4">
-                        <div class="list-group">
-                            <a href="/orders" class="list-group-item list-group-item-action">Back to Orders</a>
-                        </div>
-                    </div> -->
-            
+                        
                     <!-- Order Details Content -->
                     <div class="col-lg-9 col-md-8">
                         <div class="content-card">
@@ -310,17 +302,21 @@
                                     </span>
                                 </h5>
             
+                               <!-- Order-Level Cancel & Return -->
+                            <div class="mt-auto">
                                 <% if (order.orderStatus === 'Pending' || order.orderStatus === 'Processing' || order.orderStatus === 'Shipped') { %>
-                                    <a href="/order/cancel/<%= order._id %>" class="btn btn-danger btn-sm">
+                                    <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= order._id %>" data-type="order" data-bs-toggle="modal" data-bs-target="#cancelModal">
                                         <i class="fas fa-times-circle me-1"></i> Cancel Order
-                                    </a>
+                                    </button>
                                 <% } %>
-            
+
                                 <% if (order.orderStatus === 'Delivered') { %>
-                                    <a href="/order/return/<%= order._id %>" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-undo-alt me-1"></i> Request Return
-                                    </a>
+                                    <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= order._id %>" data-type="order" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                        <i class="fas fa-undo-alt me-1"></i> Return Order
+                                    </button>
                                 <% } %>
+                            </div>
+   
                             </div>
             
                             <!-- Order Details -->
@@ -374,19 +370,20 @@
                                                     </p>
                             
                                                     <!-- Product Level Actions -->
-                                                    <div class="mt-auto">
-                                                        <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
-                                                            <a href="/order/cancel-item/<%= order._id %>/<%= item._id %>" class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-times-circle me-1"></i> Cancel Item
-                                                            </a>
-                                                        <% } %>
-                            
-                                                        <% if (item.status === 'Delivered') { %>
-                                                            <a href="/order/return-item/<%= order._id %>/<%= item._id %>" class="btn btn-warning btn-sm">
-                                                                <i class="fas fa-undo-alt me-1"></i> Return Item
-                                                            </a>
-                                                        <% } %>
-                                                    </div>
+                                                   <!-- Item-Level Cancel & Return -->
+                                                        <div class="mt-auto">
+                                                            <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
+                                                                <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                                                    <i class="fas fa-times-circle me-1"></i> Cancel Item
+                                                                </button>
+                                                            <% } %>
+
+                                                            <% if (item.status === 'Delivered') { %>
+                                                                <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                                                    <i class="fas fa-undo-alt me-1"></i> Return Item
+                                                                </button>
+                                                            <% } %>
+                                                        </div>
                             
                                                     <div class="mt-auto">
                                                         <% if (item.status === 'Delivered') { %>
@@ -395,6 +392,42 @@
                                                             </a>
                                                         <% } %>
                                                     </div>
+
+                                                    <!-- Review Modal -->
+                                                <div class="modal fade" id="reviewModal-<%= item.product._id %>" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form action="/product/review/<%= item.product._id %>" method="POST">
+                                                                <div class="modal-body">
+                                                                    <label class="form-label">Rating</label>
+                                                                    <div class="rating mb-3">
+                                                                        <input type="radio" name="rating" value="5" id="star5-<%= item.product._id %>" required>
+                                                                        <label for="star5-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="4" id="star4-<%= item.product._id %>">
+                                                                        <label for="star4-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="3" id="star3-<%= item.product._id %>">
+                                                                        <label for="star3-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="2" id="star2-<%= item.product._id %>">
+                                                                        <label for="star2-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="1" id="star1-<%= item.product._id %>">
+                                                                        <label for="star1-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                    </div>
+
+                                                                    <label for="reviewText-<%= item.product._id %>" class="form-label">Your Review</label>
+                                                                    <textarea class="form-control" name="review" id="reviewText-<%= item.product._id %>" rows="4" placeholder="Write your review here..." required></textarea>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-success">Submit Review</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                             
                                                 </div>
                                             </div>
@@ -402,6 +435,78 @@
                                     <% }); %> <!-- 🚀 Correctly closing the forEach loop here -->
                                 </div>
                             </div>
+
+                    <!-- CANCEL Modal (Handles Order & Item Cancellation) -->
+                        <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cancelLabel">Cancel</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="cancelForm">
+                                        <div class="modal-body">
+                                            <input type="hidden" id="cancelEntityId" name="entityId">
+                                            <input type="hidden" id="cancelType" name="type">
+
+                                            <label for="cancelReason">Select Reason:</label>
+                                            <select class="form-select reason-select" id="cancelReason" name="reason" required>
+                                                <option value="">-- Select Reason --</option>
+                                                <option value="Not Required Anymore">Not Required Anymore</option>
+                                                <option value="Changed my mind">Changed my mind</option>
+                                                <option value="Ordered by mistake">Ordered by mistake</option>
+                                                <option value="Found a better price">Found a better price</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <div class="mt-3 other-reason d-none">
+                                                <label for="cancelOtherReason">Provide reason:</label>
+                                                <textarea class="form-control" id="cancelOtherReason" name="otherReason"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger cancel-order">Confirm Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RETURN Modal (Handles Order & Item Return) -->
+                        <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="returnLabel">Return</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="returnForm" method="POST">
+                                        <div class="modal-body">
+                                            <input type="hidden" id="returnEntityId" name="entityId">
+                                            <input type="hidden" id="returnType" name="type">
+
+                                            <label for="returnReason">Select Reason:</label>
+                                            <select class="form-select reason-select" id="returnReason" name="reason" required>
+                                                <option value="">-- Select Reason --</option>
+                                                <option value="Item defective">Item defective</option>
+                                                <option value="Wrong item received">Wrong item received</option>
+                                                <option value="Not as described">Not as described</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <div class="mt-3 other-reason d-none">
+                                                <label for="returnOtherReason">Provide reason:</label>
+                                                <textarea class="form-control" id="returnOtherReason" name="otherReason"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-warning">Confirm Return</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    
                             <!-- <div class="order-products">
                                 <h5>Ordered Items:</h5>
                                 <div class="row">
@@ -438,7 +543,145 @@
     </div>
 
     <%- include('./userPartials/footer') %> 
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Show/hide "Other" text area when "Other" is selected
+            document.querySelectorAll(".reason-select").forEach(function (select) {
+                select.addEventListener("change", function () {
+                    let selectedOption = this.value;
+                    let parent = this.closest(".modal-body");
+                    let otherReasonField = parent.querySelector(".other-reason");
+    
+                    if (selectedOption === "Other") {
+                        otherReasonField.classList.remove("d-none");
+                        otherReasonField.querySelector("textarea").setAttribute("required", "true");
+                    } else {
+                        otherReasonField.classList.add("d-none");
+                        otherReasonField.querySelector("textarea").removeAttribute("required");
+                    }
+                });
+            });
+    
+            // Open cancel modal for both order and item
+            document.querySelectorAll(".open-cancel-modal").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let entityId = this.getAttribute("data-id");
+                    let entityType = this.getAttribute("data-type"); // 'order' or 'item'
+    
+                    document.getElementById("cancelEntityId").value = entityId;
+                    document.getElementById("cancelType").value = entityType;
+                    // document.getElementById("cancelForm").action = `/cancel/${entityType}/${entityId}`;  
+                });
+            });
+    
+            // Open return modal for both order and item
+            document.querySelectorAll(".open-return-modal").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let entityId = this.getAttribute("data-id");
+                    let entityType = this.getAttribute("data-type"); // 'order' or 'item'
+    
+                    document.getElementById("returnEntityId").value = entityId;
+                    document.getElementById("returnType").value = entityType;
+                    // document.getElementById("returnForm").action = `/return/${entityType}/${entityId}`;
+                });
+            });
+
+            // Cancel Order or Item
+        document.getElementById("cancelForm").addEventListener("submit", async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const entityId = document.getElementById("cancelEntityId").value;
+            const type = document.getElementById("cancelType").value;
+            const reason = document.getElementById("cancelReason").value;
+            const otherReason = document.getElementById("cancelOtherReason").value;
+            try{
+                const response = await fetch(`/profile/cancel/${type}/${entityId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    reason: reason,
+                    otherReason: otherReason,
+                }),
+            });
+            const result=await response.json();
+            if (result.success) {
+                Swal.fire({
+                    icon:"success",
+                    title:"Cancellation success",
+                    text: result.message,
+                    confirmButtonText: "OK"
+                }).then(()=>location.reload())              
+            } else {
+                Swal.fire({
+                    icon:"error",
+                    title:"Error!!",
+                    text: result.message,
+                    confirmButtonText: "OK"
+                })
+            }
+            }catch(err){
+                console.error(err);
+                Swal.fire({
+                    icon:"error",
+                    title:"Error!!",
+                    text:"Somnething Went Wrong!!",
+                    confirmButtonText: "OK"
+                })
+            }
+            
+        });
+
+        // Return Order or Item
+        document.getElementById("returnForm").addEventListener("submit", async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const entityId = document.getElementById("returnEntityId").value;
+            const type = document.getElementById("returnType").value;
+            const reason = document.getElementById("returnReason").value;
+            const otherReason = document.getElementById("returnOtherReason").value;
+            try{
+            const response = await fetch(`/profile/return/${type}/${entityId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    reason: reason,
+                    otherReason: otherReason,
+                }),
+            });
+            const result=await response.json();
+            if (result.success) {
+                Swal.fire({
+                    icon:"success",
+                    title:"Cancellation success",
+                    text: result.message,
+                    confirmButtonText: "OK"
+                }).then(()=>location.reload());   
+            } else {
+                Swal.fire({
+                    icon:"error",
+                    title:"Error!!",
+                    text: result.message,
+                    confirmButtonText: "OK"
+                })
+            }
+        }catch(err){
+            console.error(err);
+                Swal.fire({
+                    icon:"error",
+                    title:"Error!!",
+                    text:"Somnething Went Wrong!!",
+                    confirmButtonText: "OK"
+                })
+        }
+        });
+
+        });
+    </script>
 </body>
 </html>

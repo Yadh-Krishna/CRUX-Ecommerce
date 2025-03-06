@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
   orderId: { type: String, required: true, unique: true }, // Unique Order ID
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User who placed the order
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true }, // User who placed the order
   items: [
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -14,7 +14,9 @@ const OrderSchema = new mongoose.Schema({
         type: String, 
         enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested", "Returned"], 
         default: "Pending" 
-    }
+    },
+    cancellationReason: { type: String, default: null }, // Item-level cancellation reason
+    returnReason: { type: String }, 
     }
   ],
   totalAmount: { type: Number, required: true }, // Final order total
@@ -32,7 +34,7 @@ const OrderSchema = new mongoose.Schema({
   address: { type: mongoose.Schema.Types.ObjectId, ref: "address", required: true }, // Shipping address
   deliveredAt: { type: Date }, // When the order was delivered
   cancellationReason: { type: String,default:null }, // Reason if order is cancelled
-  returnReason: { type: String }, // Reason if order is returned
+  returnReason: { type: String}, // Reason if order is returned
   refundStatus: { 
     type: String, 
     enum: ["Initiated", "Completed", "Not Applicable"], 

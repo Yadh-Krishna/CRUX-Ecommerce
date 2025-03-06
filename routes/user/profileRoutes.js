@@ -12,6 +12,7 @@ const verifyToken=require('../../middleware/userAuth');
 const guestToken=require('../../middleware/guestUser')
 const userProductController=require('../../controller/userController/userProductController');
 const cartController=require('../../controller/userController/cartController');
+const orderController=require('../../controller/userController/orderController');
 
 
 
@@ -34,10 +35,14 @@ router.patch('/addresses/:id',verifyToken,manageUser.defaultAddress)
 //Orders
 router.get('/my-orders',verifyToken,manageUser.orderList);
 router.get('/my-orders/:id',verifyToken,manageUser.loadOrderDetails);
+router.patch('/cancel/:type/:entityId',verifyToken,orderController.cancelOrderItem)
 
 //Wishlist
 router.get('/wishlist',verifyToken,manageUser.loadWishlist);
 router.post('/wishlist/add',verifyToken,manageUser.addWishlist);
 
+//Wallet
+router.get('/wallet',verifyToken,manageUser.loadWallet);
+router.post('/wallet',verifyToken,manageUser.addMoney);
 
 module.exports=router;
