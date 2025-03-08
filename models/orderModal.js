@@ -28,7 +28,7 @@ const OrderSchema = new mongoose.Schema({
   }, // Payment status
   orderStatus: { 
     type: String, 
-    enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Request","Returned"], 
+    enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested","Returned"], 
     default: "Pending" 
   }, // Order status
   address: { type: mongoose.Schema.Types.ObjectId, ref: "address", required: true }, // Shipping address

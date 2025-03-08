@@ -211,8 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
             isValid = false;
         }
 
-        if (parseFloat(form.discount.value) < 0) {
-            errors.discount.textContent = "Discount cannot be negative.";
+        if (parseFloat(form.discount.value) < 0||parseFloat(form.discount.value)>100) {
+            errors.discount.textContent = "Discount cannot be negative and cannot be greater than 100";
             isValid = false;
         }
 

@@ -54,7 +54,7 @@ const productDetails = async (req, res) => {
     
             // Fetch product reviews
             const reviews = await Review.find({ product: product._id })
-                .populate("user", "fullName")
+                .populate("user", "fullName image")
                 .sort({ createdAt: -1 });
             
                 let wishlistProductIds = null;
@@ -66,7 +66,12 @@ const productDetails = async (req, res) => {
                         wishlistProductIds = wishlist.products.map(item => item.productId.toString());
                     }
                 }
+
+                const breadcrumbs= [               
+                    { name: "Shop", url: "/product-list" },
+                    { name: slug.toUpperCase(), url: `/product-list/${slug}`}];
            
+                    console.log(breadcrumbs);
             res.render("products", { 
                 userWishlist:wishlistProductIds,
                 product, 
@@ -75,9 +80,7 @@ const productDetails = async (req, res) => {
                 message: null, 
                 brand: product.brands, 
                 relatedProducts,
-                breadcrumbs: [                    
-                    { name: "Shop", url: "/product-list" },
-                    { name: slug.toUpperCase(), url: `/product-list/${slug}`}]
+                breadcrumbs
             });
     
         } catch (error) {

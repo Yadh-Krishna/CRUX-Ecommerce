@@ -183,15 +183,17 @@ const addProduct= asyncHandler(async (req, res) => {
         return `/uploads/products/resized-${file.filename}`; // Return new file path
       })
     );
+
+    if(!discount) discount=0;
     // Calculate final price
-    const finalPrice = price - (price * (discount || 0)) / 100;
+    const finalPrice = price - (price * (discount)) / 100;
 
     // Save product to the database
     await Product.create({
       name,
       description,
       price,
-      discount: discount || 0,
+      discount: discount,
       finalPrice,
       stock,
       category,
@@ -267,6 +269,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       product.category = category;
       product.brands = brands;
       product.gender = gender;
+      product.finalPrice= price-(price*(discount/100));
 
       let updatedImages = [...product.images]; // Copy existing images
 

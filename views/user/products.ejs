@@ -415,7 +415,7 @@
 								<h2><%= product.name %></h2>
 								<p><%= product.description %></p>
 								<p class="price">
-									<span>₹<%= product.finalPrice %></span>
+									<span>₹<%= product.finalPrice.toFixed(2) %></span>
 									<% if (product.discount) { %>
 										<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
 										<span class="text-success"><%= product.discount %>% Off</span>
@@ -462,17 +462,17 @@
 		<div class="container mt-5">
 			<ul class="nav nav-tabs" id="productTabs">
 				<li class="nav-item">
-					<a class="nav-link active" data-bs-toggle="tab" href="#brand">Brand</a>
+					<a class="nav-link " data-bs-toggle="tab" href="#brand">Brand</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" data-bs-toggle="tab" href="#description">Description</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" data-bs-toggle="tab" href="#review">Reviews</a>
+					<a class="nav-link active" data-bs-toggle="tab" href="#review">Reviews</a>
 				</li>
 			</ul>
 			<div class="tab-content p-4 border bg-light">
-				<div class="tab-pane fade show active" id="brand">
+				<div class="tab-pane fade " id="brand">
 					<div class="d-flex align-items-center mb-3">
 						<img src="<%= brand.image %>" alt="<%= brand.name %>" class="rounded-circle" height="60">
 						<h4 class="ms-3 mb-0"><%= brand.name %></h4>
@@ -480,9 +480,46 @@
 					<p><%= brand.description %></p>
 				</div>
 				<div class="tab-pane fade" id="description">
+					<h3><%=product.name%></h3>
 					<p><%= product.description %></p>
 				</div>
-				<div class="tab-pane fade" id="review">
+				<div class="tab-pane fade show active" id="review">
+					<% if (reviews && reviews.length > 0) { %>
+						<% reviews.forEach(review => { %>
+							<div class="review mb-4 p-3 border rounded">
+								<!-- User Info -->
+								<div class="d-flex align-items-center mb-2">
+									<!-- Profile Image -->
+									<img src="<%= review.user.image %>" 
+										 alt="<%= review.user.fullName %>" 
+										 class="rounded-circle me-3" 
+										 style="width: 50px; height: 50px; object-fit: cover;">
+									
+									<!-- User Name and Date -->
+									<div>
+										<strong><%= review.user.fullName %></strong>
+										<span class="text-muted d-block">
+											<%= new Date(review.createdAt).toLocaleDateString() %>
+										</span>
+									</div>
+								</div>
+				
+								<!-- Rating Stars -->
+								<div class="text-warning mb-2">
+									<% for (let i = 1; i <= 5; i++) { %>
+										<i class="fa <%= i <= review.rating ? 'fa-star' : 'fa-star text-muted' %>"></i>
+									<% } %>
+								</div>
+				
+								<!-- Review Comment -->
+								<p class="mb-0"><%= review.comment %></p>
+							</div>
+						<% }) %>
+					<% } else { %>
+						<p>No reviews yet. Be the first to review this product.</p>
+					<% } %>
+				</div>
+				<!-- <div class="tab-pane fade" id="review">
 					<% if (reviews && reviews.length > 0) { %>
 						<% reviews.forEach(review => { %>
 							<div class="review mb-3">
@@ -499,7 +536,7 @@
 					<% } else { %>
 						<p>No reviews yet. Be the first to review this product.</p>
 					<% } %>
-				</div>
+				</div> -->
 			</div>
 		</div>
 		

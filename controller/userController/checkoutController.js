@@ -95,16 +95,18 @@ const placeOrder= async (req, res) => {
         for(const x of cart.items){
             if(x.quantity>x.product.stock)
                 return res.status(400).json({error:`Not enough Stock for ${x.product.name}`});
+            if(x.product.isDeleted)
+                return res.status(400).json({error:`Order cannot be placed ${x.product.name} is Blocked`})
         }
 
-        const address = await Address.findById(addressId);
+         const address = await Address.findById(addressId);
         if (!address) {
             return res.status(400).json({ error: "Invalid address" });
         }        
 
         let subtotal = cart.items.reduce((acc, item) => acc + item.product.finalPrice * item.quantity, 0);
-        let tax = subtotal * 0.1;  // Assuming 5% tax
-        let shippingCharge = subtotal > 500 ? 0 : 50; // Free shipping for orders above ₹500
+        let tax = subtotal * 0.1;  
+        let shippingCharge = subtotal > 500 ? 0 : 50; 
         let totalAmount = subtotal + tax + shippingCharge;
 
         let newOrder = new Order({

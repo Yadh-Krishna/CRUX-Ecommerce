@@ -98,7 +98,7 @@ const authenticateOtp =  async (req, res) => {
     try {
         const { otp } = req.body;
 
-        // Retrieve temp user data from cookies
+        
         const tempUser = req.cookies.tempUser ? JSON.parse(req.cookies.tempUser) : null;
 
         if (!tempUser) {
@@ -108,13 +108,13 @@ const authenticateOtp =  async (req, res) => {
 
         const { name, email, mobile, password, otp: storedOTP, otpExpires } = tempUser;
 
-        // Validate OTP
+       
         if (otp !== storedOTP || otpExpires < Date.now()) {
             req.flash("error", "Invalid or expired OTP!");
             return res.redirect("/verify-OTP");
         }
 
-        // Save user in the database after successful OTP verification
+        
         const newUser = new User({
             fullName: name,
             email,
@@ -129,7 +129,7 @@ const authenticateOtp =  async (req, res) => {
 
         // Clear temp user cookie after verification
         res.clearCookie("tempUser");
-        // Redirect to dashboard
+        
         req.flash("success","User Added Successfully, Try Logging In !!");
         res.redirect("/login");
     } catch (error) {

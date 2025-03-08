@@ -29,13 +29,16 @@ router.get('/addresses',verifyToken,manageUser.loadAddress);
 router.post('/addresses',verifyToken,manageUser.addAddress);
 router.get('/addresses/:id',verifyToken,manageUser.editPage);
 router.put('/addresses/:id',verifyToken,manageUser.updateAddress);  
-router.delete('/addresses/:id',verifyToken,manageUser.deleteAddress)
-router.patch('/addresses/:id',verifyToken,manageUser.defaultAddress)
+router.delete('/addresses/:id',verifyToken,manageUser.deleteAddress);
+router.patch('/addresses/:id',verifyToken,manageUser.defaultAddress);
 
 //Orders
 router.get('/my-orders',verifyToken,manageUser.orderList);
 router.get('/my-orders/:id',verifyToken,manageUser.loadOrderDetails);
-router.patch('/cancel/:type/:entityId',verifyToken,orderController.cancelOrderItem)
+router.get('/my-orders/:orderId/invoice',verifyToken,manageUser.downloadInvoice)
+router.patch('/cancel/:type/:entityId',verifyToken,orderController.cancelOrderItem);
+router.patch('/return/:type/:entityId/:orderId',verifyToken,orderController.returnOrderItem);
+router.post('/order/review/:productId',verifyToken,manageUser.submitReview)
 
 //Wishlist
 router.get('/wishlist',verifyToken,manageUser.loadWishlist);

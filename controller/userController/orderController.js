@@ -11,6 +11,7 @@ const sendOTP =require('../../utils/sendOTP');
 const Product=require('../../models/productModel')
 const Cart=require('../../models/cartModel');
 
+
 const cancelOrderItem=async(req,res)=>{
     try {
         const { entityId, type } = req.params;
@@ -67,10 +68,77 @@ const cancelOrderItem=async(req,res)=>{
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server error" });
+        res.status(500).json({success:false,message: "Server error" });
     }
 }
 
+const returnOrderItem = async (req, res) => {
+    try {
+        console.log(req.params);
+        const { orderId, entityId,type } = req.params; 
+        const { reason, otherReason } = req.body;
+
+        if (type === "order") {
+            // Handle order return
+            const order = await Order.findById(orderId).populate("items.product");
+            if (!order) {
+                return res.status(404).json({ success: false, message: "Order not found" });
+            }
+
+            // Update order status and reason
+            order.orderStatus = "Return Requested";
+            order.refundReason = otherReason || reason;
+
+            // Update item statuses and restore product stock
+            for (const item of order.items) {
+                item.status = "Return Requested";
+                }
+
+            await order.save();
+            res.status(statusCodes.SUCCESS).json({ success: true, message: "Order return request sent" });
+        }
+
+        // else if (type === "item") {
+        //     // Handle item return
+        //     const order = await Order.findById(orderId).populate("items.product");
+        //     if (!order) {
+        //         return res.status(404).json({ success: false, message: "Order not found" });
+        //     }
+
+        //     // Find the specific item in the order
+        //     const item = order.items.id(itemId);
+        //     if (!item) {
+        //         return res.status(404).json({ success: false, message: "Item not found in the order" });
+        //     }
+
+        //     // Update item status and reason
+        //     item.status = "Return Requested";
+        //     item.refundReason = otherReason || reason;
+
+        //     // Restore product stock
+        //     const product = item.product;
+        //     if (product) {
+        //         product.stock += item.quantity;
+        //         await product.save();
+        //     }
+
+        //     // Check if all items in the order are cancelled
+        //     const allItemsCancelled = order.items.every((item) => item.status === "Return Requested");
+        //     if (allItemsCancelled) {
+        //         order.orderStatus = "Return Requested";
+        //     }
+
+        //     await order.save();
+        //     res.status(200).json({ success: true, message: "Item return request sent" });
+        // } 
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
 module.exports={
-    cancelOrderItem
+    cancelOrderItem,
+    returnOrderItem
 };

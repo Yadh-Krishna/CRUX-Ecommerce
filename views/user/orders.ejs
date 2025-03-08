@@ -403,7 +403,7 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="order-status status-<%= (order.status || order.orderStatus).toLowerCase() %>"><%= order.status || order.orderStatus %></span>
                                         <% if ((order.status || order.orderStatus) === 'Delivered') { %>
-                                            <a href="/profile/my-orders/<%= order._id %>/invoice" class="btn-details">
+                                            <a href="/profile/my-orders/<%= order.orderId %>/invoice" class="btn-details">
                                                 <i class="fas fa-file-invoice me-1"></i> Invoice
                                             </a>
                                         <% } %>
@@ -473,11 +473,11 @@
                                         <a href="/profile/my-orders/<%= order._id %>" class="btn-details ms-2">
                                             <i class="fas fa-eye me-1"></i> View Details
                                         </a>
-                                        <% if ((order.status || order.orderStatus) === 'Delivered') { %>
+                                        <!-- <% if ((order.status || order.orderStatus) === 'Delivered') { %>
                                             <a href="/orders/<%= order._id %>/review" class="btn-details ms-2">
                                                 <i class="fas fa-star me-1"></i> Review
                                             </a>
-                                        <% } %>
+                                        <% } %> -->
                                     </div>
                                 </div>
                             </div>

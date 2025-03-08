@@ -2,15 +2,20 @@ const bcrypt=require('bcrypt');
 const User=require('../../models/userModel');
 const Wishlist=require('../../models/wishlistModel')
 const Wallet=require('../../models/walletModel');
+const Cart=require('../../models/cartModel')
 const jwt = require("jsonwebtoken");
 const statusCodes=require('../../utils/statusCodes');
 const errorMessages=require('../../utils/errorMessages')
 const crypto = require("crypto");
 require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
+const path=require('path');
+const fs=require('fs');
 
+const Review=require('../../models/reviewModel')
 const Order=require('../../models/orderModal');
 const Address= require('../../models/addressModal');
+const Product=require('../../models/productModel');
 
 const sendOTP =require('../../utils/sendOTP'); 
 
@@ -370,7 +375,7 @@ const orderList=async(req,res)=>{
             req.flash("error","User not found");
             res.redirect('/login');
         }
-        const orders= await Order.find({user:userId}).populate('items.product');
+        const orders= await Order.find({user:userId}).populate('items.product').sort({createdAt:-1});
         if(!orders){
             req.flash("error","No Orders Available");
             res.render('orders',{orders:null,user})
@@ -419,6 +424,12 @@ const addWishlist=async(req,res)=>{
         if(!user){
             return res.status(statusCodes.NOT_FOUND).json({success:false,message:"User not found, Try Logging in!!"});
         }
+
+        const cart= await Cart.findOne({user:userId,"items.product":productId})
+        if(cart){
+            return res.status(406).json({success:false,message:"Product already available in cart"});
+        }
+
         let wishlist= await Wishlist.findOne({userId}); 
 
         if(!wishlist){
@@ -427,6 +438,8 @@ const addWishlist=async(req,res)=>{
                 products:[{productId,addedOn:Date.now()}],
             })
         }
+
+        
         const productIndex = wishlist.products.findIndex(product => product.productId.toString() === productId);
         if (productIndex !== -1) {
             // Remove the product if it exists
@@ -435,7 +448,7 @@ const addWishlist=async(req,res)=>{
             return res.status(200).json({ success: true, message: "Product removed from wishlist!" });
         } 
 
-            wishlist.products.push({productId,addedOn:Date.now()});
+             wishlist.products.push({productId,addedOn:Date.now()});
         
         await wishlist.save();
         return res.status(200).json({ success: true, message: "Product added to wishlist!" });   
@@ -489,7 +502,7 @@ const loadWallet = async (req, res) => {
         }
     };
 
-    const addMoney = async (req, res) => {
+ const addMoney = async (req, res) => {
         try {
             const userId = req.user.userId;
             const { amount, paymentMethod } = req.body;
@@ -519,6 +532,52 @@ const loadWallet = async (req, res) => {
         }
     };
 
+const downloadInvoice=async(req,res)=>{
+   try{
+    const orderId = req.params.orderId;
+    const filePath = path.join(__dirname, '../../public/invoices', `invoice_${orderId}.pdf`);
+
+    // Check if the file exists
+    if (fs.existsSync(filePath)) {
+        res.download(filePath, `invoice_${orderId}.pdf`); // Download the file
+    } else {
+        res.status(404).json({ success: false, message: "Invoice not found" });
+    }
+   }catch(err){
+    console.error(err);
+   }
+}
+
+const submitReview=async(req,res)=>{
+    try {
+        const { productId } = req.params;
+        const { rating, review } = req.body;
+        const userId = req.user.userId; // Assuming user is authenticated and user ID is available in req.user
+
+        // Create a new review
+        const newReview = new Review({
+            product: productId,
+            user: userId,
+            rating,
+            comment:review,
+        });
+
+        await newReview.save();
+
+        // Update the product's average rating
+        const product = await Product.findById(productId);
+        const reviews = await Review.find({ product: productId });
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        product.ratings = totalRating / reviews.length;
+        await product.save();
+
+        res.status(200).redirect('/profile/my-orders');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/');
+    }
+}
+
 
 
     module.exports={
@@ -539,5 +598,7 @@ const loadWallet = async (req, res) => {
         loadWishlist,
         loadOrderDetails,
         loadWallet,
-        addMoney 
+        addMoney,
+        downloadInvoice,
+        submitReview 
     }

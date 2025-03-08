@@ -107,7 +107,7 @@
                                     </div>
                                 </a>
                             </div>
-                            <div class="col-lg-2 col-sm-2 col-2">₹<%= product.finalPrice || product.price %></div>
+                            <div class="col-lg-2 col-sm-2 col-2">₹<%= product.finalPrice.toFixed(2) || product.price %></div>
                             <div class="col-lg-2 col-sm-2 col-1">
                                 <% if (!product.isDeleted) { %>
                                     <span class="badge rounded-pill alert-success">Active</span>

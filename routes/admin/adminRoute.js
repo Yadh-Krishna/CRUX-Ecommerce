@@ -65,5 +65,6 @@ router.patch('/products/:id/toggle-status',auth,productController.blockProduct);
 //Order Management
 router.get('/orders',auth,orderController.orderList);
 router.get('/orders/:id',auth,orderController.orderDetails);
+router.patch('/orders/:type/update-status/:id',auth,orderController.orderStatusManage);
 
 module.exports=router;

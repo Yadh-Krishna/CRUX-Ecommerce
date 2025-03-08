@@ -15,6 +15,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -24,21 +25,37 @@
         <%- include("../partials/header") %>
         <section class="content-main">
             <div class="content-header">
-                <div>
+                <div class="container"><div class="row">
+                    <div class="col-6">
                     <h2 class="content-title card-title">Order detail</h2>
-                    <p>Details for Order ID: <%= order.orderId %></p>
+                    <p> Order ID: <%= order.orderId %></p>
                 </div>
+                <div class="col-6">
+                    <h4 class="content-title card-title">Order Status</h4>
+                    <span class="badge text-dark <%= order.orderStatus === 'Pending' ? 'alert-warning' : 
+                            order.orderStatus === 'Processing' ? 'alert-info' : 
+                            order.orderStatus === 'Shipped' ? 'alert-primary' : 
+                            order.orderStatus === 'Delivered' ? 'alert-success' : 
+                            order.orderStatus === 'Cancelled' ? 'alert-danger' : 
+                            order.orderStatus === 'Return Requested' ? 'alert-dark' : 
+                                                'alert-secondary' %>">
+                              <strong><%= order.orderStatus %></strong> 
+                           </span>
+                </div>
+            </div></div>
+                
             </div>
             <div class="card">
                 <header class="card-header">
                     <div class="row align-items-center">
-                        <div class="col-lg-6 col-md-4 mb-lg-0 mb-15">
+                        <div class="col-lg-4 col-md-4 mb-lg-0 mb-15">
                             <span>
                                 <i class="material-icons md-calendar_today"></i> <b><%= order.createdAt.toDateString() %></b>
                             </span> <br>
                             <small class="text-muted">Order ID: <%= order.orderId %></small>
                         </div>
-                        <div class="col-lg-6 col-md-8 ms-auto text-md-end">
+                        <div class="col-lg-8 col-md-8 ms-auto text-md-end">
+                            
                             <!-- <form action="/admin/orders/update-status/<%= order._id %>" method="POST"> -->
                                 <!-- <select name="status" class="form-select d-inline-block mb-lg-0 mb-15 mw-200">
                                     <option value="Pending" <%= order.status === "Pending" ? "selected" : "" %>>Pending</option>
@@ -46,7 +63,11 @@
                                     <option value="Shipped" <%= order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
                                     <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
                                 </select> -->
-                                <button type="submit" class="btn btn-primary">Change Order status</button>                            
+                                <button type="button" class="btn btn-primary" 
+                    onclick="openStatusModal('<%= order._id %>', '<%= order.orderStatus %>', '<%= order.returnReason || order.cancellationReason || '' %>', 'order')"
+                    <%=(order.orderStatus==='Cancelled'||order.orderStatus==='Returned')? 'disabled': ''%>>
+                    Change Order Status
+                    </button>                                                       
                             <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
                         </div>
                     </div>
@@ -74,7 +95,7 @@
                                 <div class="text">
                                     <h6 class="mb-1">Order info</h6>
                                     <p class="mb-1">
-                                        Shipping: <%= order.shippingMethod %> <br> Pay method: <%= order.paymentMethod %> <br> Status: <%= order.status %>
+                                        Shipping: <%= order.shippingMethod %> <br> Pay method: <%= order.paymentMethod %> <br> Status: <%= order.orderStatus %>
                                     </p>
                                 </div>
                             </article>
@@ -96,36 +117,67 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-7">
+                        <div class="col-lg-12">
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
                                         <tr>
+                                            <th>Sl No.</th>
                                             <th>Product</th>
                                             <th>Unit Price</th>
                                             <th>Quantity</th>
+                                            <th>Item Status</th>
                                             <th class="text-start">Total</th>
-                                            <th class="text-center">Action</th>
+                                            <!-- <th class="text-center">Action</th>
+                                            <th class="text-start">Reason</th>  -->
+                                            <!-- Always include header to maintain column structure -->
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% order.items.forEach(item => { %>
+                                        <% order.items.forEach((item, index) => { %>
                                         <tr>
+                                            <td class="text-center"><%= index + 1 %>. </td>
                                             <td>
                                                 <a class="itemside" href="#">
                                                     <div class="left">
                                                         <img src="<%= item.product.images[0] %>" width="40" height="40" class="img-xs" alt="Item">
                                                     </div>
-                                                    <div class="info"> <%= item.product.name %> </div>
+                                                    <div class="info"><%= item.product.name %></div>
                                                 </a>
                                             </td>
-                                            <td> ₹<%= item.product.price.toFixed(2) %> </td>
-                                            <td> <%= item.quantity %> </td>
-                                            <td class="text-start"> ₹<%= (item.product.price * item.quantity).toFixed(2) %> </td>
-                                            <td class="text-center">  </td>
+                                            <td>₹<%= item.product.price.toFixed(2) %></td>
+                                            <td><%= item.quantity %></td>
+                                            <td>
+                                                <span class="badge text-dark <%= item.status === 'Pending' ? 'alert-warning' : 
+                                                                                  item.status === 'Processing' ? 'alert-info' : 
+                                                                                  item.status === 'Shipped' ? 'alert-primary' : 
+                                                                                  item.status === 'Delivered' ? 'alert-success' : 
+                                                                                  item.status === 'Cancelled' ? 'alert-danger' : 
+                                                                                  item.status === 'Return Requested' ? 'alert-dark' : 
+                                                                                  'alert-secondary' %>">
+                                                    <%= item.status %>
+                                                </span>
+                                            </td>
+                                            <td class="text-start">₹<%= (item.product.price * item.quantity).toFixed(2) %></td>
+                                            <!-- <td class="text-center">
+                                                <% if (item.status === 'Return Requested') { %>
+                                                    <button type="button"  class="btn btn-success refundPayment">Refund Payment</button>
+                                                <% } else { %>
+                                                    <button type="button"  class="btn btn-primary cancelButton " 
+                                                            <%= (item.status === 'Delivered' || item.status === 'Cancelled' || item.status === 'Returned') ? 'disabled' : '' %>>
+                                                        Cancel Item
+                                                    </button>
+                                                <% } %>
+                                            </td>
+                                            <td class="text-start">
+                                                <% if (item.status === 'Return Requested') { %>
+                                                    <%= item.returnReason || 'N/A' %> <!-- Display return reason -->
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td> -->
                                         </tr>
                                         <% }); %>
-                                        <tr>
                                             <td colspan="4">
                                                 <article class="float-end">
                                                     <dl class="dlist">
@@ -153,7 +205,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <!-- <div class="col-lg-4">
                             <div class="box shadow-sm bg-light">
                                 <h6 class="mb-15">Payment info</h6>
                                 <p>
@@ -161,20 +213,118 @@
                                  
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Order/Item Status Modal -->
+        <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="statusModalLabel">Change Status</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <p><strong>Current Status:</strong> <span id="modalStatus"></span></p>
+            <div id="reasonSection" class="d-none">
+                <p><strong>Reason:</strong></p>
+                <textarea id="modalReason" class="form-control" rows="3" readonly></textarea>
+            </div>
+            <form id="statusForm" method="POST">
+                <label for="newStatus">Update Status:</label>
+                <select id="newStatus" name="status" class="form-select">
+                    <% orderStatusOptions.forEach(status => { %>
+                        <option value="<%= status %>"><%= status %></option>
+                    <% }) %>               
+                </select>
+                <input type="hidden" id="updateUrl">
+            </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" onclick="submitStatusUpdate()">Update Status</button>
+            </div>
+        </div>
+        </div>
+    </div>
         <%- include("../partials/footer") %>
     </main>
-    <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/vendors/select2.min.js"></script>
-    <script src="assets/js/vendors/perfect-scrollbar.js"></script>
-    <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/select2.min.js"></script>
+    <script src="/assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
-    <script src="assets/js/main.js" type="text/javascript"></script>
+    <script src="/assets/js/main.js" type="text/javascript"></script>
+    <script>
+    function openStatusModal(id, currentStatus, reason, type) {
+    // Set the modal values
+    document.getElementById('modalStatus').innerText = currentStatus;
+    document.getElementById('modalReason').value = reason;
+
+    // Show reason section only if status is "Return Requested" or "Cancelled"
+    if (currentStatus === "Return Requested" || currentStatus === "Cancelled") {
+        document.getElementById('reasonSection').classList.remove('d-none');
+    } else {
+        document.getElementById('reasonSection').classList.add('d-none');
+    }
+
+    // Set the update URL based on the type (order or item)
+    document.getElementById('updateUrl').value = `/admin/orders/${type}/update-status/${id}`;
+
+    // Open the modal
+    const statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+    statusModal.show();
+}
+
+       
+async function submitStatusUpdate() {
+    const newStatus = document.getElementById('newStatus').value;
+    const updateUrl = document.getElementById('updateUrl').value;
+
+    try {
+        const response = await fetch(updateUrl, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                status: newStatus,
+            }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+        Swal.fire({
+            icon: 'success', 
+            title: 'Success',
+            text: result.message || 'Operation successful!',
+            confirmButtonText: "OK"
+        }).then(() => window.location.reload());
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: result.message || 'Something went wrong!',
+            confirmButtonText: "OK"
+        });
+    }
+} catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An unexpected error occurred. Please try again!',
+        confirmButtonText: "OK"
+    });
+}
+}   
+    </script>
 </body>
 
 </html>

@@ -211,6 +211,30 @@
             font-size: 14px;
             color: #6c757d;
         }
+                .rating {
+            display: flex;
+            flex-direction: row-reverse; /* Reverse the order visually */
+            justify-content: flex-end;
+        }
+
+        .rating input {
+            display: none; /* Hide the radio buttons */
+        }
+
+        .rating label {
+            cursor: pointer;
+            color: #ddd; /* Default star color */
+            font-size: 24px;
+        }
+
+        .rating input:checked ~ label {
+            color: #ffc107; /* Highlight selected stars */
+        }
+
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #ffc107; /* Highlight stars on hover */
+        }
 
     .badge-pending { background-color: #6c757d; color: white; }  /* Pending */
     .badge-processing { background-color: #007bff; color: white; }  /* Processing */
@@ -311,7 +335,7 @@
                                 <% } %>
 
                                 <% if (order.orderStatus === 'Delivered') { %>
-                                    <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= order._id %>" data-type="order" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                    <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= order._id %>" data-type="order" data-order-id="<%=order._id%>" data-bs-toggle="modal" data-bs-target="#returnModal">
                                         <i class="fas fa-undo-alt me-1"></i> Return Order
                                     </button>
                                 <% } %>
@@ -329,7 +353,7 @@
                                     <p><strong>Expected Delivery:</strong> <%= new Date(order.expectedDelivery).toDateString() %></p>
                                 <% } %>
                                 <% if (order.invoiceUrl) { %>
-                                    <a href="<%= order.invoiceUrl %>" class="btn btn-info btn-sm" target="_blank">
+                                    <a href="/profile/my-orders/<%= order.orderId %>/invoice" class="btn btn-info btn-sm" target="_blank">
                                         <i class="fas fa-file-invoice"></i> Download Invoice
                                     </a>
                                 <% } %>
@@ -371,7 +395,7 @@
                             
                                                     <!-- Product Level Actions -->
                                                    <!-- Item-Level Cancel & Return -->
-                                                        <div class="mt-auto">
+                                                        <!-- <div class="mt-auto">
                                                             <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
                                                                 <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#cancelModal">
                                                                     <i class="fas fa-times-circle me-1"></i> Cancel Item
@@ -379,44 +403,50 @@
                                                             <% } %>
 
                                                             <% if (item.status === 'Delivered') { %>
-                                                                <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                                                <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= item._id %>" data-type="item" data-order-id="<%=order._id%>" data-bs-toggle="modal" data-bs-target="#returnModal">
                                                                     <i class="fas fa-undo-alt me-1"></i> Return Item
                                                                 </button>
                                                             <% } %>
+                                                        </div> -->
+                                                        
+                                                         <!-- Button to open the modal -->
+
+                                                        <div class="mt-auto">
+                                                            <% if (item.status === 'Delivered') { %>
+                                                               
+                                                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal-<%= item.product._id %>">
+                                                                    <i class="fas fa-star"></i> Write a Review
+                                                                </button>
+                                                            <% } %>
                                                         </div>
-                            
-                                                    <div class="mt-auto">
-                                                        <% if (item.status === 'Delivered') { %>
-                                                            <a href="/product/review/<%= item.product._id %>" class="btn btn-success btn-sm">
-                                                                <i class="fas fa-star"></i> Write a Review
-                                                            </a>
-                                                        <% } %>
-                                                    </div>
 
                                                     <!-- Review Modal -->
-                                                <div class="modal fade" id="reviewModal-<%= item.product._id %>" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                                                <!-- Review Modal -->
+                                                <div class="modal fade" id="reviewModal-<%= item.product._id %>" tabindex="-1" aria-labelledby="reviewModalLabel-<%= item.product._id %>" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+                                                                <h5 class="modal-title" id="reviewModalLabel-<%= item.product._id %>">Write a Review</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
-                                                            <form action="/product/review/<%= item.product._id %>" method="POST">
+                                                            <form action="/profile/order/review/<%= item.product._id %>" method="POST">
                                                                 <div class="modal-body">
+                                                                    <!-- Rating Input -->
                                                                     <label class="form-label">Rating</label>
                                                                     <div class="rating mb-3">
-                                                                        <input type="radio" name="rating" value="5" id="star5-<%= item.product._id %>" required>
-                                                                        <label for="star5-<%= item.product._id %>"><i class="fas fa-star"></i></label>
-                                                                        <input type="radio" name="rating" value="4" id="star4-<%= item.product._id %>">
-                                                                        <label for="star4-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="5" id="star1-<%= item.product._id %>" required>
+                                                                        <label for="star1-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="4" id="star2-<%= item.product._id %>">
+                                                                        <label for="star2-<%= item.product._id %>"><i class="fas fa-star"></i></label>
                                                                         <input type="radio" name="rating" value="3" id="star3-<%= item.product._id %>">
                                                                         <label for="star3-<%= item.product._id %>"><i class="fas fa-star"></i></label>
-                                                                        <input type="radio" name="rating" value="2" id="star2-<%= item.product._id %>">
-                                                                        <label for="star2-<%= item.product._id %>"><i class="fas fa-star"></i></label>
-                                                                        <input type="radio" name="rating" value="1" id="star1-<%= item.product._id %>">
-                                                                        <label for="star1-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="2" id="star4-<%= item.product._id %>">
+                                                                        <label for="star4-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="1" id="star5-<%= item.product._id %>">
+                                                                        <label for="star5-<%= item.product._id %>"><i class="fas fa-star"></i></label>
                                                                     </div>
 
+                                                                    <!-- Review Textarea -->
                                                                     <label for="reviewText-<%= item.product._id %>" class="form-label">Your Review</label>
                                                                     <textarea class="form-control" name="review" id="reviewText-<%= item.product._id %>" rows="4" placeholder="Write your review here..." required></textarea>
                                                                 </div>
@@ -483,6 +513,7 @@
                                     <form id="returnForm" method="POST">
                                         <div class="modal-body">
                                             <input type="hidden" id="returnEntityId" name="entityId">
+                                            <input type="hidden" id="returnOrderId" name="orderId">
                                             <input type="hidden" id="returnType" name="type">
 
                                             <label for="returnReason">Select Reason:</label>
@@ -547,6 +578,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+
+                    document.querySelectorAll('.rating input').forEach(input => {
+            input.addEventListener('change', () => {
+                const ratingValue = input.value;
+                console.log("Selected Rating:", ratingValue);
+            });
+        });
             // Show/hide "Other" text area when "Other" is selected
             document.querySelectorAll(".reason-select").forEach(function (select) {
                 select.addEventListener("change", function () {
@@ -581,9 +619,11 @@
                 btn.addEventListener("click", function () {
                     let entityId = this.getAttribute("data-id");
                     let entityType = this.getAttribute("data-type"); // 'order' or 'item'
-    
+                    let orderId=this.getAttribute('data-order-id');
+
                     document.getElementById("returnEntityId").value = entityId;
                     document.getElementById("returnType").value = entityType;
+                    document.getElementById('returnOrderId').value=orderId;
                     // document.getElementById("returnForm").action = `/return/${entityType}/${entityId}`;
                 });
             });
@@ -635,52 +675,53 @@
             
         });
 
-        // Return Order or Item
         document.getElementById("returnForm").addEventListener("submit", async function (e) {
-            e.preventDefault(); // Prevent default form submission
+    e.preventDefault(); // Prevent default form submission
 
-            const entityId = document.getElementById("returnEntityId").value;
-            const type = document.getElementById("returnType").value;
-            const reason = document.getElementById("returnReason").value;
-            const otherReason = document.getElementById("returnOtherReason").value;
-            try{
-            const response = await fetch(`/profile/return/${type}/${entityId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    reason: reason,
-                    otherReason: otherReason,
-                }),
-            });
-            const result=await response.json();
-            if (result.success) {
-                Swal.fire({
-                    icon:"success",
-                    title:"Cancellation success",
-                    text: result.message,
-                    confirmButtonText: "OK"
-                }).then(()=>location.reload());   
-            } else {
-                Swal.fire({
-                    icon:"error",
-                    title:"Error!!",
-                    text: result.message,
-                    confirmButtonText: "OK"
-                })
-            }
-        }catch(err){
-            console.error(err);
-                Swal.fire({
-                    icon:"error",
-                    title:"Error!!",
-                    text:"Somnething Went Wrong!!",
-                    confirmButtonText: "OK"
-                })
-        }
+    const entityId = document.getElementById("returnEntityId").value;
+    const type = document.getElementById("returnType").value;
+    const orderId = document.getElementById("returnOrderId").value;
+    const reason = document.getElementById("returnReason").value;
+    const otherReason = document.getElementById("returnOtherReason").value;
+            console.log(orderId);
+    try {
+        const response = await fetch(`/profile/return/${type}/${entityId}/${orderId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                reason: reason,
+                otherReason: otherReason,
+            }),
         });
 
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Return Request Sent",
+                text: result.message,
+                confirmButtonText: "OK",
+            }).then(() => location.reload());
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error!!",
+                text: result.message,
+                confirmButtonText: "OK",
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            icon: "error",
+            title: "Error!!",
+            text: "Something Went Wrong!!",
+            confirmButtonText: "OK",
+        });
+    }
+});
         });
     </script>
 </body>
