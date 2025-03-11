@@ -36,13 +36,45 @@
 	<link rel="stylesheet" href="/front/css/style.css">
         <style>
             h2.mb-4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
+                font-family: 'Playfair Display', serif;
+                font-size: 2.5rem;
+                color: var(--primary-color);
+                margin-bottom: 20px;
+            }
+            
+            /* Animation for the success icon */
+            .icon-addcart {
+                animation: popIn 0.6s ease-out;
+            }
+            
+            @keyframes popIn {
+                0% { transform: scale(0); opacity: 0; }
+                70% { transform: scale(1.2); opacity: 1; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            
+            /* Button hover effects */
+            .btn-primary {
+                transition: all 0.3s ease;
+            }
+            
+            .btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+            
+            /* Canvas for confetti */
+            #confetti-canvas {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1000;
+                pointer-events: none;
+            }
         </style>
-         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	</head>
 	<body>
 		
@@ -51,10 +83,11 @@
 	<div id="page">
         <%- include('./userPartials/header') %>  	
 
+        <!-- Canvas for confetti animation -->
+        <canvas id="confetti-canvas"></canvas>
 
 		<div class="colorlib-product">
 			<div class="container">
-				
 				<div class="row">
 					<div class="col-sm-10 offset-sm-1 text-center">
 						<p class="icon-addcart"><span><i class="icon-check"></i></span></p>
@@ -75,6 +108,63 @@
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
 	</div>
+    
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        // Function to run confetti effect
+        function runCrackerEffect() {
+            var duration = 3000;
+            var end = Date.now() + duration;
+            
+            // First burst of confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            
+            // Continuous confetti
+            (function frame() {
+                confetti({
+                    particleCount: 2,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                
+                confetti({
+                    particleCount: 2,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+                
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+            
+            // Store in session that animation has been shown
+            sessionStorage.setItem('orderCompleted', 'true');
+            
+            // Set redirection after delay if needed
+            setTimeout(function() {
+                // Uncomment and modify if you want automatic redirection
+                // window.location.href = '/profile/my-orders';
+            }, duration + 2000); // Wait for confetti to finish plus 2 seconds
+        }
+        
+        // Run the effect when page loads if not already shown
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only run if this is a fresh page load after order completion
+            if (!sessionStorage.getItem('orderCompleted')) {
+                runCrackerEffect();
+            }
+        });
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- jQuery -->
 	<script src="/front/js/jquery.min.js"></script>
@@ -102,4 +192,3 @@
 
 	</body>
 </html>
-

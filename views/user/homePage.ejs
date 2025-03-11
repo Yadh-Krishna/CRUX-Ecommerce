@@ -663,10 +663,10 @@
                             <div class="product-rating">
                                 <span class="text-warning">
                                     <% for (let i = 0; i < 5; i++) { %>
-                                        <%- i < product.rating ? "&#9733;" : "&#9734;" %>
+                                        <%- i < product.ratings ? "&#9733;" : "&#9734;" %>
                                     <% } %>
                                 </span>
-                                <span class="ms-1"><%= product.ratings %></span>
+                                <span class="ms-1"><%= product.ratings.toFixed(2) %></span>
                             </div>
                             <div class="product-price">
                                 <% if (product.discount > 0) { %>
@@ -752,7 +752,7 @@
 
 						Swal.fire({
 							icon:"success",
-							title:"Added to wishlist",
+							title:"Wishlist",
 							text:result.message,
 							confirmButtonText:"OK"
 						}).then(()=>location.reload())

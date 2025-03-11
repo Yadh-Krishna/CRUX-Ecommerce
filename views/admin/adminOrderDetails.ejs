@@ -64,7 +64,7 @@
                                     <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
                                 </select> -->
                                 <button type="button" class="btn btn-primary" 
-                    onclick="openStatusModal('<%= order._id %>', '<%= order.orderStatus %>', '<%= order.returnReason || order.cancellationReason || '' %>', 'order')"
+                    onclick="openStatusModal('<%= order._id %>', '<%= order.orderStatus %>', '<%= order.returnReason || order.cancellationReason %>', 'order')"
                     <%=(order.orderStatus==='Cancelled'||order.orderStatus==='Returned')? 'disabled': ''%>>
                     Change Order Status
                     </button>                                                       
@@ -171,7 +171,7 @@
                                             </td>
                                             <td class="text-start">
                                                 <% if (item.status === 'Return Requested') { %>
-                                                    <%= item.returnReason || 'N/A' %> <!-- Display return reason -->
+                                                    <%= item.returnReason || 'N/A' %> 
                                                 <% } else { %>
                                                     -
                                                 <% } %>

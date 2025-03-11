@@ -425,7 +425,7 @@
 									<% for (let i = 1; i <= 5; i++) { %>
 										<i class="fa <%= i <= product.ratings ? 'fa-star text-warning' : 'fa-star text-muted' %>"></i>
 									<% } %>
-									<span>(<%= product.ratings %> Ratings)</span>
+									<span>(<%= product.ratings.toFixed(2) %> Ratings)</span>
 								</p>
 								<div class="stock">
 									<% if(product.stock > 5) { %>
@@ -707,7 +707,7 @@
 						return;
 					}
 
-					//  Check if the response is OK (200 or other expected statuses)
+				
 					const result = await response.json();
 
 					if (result.success) {
@@ -752,7 +752,7 @@
 
 						Swal.fire({
 							icon:"success",
-							title:"Added to wishlist",
+							title:"Wishlist",
 							text:result.message,
 							confirmButtonText:"OK"
 						}).then(()=>location.reload())

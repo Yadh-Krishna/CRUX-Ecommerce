@@ -15,6 +15,8 @@ const cookieParser = require('cookie-parser');
 const passport = require('./config/passport')
 const jwt= require('jsonwebtoken');
 const upload=require('./middleware/upload')
+const Razorpay=require('razorpay');
+
 
 const googleAuth=require('./controller/authController')
 
@@ -44,14 +46,13 @@ app.use(session({
   app.use(methodOverride("_method"));
 
   app.use((err, req, res, next) => {
-    console.error("Error:", err.message);
-    
+    console.error("Error:", err.message);    
     // Set flash message for errors
     req.flash("error", err.message || "Internal Server Error");
-
     // Redirect back to the previous page or a generic error page
-    res.redirect("/admin/error"); // Redirects to the error page
+    res.redirect("/admin/error"); 
 });
+
 
   // Initialize flash middleware
   app.use(flash());
@@ -76,8 +77,13 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 app.get("/auth/google/callback",  passport.authenticate("google", { failureRedirect: "/user/login",session: false }),googleAuth);
 
 app.use('/admin',nocache(),adminRoutes);
-app.use('/',userRoutes);
-// app.use('/user',userRoutes);
+app.use('/',nocache(),userRoutes);
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZOR_PAY_ID,
+  key_secret: process.env.RAZOR_PAY_SECRET_KEY,
+});
+
 
 connectDB();
 const PORT = process.env.PORT;

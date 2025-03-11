@@ -3,7 +3,6 @@ const router= express.Router();
 const bcrypt=require('bcrypt');
 const nocache = require('nocache');
 const upload=require('../../middleware/upload')
-
 const userAuthenticate=require('../../middleware/authenticateUser')
 
 const userController=require('../../controller/userController/userDashboard');
@@ -50,6 +49,8 @@ router.patch('/remove-product/:id',verifyToken,cartController.removeProduct);
 router.get('/checkout',verifyToken,checkoutController.loadCheckout);
 router.get('/order',verifyToken,checkoutController.loadOrder);
 router.post('/order',verifyToken,checkoutController.placeOrder);
+router.post('/order/create-razorpay-order',verifyToken,checkoutController.createRazorPay);
+router.post('/order/verify-payment',verifyToken,checkoutController.verifyOnlinePayment)
 
 
 module.exports = router; 
