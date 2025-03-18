@@ -62,7 +62,7 @@
                                     <th>Image</th>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Slug</th>
+                                    <th>Offer</th>
                                     <th>Status</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -80,7 +80,14 @@
                                         </td>
                                         <td class="align-middle"><b><%= category.name %></b></td>
                                         <td class="align-middle"><%= category.description || "No description" %></td>
-                                        <td class="align-middle"><%= category.slug %></td>
+                                        <td class="align-middle text-nowrap">
+                                            <% if (category.offerApplied && category.catOffer) { %>
+                                                <span class="badge bg-success"><%= category.catOffer %>% Off</span>
+                                            <% } else { %>
+                                                <span class="text-muted">No offer</span>
+                                            <% } %>
+                                        </td>
+                                        
                                         <td class="align-middle">
                                             <% if (!category.isDeleted) { %>
                                                 <span class="badge bg-success">Active</span>
@@ -91,14 +98,23 @@
                                         <td class="text-center align-middle">
                                             <div class="d-flex justify-content-center gap-2">
                                                 <a href="/admin/categories/edit/<%= category._id %>" 
-                                                   class="btn btn-sm btn-warning text-white px-3">Edit</a>
+                                                   class="btn btn-sm btn-warning text-white px-3 ">Edit</a>
                                                 <% if (!category.isDeleted) { %>
                                                     <a href="#" onclick="toggleCategoryStatus('<%= category._id %>')"
                                                        class="btn btn-sm btn-danger px-3">Block</a>
                                                 <% } else{ %>
                                                     <a href="#" onclick="toggleCategoryStatus('<%= category._id %>')"
                                                         class="btn btn-sm btn-success px-3">Unblock</a>
-                                                        <%}%>
+                                                        <%}%>                                                                                                         
+                                            </div>  
+                                            <div class="d-flex justify-content-center mt-2"> 
+                                                <% if (category.offerApplied) { %>
+                                                    <button class="btn btn-sm btn-danger px-3" 
+                                                            onclick="removeCategoryOffer('<%= category._id %>')">Remove Offer</button>
+                                                <% } else { %>
+                                                    <button class="btn btn-sm btn-secondary text-white px-3" 
+                                                            onclick="openOfferModal('<%= category._id %>', '<%= category.name %>')">Add Offer</button>
+                                                <% } %>
                                             </div>
                                         </td>
                                     </tr>
@@ -129,10 +145,34 @@
 
         </section>
 
+          <!-- Offer Modal -->
+    <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="offerModalLabel">Apply Offer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="offerForm">
+                        <input type="hidden" id="categoryId">
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Category</label>
+                            <input type="text" id="categoryName" class="form-control" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="offerPercentage" class="form-label">Category Offer Percentage</label>
+                            <input type="number" id="offerPercentage" class="form-control" min="1" max="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Offer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+      </div>
 
         <%- include("../partials/footer") %>
     </main>
-
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/main.js"></script>
@@ -140,7 +180,58 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 
+function openOfferModal(categoryId, categoryName) {
+    document.getElementById('categoryId').value = categoryId;
+    document.getElementById('categoryName').value = categoryName;
+    var offerModal = new bootstrap.Modal(document.getElementById('offerModal'));
+    offerModal.show();
+}   
+
+async function removeCategoryOffer(categoryId) {
+    try {
+        const response = await fetch(`/admin/categories/removeOffer/${categoryId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire("Success!", result.message, "success").then(() => location.reload());
+        } else {
+            Swal.fire("Error!", result.message, "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Something went wrong!", "error");
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById("offerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const categoryId = document.getElementById("categoryId").value;
+    const offerPercentage = document.getElementById("offerPercentage").value;
+        console.log(categoryId,offerPercentage)
+    try {
+        const response = await fetch(`/admin/categories/applyOffer/${categoryId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ offerPercentage })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire("Success!", result.message, "success").then(() => location.reload());
+        } else {
+            Swal.fire("Error!", result.message, "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Something went wrong!", "error");
+    }
+    });
+
     const searchInput = document.getElementById("searchCategories");
     const statusFilter = document.getElementById("statusFilter");
 
@@ -197,6 +288,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     searchInput.addEventListener("input", fetchCategories);
     statusFilter.addEventListener("change", fetchCategories);
+
+    
+
+
 });
         // Auto fade-out alerts after 5 seconds
 setTimeout(() => {

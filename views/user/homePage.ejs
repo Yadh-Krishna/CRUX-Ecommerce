@@ -651,8 +651,13 @@
                         <div class="product-img-container">
                             <a href="/products/<%= product.slug %>">
                                 <img src="<%= product.images[1] %>" class="product-img" alt="<%= product.name %>">
-                                <% if (product.discount > 0) { %>
-                                    <span class="discount-badge"><%= product.discount %>% OFF</span>
+                                <% let offerValue=product.offerApplied ? product.prodOffer : 0;
+                                    let catDiscount = product.category.offerApplied ? product.category.catOffer : 0;
+                                    let defaultDiscount = product.discount || 0;
+                                    let maxDiscount= Math.max(offerValue,catDiscount,defaultDiscount); 
+                                
+                                if (maxDiscount > 0) { %>
+                                    <span class="discount-badge"><%= maxDiscount %>% OFF</span>
                                 <% } %>
                             </a>
                         </div>

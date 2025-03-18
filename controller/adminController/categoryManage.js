@@ -1,5 +1,9 @@
 const Category=require('../../models/categoryModal');
+const Product=require('../../models/productModel');
+const Offer=require('../../models/offerModel')
 const asyncHandler=require('express-async-handler');
+const statusCodes=require('../../utils/statusCodes');
+const errorMessages=require('../../utils/errorMessages')
 
 const categoryList= asyncHandler(async (req, res) => {
     const searchQuery = req.query.searchCategories || "";
@@ -20,7 +24,7 @@ const categoryList= asyncHandler(async (req, res) => {
     }
 
     const totalCategories = await Category.countDocuments(filter);
-    const categories = await Category.find(filter).sort({name:1}).skip(skip).limit(limit);
+    let categories = await Category.find(filter).sort({name:1}).skip(skip).limit(limit);        
 
     res.render("category", {
         categories,
@@ -122,6 +126,80 @@ const blockCategory=asyncHandler(async (req, res) => {
 
   });
 
+const applyOffer = async (req, res) => {
+    try {
+      const { categoryId } = req.params;
+      const { offerPercentage } = req.body;
+  
+      // Find or create an offer
+      let category = await Category.findById(categoryId);
+      let products=await Product.find({category:categoryId})
+      if (!category) {
+       return res.status(400).json({success:false,message:"No category found"})
+      } else {
+        category.catOffer = offerPercentage;
+        category.offerApplied = true;
+        await category.save();
+
+        for (let product of products) {
+          const productDiscount = product.offerApplied ? product.prodOffer || 0 : 0;
+          const categoryDiscount = category.offerApplied ? category.catOffer || 0 : 0;
+          const defaultDiscount = product.discount || 0;
+    
+          const maxDiscount = Math.max(productDiscount, categoryDiscount, defaultDiscount);
+    
+          product.finalPrice = parseFloat(
+            (product.price - (product.price * maxDiscount) / 100).toFixed(2)
+          );
+    
+          await product.save(); // Save each product
+        }        
+      }
+  
+      return res.status(200).json({ success: true, message: "Offer applied successfully!" });
+  
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+  };
+
+const removeOffer = async (req, res) => {
+    try {
+      const { categoryId } = req.params; 
+      
+      const category = await Category.findById(categoryId);
+      if (category) {
+        category.offerApplied = false;
+        await category.save();
+
+        let products=await Product.find({category:categoryId})
+        for (let product of products) {
+          const productDiscount = product.offerApplied ? product.prodOffer || 0 : 0;
+          const categoryDiscount = category.offerApplied ? category.catOffer || 0 : 0;
+          const defaultDiscount = product.discount || 0;
+    
+          const maxDiscount = Math.max(productDiscount, categoryDiscount, defaultDiscount);
+    
+          product.finalPrice = parseFloat(
+            (product.price - (product.price * maxDiscount) / 100).toFixed(2)
+          );
+    
+          await product.save(); // Save each product
+        }
+
+
+      }else{
+        return res.status(statusCodes.NOT_FOUND).json({ success: false, message: "Category not found" });
+      }
+      return res.status(statusCodes.SUCCESS).json({ success: true, message: "Offer removed successfully!" });
+  
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+  };
+
   
  
 
@@ -131,5 +209,8 @@ module.exports={
     addCategory,
     editCategoryLoad,
     editCategory,
-    blockCategory
+    blockCategory,
+    applyOffer,
+    removeOffer
+
 }

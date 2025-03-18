@@ -10,6 +10,7 @@ const Order=require('../../models/orderModal');
 const sendOTP =require('../../utils/sendOTP'); 
 const Product=require('../../models/productModel')
 const Cart=require('../../models/cartModel');
+const Wallet=require('../../models/walletModel');
 
 
 const cancelOrderItem=async(req,res)=>{
@@ -36,6 +37,29 @@ const cancelOrderItem=async(req,res)=>{
                     await product.save();
                 }
             }
+            console.log(order.paymentMethod);
+            
+            if(order.paymentMethod==='Online'){
+                let wallet=await Wallet.findOne({userId:order.user});
+                console
+                if(!wallet){
+                    wallet= new Wallet({
+                        userId:order.user,
+                        transactions:[]
+                    })
+                    
+                }
+                wallet.transactions.push({
+                    orderId:order._id,
+                    transactionType:"credit",
+                    transactionAmount:order.totalAmount,
+                    transactionStatus:"completed",
+                    transactionDescription:`Refund for returned order ${order.orderId}`
+                })
+                await wallet.save();
+            }
+    
+
             await order.save();
             res.status(statusCodes.SUCCESS).json({success:true, message: "Order cancelled successfully" });
         } else if (type === "item") {

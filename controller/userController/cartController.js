@@ -39,17 +39,15 @@ const loadCart = async (req, res) => {
                 return null; // Skip this item if the product is missing
             }
 
-            const product = item.product; 
-            const price = product.discount
-                ? product.price - (product.price * product.discount) / 100
-                : product.price;
+            const product = item.product;            
+            const price = product.finalPrice;            
             const total = price * item.quantity;
             subtotal += total;
 
             return {
                 id: product._id,
                 name: product.name,
-                image: product.images?.[0] || "", // Avoid accessing undefined image array
+                image: product.images?.[0] || "", 
                 price: price,
                 quantity: item.quantity,
                 total: total,

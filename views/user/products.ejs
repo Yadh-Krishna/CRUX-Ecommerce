@@ -416,9 +416,14 @@
 								<p><%= product.description %></p>
 								<p class="price">
 									<span>₹<%= product.finalPrice.toFixed(2) %></span>
-									<% if (product.discount) { %>
+									<% let offerValue=product.offerApplied ? product.prodOffer : 0;
+									let catDiscount = product.category.offerApplied ? product.category.catOffer : 0;
+									let defaultDiscount = product.discount || 0;
+										let maxDiscount= Math.max(offerValue,catDiscount,defaultDiscount); 
+				
+									if (maxDiscount > 0) { %>
 										<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
-										<span class="text-success"><%= product.discount %>% Off</span>
+										<span class="text-success"><%= maxDiscount %>% Off</span>
 									<% } %>
 								</p>
 								<p class="rating">

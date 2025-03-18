@@ -35,12 +35,8 @@
             <!-- Right Side (Login Form) -->
             <div class="col-md-6 right-side">
                 <h2 class="text-center mb-3"><img src="/logo/logo-white.png" alt=""></h2>
-                <p class="text-center text-muted">Sign in to access your account</p>
-
-                
-                <!-- <% if (error) { %>
-                    <div class="alert alert-danger"><%= error %></div>
-                <% } %>             -->
+                <p class="text-center text-muted">Sign in to access your account</p>                
+               
                 <form id="loginForm" action="/login" method="POST" novalidate>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
@@ -97,7 +93,7 @@
 
       <!-- Step 1: Confirm Email Modal -->
       <div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Enter Your Email</h5>
@@ -117,7 +113,7 @@
 
     <!-- Step 2: OTP Verification Modal -->
     <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Enter OTP</h5>
@@ -137,7 +133,7 @@
 
     <!-- Step 3: Reset Password Modal -->
     <div class="modal fade" id="resetModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Reset Password</h5>

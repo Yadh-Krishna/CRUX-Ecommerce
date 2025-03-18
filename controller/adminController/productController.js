@@ -2,138 +2,127 @@ const Product=require('../../models/productModel');
 const Category=require('../../models/categoryModal');
 const Brand=require('../../models/brandModel');  
 const asyncHandler = require('express-async-handler');
+// const Offer=require('../../models/offerModel');
 
-const upload = require("../../middleware/upload");  //multer 
+const upload = require("../../middleware/upload");  
 const fs=require('fs');
 const path=require('path');
 const sharp=require('sharp');
+const statusCodes=require('../../utils/statusCodes')
+const errorMessages=require('../../utils/errorMessages')
 
-const productList= asyncHandler(async (req, res) => {
-    try {
-      // Pagination & Filters
+
+const productList = asyncHandler(async (req, res) => {
+  try {
       let page = parseInt(req.query.page) || 1;
       let limit = 5; // Number of products per page
       let skip = (page - 1) * limit;
-  
+
       let search = req.query.search || "";
       let category = req.query.category || "";
       let brand = req.query.brand || "";
       let status = req.query.status || "";
-  
-      // **Filter Query Object**
-      let filter = {};
-      
-      if (search) {
-        filter.name = { $regex: search, $options: "i" }; // Case-insensitive search
-      }
-      
-      if (category) {
-        filter.category = category;
-      }
-      
-      if (brand) {
-        filter.brands = brand;
-      }
-  
-      if (status === "Active") {
-        filter.isDeleted = false;
-      } else if (status === "Disabled") {
-        filter.isDeleted = true;
-      }
-  
-      // Fetch data with pagination
-      let products = await Product.find(filter).sort({name:1})
-        .populate("category brands")
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 });
 
-        const formatDate = (date) => {
-          date=date.toString();
-          const d = new Date(date);
-          return `${d}`;
-      };
-      products.forEach(product => {
-        product.formattedDate = formatDate(product.createdAt);
-    });
-  
-      // Count total products for pagination
+      let filter = {};
+
+      if (search) {
+          filter.name = { $regex: search, $options: "i" };
+      }
+      if (category) {
+          filter.category = category;
+      }
+      if (brand) {
+          filter.brands = brand;
+      }
+      if (status === "Active") {
+          filter.isDeleted = false;
+      } else if (status === "Disabled") {
+          filter.isDeleted = true;
+      }
+
+      // Fetch products and populate categories & brands
+      let products = await Product.find(filter)
+          .populate("category brands")
+          .skip(skip)
+          .limit(limit)
+          .sort({ createdAt: -1 });
+
+     
       let totalProducts = await Product.countDocuments(filter);
       let totalPages = Math.ceil(totalProducts / limit);
-  
-      // Fetch categories & brands for dropdowns
+
       let categories = await Category.find();
       let brands = await Brand.find();
-  
+
       res.render("product", {
-        products,
-        categories,
-        brands,
-        search,
-        selectedCategory: category,
-        selectedBrand: brand,
-        status,
-        currentPage: page,
-        totalPages
+          products,
+          categories,
+          brands,
+          search,
+          selectedCategory: category,
+          selectedBrand: brand,
+          status,
+          currentPage: page,
+          totalPages
       });
-  
-    } catch (error) {
+
+  } catch (error) {
       console.error("Error fetching products:", error);
       res.redirect("/admin/error");
-    }
-  });
+  }
+});
 
-const liveSearchProducts = asyncHandler(async (req, res) => {
-    try {
-      let search = req.query.search || "";
-      let category = req.query.category || "";
-      let brand = req.query.brand || "";
-      let status = req.query.status || "";
+// const liveSearchProducts = asyncHandler(async (req, res) => {
+//     try {
+//       let search = req.query.search || "";
+//       let category = req.query.category || "";
+//       let brand = req.query.brand || "";
+//       let status = req.query.status || "";
   
-      let filter = {};
+//       let filter = {};
   
-      if (search) {
-        filter.name = { $regex: search, $options: "i" };
-      }
+//       if (search) {
+//         filter.name = { $regex: search, $options: "i" };
+//       }
   
-      if (category) {
-        filter.category = category;
-      }
+//       if (category) {
+//         filter.category = category;
+//       }
   
-      if (brand) {
-        filter.brands = brand;
-      }
+//       if (brand) {
+//         filter.brands = brand;
+//       }
   
-      if (status === "Active") {
-        filter.isDeleted = false;
-      } else if (status === "Disabled") {
-        filter.isDeleted = true;
-      }
+//       if (status === "Active") {
+//         filter.isDeleted = false;
+//       } else if (status === "Disabled") {
+//         filter.isDeleted = true;
+//       }
   
-      let products = await Product.find(filter).populate("category brands").sort({ createdAt: -1 });
+//       let products = await Product.find(filter).populate("category brands").sort({ createdAt: -1 });
   
-      const formatDate = (date) => {
-        const d = new Date(date);
-        return d.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-      };
+//       const formatDate = (date) => {
+//         const d = new Date(date);
+//         return d.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+//       };
   
-      let formattedProducts = products.map((product) => ({
-        _id: product._id,
-        name: product.name,
-        price: product.price,
-        finalPrice: product.finalPrice || product.price,
-        image: product.images.length ? product.images[0] : "/assets/imgs/default.jpg",
-        isDeleted: product.isDeleted,
-        formattedDate: formatDate(product.createdAt),
-        shortDescription: product.description.length > 50 ? product.description.substring(0, 50) + "..." : product.description,
-      }));
+//       let formattedProducts = products.map((product) => ({
+//         _id: product._id,
+//         name: product.name,
+//         price: product.price,
+//         finalPrice: product.finalPrice || product.price,
+//         image: product.images.length ? product.images[0] : "/assets/imgs/default.jpg",
+//         isDeleted: product.isDeleted,
+//         formattedDate: formatDate(product.createdAt),
+//         shortDescription: product.description.length > 50 ? product.description.substring(0, 50) + "..." : product.description,
+//       }));
   
-      res.json({ products: formattedProducts });
-    } catch (error) {
-      console.error("Error in live search:", error);
-      res.status(500).json({ error: "Failed to fetch products" });
-    }
-  });
+//       res.json({ products: formattedProducts });
+//     } catch (error) {
+//       console.error("Error in live search:", error);
+//       res.status(500).json({ error: "Failed to fetch products" });
+//     }
+//   });
 
 const addProductLoad=asyncHandler(async(req,res)=>{
   try{
@@ -185,8 +174,12 @@ const addProduct= asyncHandler(async (req, res) => {
     );
 
     if(!discount) discount=0;
-    // Calculate final price
-    const finalPrice = price - (price * (discount)) / 100;
+    const categories=await Category.findOne({name:category});    
+    if(categories.offerApplied && categories.catOffer > discount ){
+      const finalPrice = price - (price * (categories.catOffer) / 100);
+    }else{
+      const finalPrice = price - (price * (discount)) / 100;
+    }
 
     // Save product to the database
     await Product.create({
@@ -245,7 +238,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       const { name, description, price, discount, stock, category, brands, gender, replacedIndexes } = req.body;
       const productId = req.params.id;
 
-      const product = await Product.findById(productId);
+      const product = await Product.findById(productId).populate('category');
       if (!product) return res.status(404).json({ error: "Product not found" });
 
       let errors = {};
@@ -269,7 +262,18 @@ const updateProduct = asyncHandler(async (req, res) => {
       product.category = category;
       product.brands = brands;
       product.gender = gender;
-      product.finalPrice= price-(price*(discount/100));
+      
+      const productDiscount = product.offerApplied ? product.prodOffer : 0;
+      const categoryDiscount = product.category.offerApplied ? product.category.catOffer : 0;
+      const defaultDiscount = product.discount || 0;
+  
+      const maxDiscount = Math.max(productDiscount, categoryDiscount, defaultDiscount);
+  
+      // Calculate Final Price
+      product.finalPrice = parseFloat(
+        (product.price - (product.price * maxDiscount) / 100).toFixed(2)
+      );
+    
 
       let updatedImages = [...product.images]; // Copy existing images
 
@@ -308,8 +312,6 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 const blockProduct=asyncHandler(async(req,res)=>{
   const productId=req.params.id;
   const product=await Product.findById(productId);
@@ -319,14 +321,87 @@ const blockProduct=asyncHandler(async(req,res)=>{
   res.json({ success: true, message: product.isDeleted?"Product blocked successfully": "Product unblocked successfully"});
   
 });
+
+const addOffer = async (req, res) => {
+  try {
+    const { productId, offerPercentage } = req.body;
+
+    let product = await Product.findById(productId).populate("category");
+
+    if (!product) {     
+      return res.status(statusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Product Not Found",
+      });     
+    }
+
+    // Update Product Offer
+    product.prodOffer = offerPercentage;
+    product.offerApplied = true;
+
+    // Determine the Maximum Discount
+    const productDiscount = product.prodOffer || 0;
+    const categoryDiscount = product.category?.offerApplied ? product.category.catOffer || 0 : 0;
+    const defaultDiscount = product.discount || 0;
+
+    const maxDiscount = Math.max(productDiscount, categoryDiscount, defaultDiscount);
+
+    // Calculate Final Price
+    product.finalPrice = parseFloat(
+      (product.price - (product.price * maxDiscount) / 100).toFixed(2)
+    );
+
+    await product.save();
+
+    return res.status(statusCodes.SUCCESS).json({
+      success: true,
+      message: "Offer Applied Successfully",
+    });
+
+  } catch (err) {
+    console.error("Error in addOffer:", err);
+    return res.status(statusCodes.SERVER_ERROR).json({
+      success: false,
+      message: "Internal Server Error!!",
+    });
+  }
+};
+
+const removeOffer=async(req,res)=>{
+  try{
+    const {id}=req.params;
+    const product=await Product.findById(id).populate("category");    
+    if(!product){
+      return res.status(statusCodes.NOT_FOUND).json({success:false,message:"Product Not found"});
+    }
+    product.offerApplied=false;
+    const categoryDiscount = product.category?.offerApplied ? product.category.catOffer || 0 : 0;
+    const defaultDiscount = product.discount || 0;
+
+    const maxDiscount = Math.max(categoryDiscount, defaultDiscount);
+
+    // Calculate Final Price
+    product.finalPrice = parseFloat(
+      (product.price - (product.price * maxDiscount) / 100).toFixed(2)
+    );
+
+    await product.save();   
+    return res.status(statusCodes.SUCCESS).json({success:true,message:'Offer is Removed'});
+
+  }catch(err){
+    console.error(err);
+    return res.status(statusCodes.SERVER_ERROR).json({success:false,message:'Internal Server Error'});
+  }
+}
     
 module.exports={
     productList,
-    liveSearchProducts,
     addProductLoad,
     addProduct,
     editProduct,
     updateProduct,
-    blockProduct
+    blockProduct,
+    addOffer,
+    removeOffer
 };
 

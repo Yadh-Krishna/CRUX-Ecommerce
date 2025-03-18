@@ -71,7 +71,8 @@ const productDetails = async (req, res) => {
                     { name: "Shop", url: "/product-list" },
                     { name: slug.toUpperCase(), url: `/product-list/${slug}`}];
            
-                    console.log(breadcrumbs);
+                    // console.log(breadcrumbs);
+                    
             res.render("products", { 
                 userWishlist:wishlistProductIds,
                 product, 
@@ -112,7 +113,8 @@ const loadHome=async(req,res)=>{
             isDeleted: false,
             category: { $in: validCategoryIds },
             brands: { $in: validBrandIds }
-        });
+        }).populate('category','name offerApplied catOffer');
+     
       
         let wishlistProductIds = null;
         if (user) {

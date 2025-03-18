@@ -50,8 +50,8 @@
     { timestamps: true }
     );
 
-walletSchema.set('toJSON', { virtuals: true });
-walletSchema.set('toObject', { virtuals: true });
+    walletSchema.set('toJSON', { virtuals: true });
+    walletSchema.set('toObject', { virtuals: true });
 
     //  Virtual field: Calculates wallet balance dynamically
     walletSchema.virtual("calculatedBalance").get(function () {

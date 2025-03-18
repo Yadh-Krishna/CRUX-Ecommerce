@@ -288,7 +288,7 @@
             <div class="colorlib-product">
                 <div class="container">
                     <div class="row row-pb-lg">
-                        <div class="col-md-12">
+                        <div class="col-md-8">
                             <div class="product-name d-flex">
                                 <div class="one-forth text-left px-4"><span>Product Details</span></div>
                                 <div class="one-eight text-center"><span>Price</span></div>
@@ -337,45 +337,38 @@
                                 <p class="text-center">Your cart is empty.</p>
                             <% } %>
                         </div>
-                    </div>
-            
-                    <div class="row row-pb-lg">
-                        <div class="col-md-12">
-                            <div class="total-wrap">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <form action="#">
-                                            <div class="row form-group">
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control input-number" placeholder="Your Coupon Code...">
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <input type="submit" value="Apply Coupon" class="btn btn-primary">
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="col-sm-5 text-center">
-                                        <div class="total">
-                                            <div class="sub">
-                                                <p><span>Subtotal:</span> <span id="subtotal">₹<%= subtotal.toFixed(2) %></span></p>
-                                                <p><span>Delivery:</span> <span>₹0.00</span></p>
-                                                <p><span>Discount:</span> <span id="discount">₹<%= discount.toFixed(2) %></span></p>
-                                            </div>
-                                            <div class="grand-total pb-2">
-                                                <p><span><strong>Total:</strong></span> <span id="grand-total">₹<%= grandTotal.toFixed(2) %></span></p>
-                                            </div>
-                                            <div>
-                                                <a href="#"><button class="btn btn-md btn-success proceedCheckout">Proceed to Checkout</button></a>
-                                            </div>
-                                            <div>
-                                                <a href="/product-list"><button class="btn btn-sm btn-dark">Continue Shopping</button></a>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <div class="col-md-4 text-center">
+                            <div class="total-wrap" style="margin:0;">                                
+                            <div class="total">
+                                <h2>Order Summary</h2>
+                                <div class="sub">
+                                    <p><span>Subtotal:</span> <span id="subtotal">₹<%= subtotal.toFixed(2) %></span></p>
+                                    <p><span>Delivery:</span> <span>₹0.00</span></p>
+                                    <p><span>Discount:</span> <span id="discount">₹<%= discount.toFixed(2) %></span></p>
+                                </div>
+                                <div class="grand-total pb-2">
+                                    <p><span><strong>Total:</strong></span> <span id="grand-total">₹<%= grandTotal.toFixed(2) %></span></p>
+                                </div>
+                                <div>
+                                    <a href="#"><button class="btn btn-md btn-success proceedCheckout">Proceed to Checkout</button></a>
+                                </div>
+                                <div>
+                                    <a href="/product-list"><button class="btn btn-sm btn-dark">Continue Shopping</button></a>
                                 </div>
                             </div>
                         </div>
+                        </div>
+                    </div>
+            
+                    <!-- <div class="row row-pb-lg">
+                        <div class="col-md-12">
+                           
+                                <div class="row">
+                                    
+                                  
+                                </div>
+                            </div>
+                        </div> -->
                     </div>
             
                     <!-- Similar Products Section -->

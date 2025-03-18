@@ -76,70 +76,104 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <% } %>
-          <div class="card-body">
-            <!--  HEADER ROW FOR COLUMNS -->
-            <div class="row fw-bold text-muted border-bottom pb-2 mb-3">
+        <div class="card-body">
+          <!-- HEADER ROW FOR COLUMNS -->
+          <div class="row fw-bold text-muted border-bottom pb-2 mb-3">
               <div class="col-lg-1 col-sm-1 col-1">Sl.No</div>
-              <div class="col-lg-4 col-sm-4 col-4">Picture & Name</div>
+              <div class="col-lg-3 col-sm-3 col-3">Picture & Name</div>
               <div class="col-lg-2 col-sm-2 col-2">Price</div>
-              <div class="col-lg-2 col-sm-2 col-1">Status</div>
+              <div class="col-lg-2 col-sm-2 col-2">Offer/Discount</div>
+              <div class="col-lg-1 col-sm-1 col-1">Status</div>
               <div class="col-lg-1 col-sm-1 col-1">Date</div>
               <div class="col-lg-2 col-sm-2 col-2 text-center">Action</div>
-            </div>
-    
-            <!-- ✅ PRODUCT LIST -->
-             <div id="product-list">
+          </div>
+      
+          <!-- ✅ PRODUCT LIST -->
+          <div id="product-list">
               <% if (products.length > 0) { %>
-                <% products.forEach((product, index) => { %>
-                    <article class="itemlist">
-                        <div class="row align-items-center">
-                            <div class="col-lg-1 col-sm-1 col-1"><%= index + 1 %>.</div>
-                            <div class="col-lg-4 col-sm-4 col-4">
-                                <a class="itemside" href="#">
-                                    <div class="left">
-                                        <img src="<%= product.images.length ? product.images[0] : '/assets/imgs/default.jpg' %>" class="img-sm img-thumbnail" alt="<%= product.name %>">
-                                    </div>
-                                    <div class="info">
-                                        <h6 class="mb-0"><%= product.name %></h6>
-                                        <small class="text-muted d-block">
-                                            <%= product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description %>
-                                        </small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-2">₹<%= product.finalPrice.toFixed(2) || product.price %></div>
-                            <div class="col-lg-2 col-sm-2 col-1">
-                                <% if (!product.isDeleted) { %>
-                                    <span class="badge rounded-pill alert-success">Active</span>
+                  <% products.forEach((product, index) => { %>
+                      <article class="itemlist">
+                          <div class="row align-items-center">
+                              <div class="col-lg-1 col-sm-1 col-1"><%= index + 1 %>.</div>
+                              <div class="col-lg-3 col-sm-3 col-3">
+                                  <a class="itemside" href="#">
+                                      <div class="left">
+                                          <img src="<%= product.images.length ? product.images[0] : '/assets/imgs/default.jpg' %>" class="img-sm img-thumbnail" alt="<%= product.name %>">
+                                      </div>
+                                      <div class="info">
+                                          <h6 class="mb-0"><%= product.name %></h6>
+                                          <small class="text-muted d-block">
+                                              <%= product.description.length > 50 ? product.description.substring(0, 50) + '...' : product.description %>
+                                          </small>
+                                      </div>
+                                  </a>
+                              </div>
+                              <div class="col-lg-2 col-sm-2 col-2">₹<%= product.finalPrice.toFixed(2) || product.price %></div>
+                              <div class="col-lg-2 col-sm-2 col-2">
+                                <% 
+                                    let discountValue = product.discount || 0;
+                                    let offerValue = (product.offerApplied && product.prodOffer) ? product.prodOffer : 0;
+                                    let catValue= (product.category.offerApplied && product.category.catOffer) ? product.category.catOffer : 0;
+                                    let maxValue= Math.max(offerValue,catValue)
+                                    if (maxValue > discountValue) { 
+                                %>
+                                    <span class="badge bg-success">
+                                        <%= maxValue %>% Off
+                                    </span>
+                                <% } else if (discountValue > 0) { %>
+                                    <span class="badge bg-warning">₹<%= discountValue %> Off</span>
                                 <% } else { %>
-                                    <span class="badge rounded-pill alert-danger">Disabled</span>
+                                    <span class="text-muted">No Offer</span>
                                 <% } %>
                             </div>
-                            <div class="col-lg-1 col-sm-2 col-1 text-nowrap">
-                                <span><%= new Intl.DateTimeFormat('en-GB').format(new Date(product.createdAt)).replace(/\//g, '-') %></span>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-2 text-start text-nowrap">
-                                <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
-                                    <i class="material-icons md-edit"></i> Edit
-                                </a>
-                                <a href="#" onclick="toggleProductStatus('<%= product._id %>')" class="btn btn-sm font-sm btn-light rounded">
-                                    <% if (!product.isDeleted) { %>
-                                        <i class="material-icons md-delete_forever"></i> Disable
+                            
+                              <div class="col-lg-1 col-sm-1 col-1">
+                                  <% if (!product.isDeleted) { %>
+                                      <span class="badge rounded-pill alert-success">Active</span>
+                                  <% } else { %>
+                                      <span class="badge rounded-pill alert-danger">Disabled</span>
+                                  <% } %>
+                              </div>
+                              <div class="col-lg-1 col-sm-1 col-1 text-nowrap">
+                                  <span><%= new Intl.DateTimeFormat('en-GB').format(new Date(product.updatedAt)).replace(/\//g, '-') %></span>
+                              </div>
+                              <div class="col-lg-2 col-sm-2 col-2 text-start text-nowrap">
+                                <div class="d-flex flex-column">
+                                  <a href="/admin/products/edit/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                      <i class="material-icons md-edit"></i> Edit
+                                  </a>
+                                  <a href="#" onclick="toggleProductStatus('<%= product._id %>')" class="btn btn-sm font-sm btn-light rounded">
+                                      <% if (!product.isDeleted) { %>
+                                          <i class="material-icons md-delete_forever"></i> Disable
+                                      <% } else { %>
+                                          <i class="material-icons md-check_circle"></i> Enable
+                                      <% } %>
+                                  </a>
+                                  <% if (product.offerApplied) { %>
+                                  <a href="#" id="removeOffer" onclick="offerRemove('<%= product._id %>')" 
+                                    class="btn btn-sm font-sm btn-warning rounded mt-1"><i class="material-icons md-remove_circle"></i> Remove Offer                                    
+                                  </a>                                        
                                     <% } else { %>
-                                        <i class="material-icons md-check_circle"></i> Enable
+                                      <a href="#" onclick="openOfferModal('<%= product._id %>', '<%= product.name %>')" 
+                                        class="btn btn-sm font-sm btn-warning rounded mt-1"><i class="material-icons md-add_circle"></i> Add Offer
+                                      </a>
+                                        
                                     <% } %>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                <% }) %>
-            <% } else { %>
-                <div class="text-center py-4">
-                    <h5>No products found.</h5>
-                </div>
-            <% } %>
-             </div>         
+                                 
+                                 
+                                     
+                                    </div>
+                              </div>
+                          </div>
+                      </article>
+                  <% }) %>
+              <% } else { %>
+                  <div class="text-center py-4">
+                      <h5>No products found.</h5>
+                  </div>
+              <% } %>
           </div>
+      </div>
         </div>
     
         <!--  PAGINATION -->
@@ -166,8 +200,112 @@
       </section>
       <%- include("../partials/footer") %>
     </main>
+    <!-- Offer Modal -->
+    <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="offerModalLabel">Apply Offer</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <form id="offerForm">
+                      <input type="hidden" id="productId">
+                      <div class="mb-3">
+                          <label for="productName" class="form-label">Product</label>
+                          <input type="text" id="productName" class="form-control" disabled>
+                      </div>
+                      <div class="mb-3">
+                          <label for="offerPercentage" class="form-label">Offer Percentage</label>
+                          <input type="number" id="offerPercentage" class="form-control" min="1" max="100" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Apply Offer</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+
+function openOfferModal(productId, productName) {
+    document.getElementById('productId').value = productId;
+    document.getElementById('productName').value = productName;
+    var offerModal = new bootstrap.Modal(document.getElementById('offerModal'));
+    offerModal.show();
+}   
+
+      async function offerRemove(productId){
+        
+        try{
+          const response= await fetch(`/admin/products/removeOffer/${productId}`,{
+            method:'PATCH',
+            headers:{'Content-Type':'application/json'},
+            })
+
+          const result=await response.json();
+          if(result.success){
+            Swal.fire({
+              icon:'success',
+              title:'Offer Removed',
+              text:result.message,
+              confirmButtonText:'OK'
+            }).then(()=>location.reload())              
+          }else{
+            Swal.fire({
+              icon:'error',
+              title:'Error Occured',
+              text:result.message,
+              confirmButtonText:'OK'
+            })
+          }
+        }catch(err){
+          Swal.fire({
+              icon:'error',
+              title:'Server Error',
+              text:"Internal Server Error",
+              confirmButtonText:'OK'
+            })
+        }
+     
+    }
+
+      document.getElementById('offerForm').addEventListener('submit',async function(){
+        const offerPercentage=document.getElementById('offerPercentage').value;
+        const productId=document.getElementById('productId').value;
+        console.log(offerPercentage,productId);
+        try{
+          const response= await fetch(`/admin/products/addOffer`,{
+            method:'PATCH',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({productId:productId,offerPercentage:offerPercentage})
+          })
+
+          const result=await response.json();
+          if(result.success){
+            Swal.fire({
+              icon:'success',
+              title:'Offer Added',
+              text:result.message,
+              confirmButtonText:'OK'
+            }).then(()=>location.reload())              
+          }else{
+            Swal.fire({
+              icon:'error',
+              title:'Error Occured',
+              text:result.message,
+              confirmButtonText:'OK'
+            })
+          }
+        }catch(err){
+          Swal.fire({
+              icon:'error',
+              title:'Server Error',
+              text:result.message,
+              confirmButtonText:'OK'
+            })
+        }
+      })
         function toggleProductStatus(productId) {
           fetch(`/admin/products/${productId}/toggle-status`, {
             method: "PATCH"
@@ -189,76 +327,76 @@
             });
           }
 
-    document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("search");
-    const categorySelect = document.querySelector("select[name='category']");
-    const brandSelect = document.querySelector("select[name='brand']");
-    const statusSelect = document.querySelector("select[name='status']");
-    const productList = document.getElementById("product-list");
+  //   document.addEventListener("DOMContentLoaded", function () {
+  //   const searchInput = document.getElementById("search");
+  //   const categorySelect = document.querySelector("select[name='category']");
+  //   const brandSelect = document.querySelector("select[name='brand']");
+  //   const statusSelect = document.querySelector("select[name='status']");
+  //   const productList = document.getElementById("product-list");
 
-    function fetchProducts() {
-      const search = searchInput.value;
-      const category = categorySelect.value;
-      const brand = brandSelect.value;
-      const status = statusSelect.value;
+  //   function fetchProducts() {
+  //     const search = searchInput.value;
+  //     const category = categorySelect.value;
+  //     const brand = brandSelect.value;
+  //     const status = statusSelect.value;
 
-      fetch(`/admin/products/search?search=${search}&category=${category}&brand=${brand}&status=${status}`)
-        .then(response => response.json())
-        .then(data => {
-          productList.innerHTML = "";
+  //     fetch(`/admin/products/search?search=${search}&category=${category}&brand=${brand}&status=${status}`)
+  //       .then(response => response.json())
+  //       .then(data => {
+  //         productList.innerHTML = "";
 
-          if (data.products.length === 0) {
-            productList.innerHTML = `<div class="text-center py-4"><h5>No products found.</h5></div>`;
-            return;
-          }
+  //         if (data.products.length === 0) {
+  //           productList.innerHTML = `<div class="text-center py-4"><h5>No products found.</h5></div>`;
+  //           return;
+  //         }
 
-          data.products.forEach((product, index) => {
-            const statusBadge = product.isDeleted
-              ? '<span class="badge rounded-pill alert-danger">Disabled</span>'
-              : '<span class="badge rounded-pill alert-success">Active</span>';
+  //         data.products.forEach((product, index) => {
+  //           const statusBadge = product.isDeleted
+  //             ? '<span class="badge rounded-pill alert-danger">Disabled</span>'
+  //             : '<span class="badge rounded-pill alert-success">Active</span>';
 
-            productList.innerHTML += `
-              <article class="itemlist">
-                <div class="row align-items-center">
-                  <div class="col-lg-1 col-sm-1 col-1">${index + 1}.</div>
-                  <div class="col-lg-4 col-sm-4 col-4">
-                    <a class="itemside" href="#">
-                      <div class="left">
-                        <img src="${product.image}" class="img-sm img-thumbnail" alt="${product.name}">
-                      </div>
-                      <div class="info">
-                        <h6 class="mb-0">${product.name}</h6>
-                        <small class="text-muted d-block">${product.shortDescription}</small>
-                      </div>
-                    </a>
-                  </div>
-                  <div class="col-lg-2 col-sm-2 col-2">₹${product.finalPrice || product.price}</div>
-                  <div class="col-lg-2 col-sm-2 col-1">${statusBadge}</div>
-                  <div class="col-lg-1 col-sm-2 col-1 text-nowrap"><span>${product.formattedDate}</span></div>
-                  <div class="col-lg-2 col-sm-2 col-2 text-start text-nowrap">
-                    <a href="/admin/products/edit/${product._id}" class="btn btn-sm font-sm rounded btn-brand">
-                      <i class="material-icons md-edit"></i> Edit
-                    </a>
-                    <a href="#" onclick="toggleProductStatus('${product._id}')" class="btn btn-sm font-sm btn-light rounded">
-                      ${product.isDeleted 
-                        ? '<i class="material-icons md-check_circle"></i> Enable' 
-                        : '<i class="material-icons md-delete_forever"></i> Disable'}
-                    </a>
-                  </div>
-                </div>
-              </article>
-            `;
-          });
-        })
-        .catch(error => console.error("Error fetching products:", error));
-    }
+  //           productList.innerHTML += `
+  //             <article class="itemlist">
+  //               <div class="row align-items-center">
+  //                 <div class="col-lg-1 col-sm-1 col-1">${index + 1}.</div>
+  //                 <div class="col-lg-4 col-sm-4 col-4">
+  //                   <a class="itemside" href="#">
+  //                     <div class="left">
+  //                       <img src="${product.image}" class="img-sm img-thumbnail" alt="${product.name}">
+  //                     </div>
+  //                     <div class="info">
+  //                       <h6 class="mb-0">${product.name}</h6>
+  //                       <small class="text-muted d-block">${product.shortDescription}</small>
+  //                     </div>
+  //                   </a>
+  //                 </div>
+  //                 <div class="col-lg-2 col-sm-2 col-2">₹${product.finalPrice || product.price}</div>
+  //                 <div class="col-lg-2 col-sm-2 col-1">${statusBadge}</div>
+  //                 <div class="col-lg-1 col-sm-2 col-1 text-nowrap"><span>${product.formattedDate}</span></div>
+  //                 <div class="col-lg-2 col-sm-2 col-2 text-start text-nowrap">
+  //                   <a href="/admin/products/edit/${product._id}" class="btn btn-sm font-sm rounded btn-brand">
+  //                     <i class="material-icons md-edit"></i> Edit
+  //                   </a>
+  //                   <a href="#" onclick="toggleProductStatus('${product._id}')" class="btn btn-sm font-sm btn-light rounded">
+  //                     ${product.isDeleted 
+  //                       ? '<i class="material-icons md-check_circle"></i> Enable' 
+  //                       : '<i class="material-icons md-delete_forever"></i> Disable'}
+  //                   </a>
+  //                 </div>
+  //               </div>
+  //             </article>
+  //           `;
+  //         });
+  //       })
+  //       .catch(error => console.error("Error fetching products:", error));
+  //   }
 
-    // Add event listeners for live search
-    searchInput.addEventListener("input", fetchProducts);
-    categorySelect.addEventListener("change", fetchProducts);
-    brandSelect.addEventListener("change", fetchProducts);
-    statusSelect.addEventListener("change", fetchProducts);
-  });
+  //   // Add event listeners for live search
+  //   searchInput.addEventListener("input", fetchProducts);
+  //   categorySelect.addEventListener("change", fetchProducts);
+  //   brandSelect.addEventListener("change", fetchProducts);
+  //   statusSelect.addEventListener("change", fetchProducts);
+  // });
       </script>      
     <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>

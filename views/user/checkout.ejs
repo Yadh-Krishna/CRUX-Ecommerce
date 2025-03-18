@@ -228,8 +228,8 @@
         font-size: 1rem;
     }
 
-    #applyCouponBtn {
-        background-color: var(--accent-color);
+    /* #applyCouponBtn {
+        background-color: rgb(113, 113, 243);
         border: none;
         padding: 10px;
         font-size: 1rem;
@@ -243,7 +243,7 @@
         color: #fff;
         transform: translateY(-3px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
+    } */
 
     #couponMessage {
         font-size: 0.9rem;
@@ -281,14 +281,14 @@
                                         <tr>
                                             <th>Image</th>
                                             <th>Product</th>
-                                            <th>Price</th>
+                                            <th class="text-center">Price</th>
                                             <th>Quantity</th>
                                             <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <% if (cart && cart.items && cart.items.length > 0) { %>
-                                            <% cart.items.forEach(function(item) { %>
+                                            <% cart.items.forEach(function(item) {%>
                                                 <tr>
                                                     <td>
                                                         <div class="product-img">
@@ -298,23 +298,23 @@
                                                     <td>
                                                         <div class="product-name">
                                                             <h3><%= item.product.name %></h3>
-                                                            <% if (item.product.discount > 0) { %>
-                                                                <span class="badge bg-success"><%= item.product.discount %>% OFF</span>
-                                                            <% } %>
+                                                            <!-- <% if (item.product.discount > 0) { %>
+                                                                <span class="badge bg-success"><%= item.product.discount  %>% OFF</span>
+                                                            <% } %> -->
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <% if (item.product.discount > 0) { %>
+                                                      <% if (item.product.discount > 0) { %>
                                                             <div class="price">
                                                                 <span class="original-price text-muted"><s>₹<%= item.product.price.toFixed(2) %></s></span>
-                                                                <span class="discounted-price">₹<%= item.product.finalprice %></span>
+                                                                <span class="discounted-price"><%= item.product.finalPrice %></span>
                                                             </div>
-                                                        <% } else { %>
+                                                         <% } else { %>
                                                             <div class="price">₹<%= item.product.price.toFixed(2) %></div>
                                                         <% } %>
                                                     </td>
                                                     <td><%= item.quantity %></td>
-                                                    <td>₹<%= (item.product.price * item.quantity).toFixed(2) %></td>
+                                                    <td>₹<%= (item.product.finalPrice * item.quantity) %></td>
                                                 </tr>
                                             <% }); %>
                                         <% } else { %>
@@ -438,7 +438,7 @@
                                     <% cart.items.forEach(function(item) { %>
                                         <li class="cart-item">
                                             <span class="item-name"><%= item.quantity %> x <%= item.product.name %></span>
-                                            <span class="item-price">₹<%= (item.product.price * item.quantity).toFixed(2) %></span>
+                                            <span class="item-price">₹<%= (item.product.finalPrice * item.quantity).toFixed(2) %></span>
                                         </li>
                                     <% }); %>
                                 <% } %>
@@ -458,25 +458,56 @@
                             <span>Shipping</span>
                             <span class="price">₹<%= cart && cart.shipping ? cart.shipping : '0.00' %></span>
                         </li>
+                        <%if(couponApplied){%>
+                            <li class="cart-summary-item">
+                                <span>Coupon Applied </span>
+                                <span class="price">₹<%= couponApplied %></span>
+                            </li>
+                            <%}%>
                         <li class="cart-summary-item total fw-bold pt-2">
                             <span>Order Total</span>
-                            <span class="price">₹<%= cart ? cart.total : '0.00' %></span>
+                            <span id="grand-total" class="price">₹<%= cart ? cart.total : '0.00' %></span>
                         </li>
                     </ul>
                 </div>
                 <!-- Apply Coupon Section -->
-                <div class="cart-detail">
+                <!-- <div class="cart-detail">
                   <h2>Apply Coupon</h2>
                   <div class="row">
-                      <div class="col-md-8">
+                      <div class="col-md-6 ">
                           <input type="text" class="form-control" id="couponCode" placeholder="Enter Coupon Code">
                       </div>
-                      <div class="col-md-4">
-                          <button class="btn btn-primary w-100" id="applyCouponBtn">Apply Coupon</button>
+                      <div class="col-md-2">
+                          <button class="btn btn-primary" id="applyCouponBtn">Apply</button>
                       </div>
-                  </div>
+                      <div class="col-md-2 ms-2">
+                        <button class="btn btn-danger" id="removeButton">Remove</button>
+                    </div>                 </div>
+                  
                   <div id="couponMessage" class="mt-2 text-center" style="display: none;"></div>
+                </div> -->
+                <div class="cart-detail">
+                    <h2>Available Coupons</h2>
+                    <div class="available-coupons">
+                        <% if (availableCoupons && availableCoupons.length > 0) { %>
+                            <% availableCoupons.forEach((coupon) => { %>
+                                <div class="coupon-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                    <div>
+                                        <span class="coupon-code fw-bold"><%= coupon.name %></span>
+                                        <p class="coupon-description mb-0 small">
+                                            <span>Minimum Purchase:</span> ₹<%= coupon.minimumPrice%> <br>
+                                            <span>Maximum Discount:</span> ₹<%= coupon.offerPrice %> <br>                                           
+                                        </p>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary apply-coupon-btn" data-coupon="<%= coupon.code %>">Apply</button>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-center">No coupons available at the moment</p>
+                        <% } %>
+                    </div>
                 </div>
+
                 <!-- Payment Method Section -->
                 <div class="cart-detail">
                     <h2>Payment Method</h2>
@@ -635,73 +666,7 @@
     }
 });
 
-
-
-document.getElementById("placeOrderBtn").addEventListener("click", async function () {
-    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
-    if (!selectedAddress) {
-        Swal.fire({
-            icon: "warning",
-            title: "Missing Address",
-            text: "Please select a shipping address.",
-        });
-        return;
-    }
-
-    const paymentMethod = document.querySelector('input[name="optradio"]:checked');
-    if (!paymentMethod) {
-        Swal.fire({
-            icon: "warning",
-            title: "Missing Payment Method",
-            text: "Please select a payment method.",
-        });
-        return;
-    }
-
-    if(paymentMethod.value==="COD"){
-    
-    try {
-        let response = await fetch("/order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                userId: "<%= user._id %>", 
-                addressId: selectedAddress.value,
-                paymentMethod: paymentMethod.value
-            })
-        });
-
-        let result = await response.json();
-
-        if (result.success) {
-            Swal.fire({
-                icon: "success",
-                title: "Order Placed!",
-                text: result.message,
-                confirmButtonText: "OK",
-            }).then(() => {
-                window.location.href = "/order";
-            });
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Order Failed",
-                text: result.error,
-            });
-        }
-    } catch (error) {
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Something went wrong. Please try again later.",
-        });
-    }
-    }else{
-      initiateRazorpayPayment(selectedAddress);
-    }     
-    });
-    
-    const applyCouponBtn = document.getElementById('applyCouponBtn');
+const applyCouponBtn = document.getElementById('applyCouponBtn');
     const couponCodeInput = document.getElementById('couponCode');
     const couponMessage = document.getElementById('couponMessage');
 
@@ -752,49 +717,76 @@ document.getElementById("placeOrderBtn").addEventListener("click", async functio
         }
     });
 
-    // Function to cancel failed orders
-async function cancelFailedOrder(orderId) {
-    try {
-        let response = await fetch("/cancel-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                orderId: orderId
-            })
+    document.getElementById("placeOrderBtn").addEventListener("click", async function () {
+    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+    if (!selectedAddress) {
+        Swal.fire({
+            icon: "warning",
+            title: "Missing Address",
+            text: "Please select a shipping address.",
         });
-        
-        let result = await response.json();
-        
-        if (result.success) {
-            Swal.fire({
-                icon: "info",
-                title: "Order Cancelled",
-                text: "Your order has been cancelled.",
-                confirmButtonText: "OK",
-            }).then(() => {
-                window.location.href = "/cart";
+        return;
+    }
+
+    const paymentMethod = document.querySelector('input[name="optradio"]:checked');
+    if (!paymentMethod) {
+        Swal.fire({
+            icon: "warning",
+            title: "Missing Payment Method",
+            text: "Please select a payment method.",
+        });
+        return;
+    }
+
+    if (paymentMethod.value === "COD") {
+        try {
+            let response = await fetch("/order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: "<%= user._id %>", 
+                    addressId: selectedAddress.value,
+                    paymentMethod: "COD"
+                })
             });
-        } else {
+
+            let result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Order Placed!",
+                    text: result.message,
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    window.location.href = "/order";
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Order Failed",
+                    text: result.error,
+                });
+            }
+        } catch (error) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: result.error || "Failed to cancel order."
+                text: "Something went wrong. Please try again later.",
             });
         }
-    } catch (error) {
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Something went wrong. Please try again later."
-        });
+    } else if (paymentMethod.value === "Online") {
+        initiateRazorpayPayment(selectedAddress);
     }
-}
-
+});
 
 async function initiateRazorpayPayment(selectedAddress, orderId = null) {
     try {
-        // Get total amount from cart
-        const totalAmount = parseFloat(document.querySelector(".price").value);
+        // Get total amount from the page
+        const totalAmount = parseFloat(document.getElementById("grand-total").textContent.replace("₹", ""));
+        
+        // Get cart items (you may need to modify this based on how you store cart data)
+        const cartItems = '<%= JSON.stringify(cart.items) %>';
         
         // If orderId is provided, we're retrying a payment
         let orderResult;
@@ -808,7 +800,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
                     userId: "<%= user._id %>",
                     addressId: selectedAddress.value,
                     amount: totalAmount,
-                    products: '<%= JSON.stringify(cart.items) %>' 
+                    products: cartItems
                 })
             });
             
@@ -819,7 +811,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
             }
         } else {
             // For retrying, get existing order info
-            let orderInfoResponse = await fetch(`/get-order-info/${orderId}`, {
+            let orderInfoResponse = await fetch(`/order/get-order-info/${orderId}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" }
             });
@@ -863,7 +855,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
                             body: JSON.stringify({
                                 userId: "<%= user._id %>",
                                 addressId: selectedAddress.value,
-                                paymentMethod: "RazorPay",
+                                paymentMethod: "Online",
                                 paymentId: response.razorpay_payment_id,
                                 orderId: response.razorpay_order_id
                             })
@@ -921,7 +913,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
                     // Retry payment with the same order ID
                     initiateRazorpayPayment(selectedAddress, response.error.metadata.order_id);
                 } else {
-                    // Cancel the order or redirect to cart
+                    // Cancel the order
                     cancelFailedOrder(response.error.metadata.order_id);
                 }
             });
@@ -943,6 +935,45 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
         });
     }
 }
+
+// Function to cancel failed orders
+async function cancelFailedOrder(orderId) {
+    try {
+        let response = await fetch("/order/cancel-failed-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                orderId: orderId
+            })
+        });
+        
+        let result = await response.json();
+        
+        if (result.success) {
+            Swal.fire({
+                icon: "info",
+                title: "Order Cancelled",
+                text: "Your order has been cancelled.",
+                confirmButtonText: "OK",
+            }).then(() => {
+                window.location.href = "/cart";
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: result.error || "Failed to cancel order."
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Something went wrong. Please try again later."
+        });
+    }
+}
+
 });
 
   </script>	

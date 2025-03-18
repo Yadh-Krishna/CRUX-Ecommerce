@@ -51,6 +51,9 @@ router.get('/order',verifyToken,checkoutController.loadOrder);
 router.post('/order',verifyToken,checkoutController.placeOrder);
 router.post('/order/create-razorpay-order',verifyToken,checkoutController.createRazorPay);
 router.post('/order/verify-payment',verifyToken,checkoutController.verifyOnlinePayment)
+router.get('/order/get-order-info/:orderId', verifyToken, checkoutController.getOrderInfo);
+router.post('/order/cancel-failed-order', verifyToken, checkoutController.cancelFailedOrder);
+
 
 
 module.exports = router; 

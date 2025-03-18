@@ -26,18 +26,18 @@ const app= express();
 
 app.use(nocache());
 
-app.use(session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: true,
-      store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI, // Use your MongoDB connection string
-        collectionName: "sessions",
-    }),
+  app.use(session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+        store: MongoStore.create({
+          mongoUrl: process.env.MONGO_URI, // Use your MongoDB connection string
+          collectionName: "sessions",
+      }),
 
-    })
-  );//session management
- 
+      })
+    );//session management
+  
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(express.static('public'));//Static file pointed
@@ -52,8 +52,6 @@ app.use(session({
     // Redirect back to the previous page or a generic error page
     res.redirect("/admin/error"); 
 });
-
-
   // Initialize flash middleware
   app.use(flash());
 
@@ -87,4 +85,4 @@ const razorpay = new Razorpay({
 
 connectDB();
 const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server Live on URL: http://localhost:${PORT}`));

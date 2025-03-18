@@ -25,7 +25,9 @@ const categorySchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false // Soft delete feature
-    }
+    },
+    catOffer:{type:Number,default:0},
+    offerApplied:{type:Boolean, default:false}
   },
   { timestamps: true } // Adds createdAt & updatedAt
 );

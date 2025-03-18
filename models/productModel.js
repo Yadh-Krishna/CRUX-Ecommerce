@@ -15,7 +15,9 @@ const ProductSchema = new mongoose.Schema({
   gender: { type: String, enum: ["Men", "Women", "Unisex"], required: true },
   ratings: { type: Number, default: 0 },
   tags: [{ type: String }],
-  isDeleted: { type: Boolean, default: false }
+  isDeleted: { type: Boolean, default: false },
+  prodOffer:{type:Number,default:0},
+  offerApplied:{type: Boolean, default: false}
 }, { timestamps: true });
   
 ProductSchema.pre("save", async function (next) {
