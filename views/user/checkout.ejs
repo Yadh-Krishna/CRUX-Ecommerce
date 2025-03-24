@@ -227,24 +227,6 @@
         padding: 10px;
         font-size: 1rem;
     }
-
-    /* #applyCouponBtn {
-        background-color: rgb(113, 113, 243);
-        border: none;
-        padding: 10px;
-        font-size: 1rem;
-        font-weight: 600;
-        border-radius: 5px;
-        transition: all 0.3s;
-    }
-
-    #applyCouponBtn:hover {
-        background-color: var(--primary-color);
-        color: #fff;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    } */
-
     #couponMessage {
         font-size: 0.9rem;
         color: var(--primary-color);
@@ -265,6 +247,19 @@
 <div id="page">
   <%- include('./userPartials/header') %>
 
+  <% if (messages.success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= messages.success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<% if (messages.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= messages.error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
 
   <div class="colorlib-product">
     <div class="container">
@@ -281,8 +276,8 @@
                                         <tr>
                                             <th>Image</th>
                                             <th>Product</th>
-                                            <th class="text-center">Price</th>
-                                            <th>Quantity</th>
+                                            <th class="text-start">Price</th>
+                                            <th >Quantity</th>
                                             <th>Total</th>
                                         </tr>
                                     </thead>
@@ -296,25 +291,25 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <div class="product-name">
+                                                        <div class="product-name align-middle">
                                                             <h3><%= item.product.name %></h3>
                                                             <!-- <% if (item.product.discount > 0) { %>
                                                                 <span class="badge bg-success"><%= item.product.discount  %>% OFF</span>
                                                             <% } %> -->
                                                         </div>
                                                     </td>
-                                                    <td>
+                                                    <td class="align-middle">
                                                       <% if (item.product.discount > 0) { %>
                                                             <div class="price">
                                                                 <span class="original-price text-muted"><s>₹<%= item.product.price.toFixed(2) %></s></span>
-                                                                <span class="discounted-price"><%= item.product.finalPrice %></span>
+                                                                <span class="discounted-price">₹<%= item.product.finalPrice %></span>
                                                             </div>
                                                          <% } else { %>
                                                             <div class="price">₹<%= item.product.price.toFixed(2) %></div>
                                                         <% } %>
                                                     </td>
-                                                    <td><%= item.quantity %></td>
-                                                    <td>₹<%= (item.product.finalPrice * item.quantity) %></td>
+                                                    <td class="align-middle"><%= item.quantity %></td>
+                                                    <td class="align-middle">₹<%= (item.product.finalPrice * item.quantity) %></td>
                                                 </tr>
                                             <% }); %>
                                         <% } else { %>
@@ -446,46 +441,32 @@
                         </li>
                         <li class="cart-summary-item">
                             <span>Subtotal</span>
-                            <span class="price">₹<%= cart ? cart.subtotal : '0.00' %></span>
+                            <span  class="price" id="subtotal">₹<%= cart ? cart.subtotal : '0.00' %></span>
                         </li>
                         <% if (cart && cart.tax > 0) { %>
                             <li class="cart-summary-item">
                                 <span>Tax</span>
-                                <span class="price">₹<%= cart.tax %></span>
+                                <span id="tax" class="price">₹<%= cart.tax %></span>
                             </li>
                         <% } %>
                         <li class="cart-summary-item">
                             <span>Shipping</span>
-                            <span class="price">₹<%= cart && cart.shipping ? cart.shipping : '0.00' %></span>
+                            <span id="shippingCharge" class="price">₹<%= cart && cart.shipping ? cart.shipping : '0.00' %></span>
                         </li>
-                        <%if(couponApplied){%>
-                            <li class="cart-summary-item">
-                                <span>Coupon Applied </span>
-                                <span class="price">₹<%= couponApplied %></span>
+                        <% if (appliedCoupon && couponOff > 0) { %>
+                            <li class="cart-summary-item text-success">
+                                <span>Coupon Applied (<%= appliedCoupon.name %>)</span>
+                                <span id="couponOff" class="price">-₹<%= couponOff.toFixed(2) %></span>
                             </li>
-                            <%}%>
+                        <% } %>
                         <li class="cart-summary-item total fw-bold pt-2">
                             <span>Order Total</span>
                             <span id="grand-total" class="price">₹<%= cart ? cart.total : '0.00' %></span>
                         </li>
                     </ul>
-                </div>
-                <!-- Apply Coupon Section -->
-                <!-- <div class="cart-detail">
-                  <h2>Apply Coupon</h2>
-                  <div class="row">
-                      <div class="col-md-6 ">
-                          <input type="text" class="form-control" id="couponCode" placeholder="Enter Coupon Code">
-                      </div>
-                      <div class="col-md-2">
-                          <button class="btn btn-primary" id="applyCouponBtn">Apply</button>
-                      </div>
-                      <div class="col-md-2 ms-2">
-                        <button class="btn btn-danger" id="removeButton">Remove</button>
-                    </div>                 </div>
-                  
-                  <div id="couponMessage" class="mt-2 text-center" style="display: none;"></div>
-                </div> -->
+                    <input type="hidden" id="appliedCouponId" value="<%= appliedCoupon ? appliedCoupon._id : '' %>">
+                </div>               
+
                 <div class="cart-detail">
                     <h2>Available Coupons</h2>
                     <div class="available-coupons">
@@ -495,11 +476,24 @@
                                     <div>
                                         <span class="coupon-code fw-bold"><%= coupon.name %></span>
                                         <p class="coupon-description mb-0 small">
-                                            <span>Minimum Purchase:</span> ₹<%= coupon.minimumPrice%> <br>
-                                            <span>Maximum Discount:</span> ₹<%= coupon.offerPrice %> <br>                                           
+                                            <span>Minimum Purchase:</span> ₹<%= coupon.minimumPrice %> <br>
+                                            <span>Discount:</span> ₹<%= coupon.offerPrice %> <br>                                           
                                         </p>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-primary apply-coupon-btn" data-coupon="<%= coupon.code %>">Apply</button>
+                
+                                    <!-- Apply Button -->
+                                    <button class="btn btn-sm btn-outline-primary apply-coupon-btn 
+                                        <% if (appliedCoupon && appliedCoupon.name === coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Apply
+                                    </button>
+                
+                                    <!-- Remove Button -->
+                                    <button class="btn btn-sm btn-danger remove-coupon-btn 
+                                        <% if (!appliedCoupon || appliedCoupon.name !== coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Remove
+                                    </button>
                                 </div>
                             <% }); %>
                         <% } else { %>
@@ -542,7 +536,107 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+
+document.addEventListener("visibilitychange", async function () {
+    const couponId="<%= appliedCoupon ? appliedCoupon._id : '' %>";
+        if (document.visibilityState === "hidden") {           
+             const response=await fetch("/remove-coupon", { method: "PATCH" ,headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify({couponId})
+        });
+        const result =await response.json();
+        if(result.success){
+            console.log('Coupon Removed');            
+        }else{
+            console.log("Error Occured");
+        }
+        }
+    });
+
+
     document.addEventListener('DOMContentLoaded', function() {
+
+        document.querySelectorAll('.apply-coupon-btn').forEach(apply => {
+    apply.addEventListener('click', async function() {
+        let couponId = this.getAttribute('data-coupon');       
+        let subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('₹', ''));
+
+        try {
+            const response = await fetch(`/apply-coupon`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ couponId ,subtotal})
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: 'Coupon Applied',
+                    text: result.message,
+                    confirmButtonText: "OK"
+                }).then(() => location.reload());
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: 'Error',
+                    text: result.message,
+                    confirmButtonText: "OK"
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: "error",
+                title: 'Error',
+                text: "Internal Server Error!!",
+                confirmButtonText: "OK"
+            });
+        }
+    });
+});     
+
+        document.querySelectorAll('.remove-coupon-btn').forEach(remove => {
+            remove.addEventListener('click', async function() {
+                let couponId = this.getAttribute('data-coupon');                
+
+                try {
+                    const response = await fetch(`/remove-coupon`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ couponId })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: 'Coupon Removed',
+                            text: result.message,
+                            confirmButtonText: "OK"
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: 'Error',
+                            text: result.message,
+                            confirmButtonText: "OK"
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire({
+                        icon: "error",
+                        title: 'Error',
+                        text: "Internal Server Error!!",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        });
+        
+        
+
+
       // Address form toggle
       const addNewAddressBtn = document.getElementById('addNewAddress');
       const addressForm = document.getElementById('addressForm');
@@ -666,56 +760,6 @@
     }
 });
 
-const applyCouponBtn = document.getElementById('applyCouponBtn');
-    const couponCodeInput = document.getElementById('couponCode');
-    const couponMessage = document.getElementById('couponMessage');
-
-    applyCouponBtn.addEventListener('click', async function () {
-        const couponCode = couponCodeInput.value.trim();
-
-        if (!couponCode) {
-            couponMessage.textContent = "Please enter a coupon code.";
-            couponMessage.style.display = "block";
-            couponMessage.classList.remove('success');
-            couponMessage.classList.add('error');
-            return;
-        }
-
-        try {
-            const response = await fetch('/apply-coupon', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ couponCode }),
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                couponMessage.textContent = result.message;
-                couponMessage.style.display = "block";
-                couponMessage.classList.remove('error');
-                couponMessage.classList.add('success');
-
-                // Update cart totals
-                document.getElementById('subtotal').textContent = `₹${result.subtotal.toFixed(2)}`;
-                document.getElementById('discount').textContent = `₹${result.discount.toFixed(2)}`;
-                document.getElementById('grand-total').textContent = `₹${result.total.toFixed(2)}`;
-            } else {
-                couponMessage.textContent = result.message;
-                couponMessage.style.display = "block";
-                couponMessage.classList.remove('success');
-                couponMessage.classList.add('error');
-            }
-        } catch (error) {
-            console.error('Error applying coupon:', error);
-            couponMessage.textContent = "Something went wrong. Please try again.";
-            couponMessage.style.display = "block";
-            couponMessage.classList.remove('success');
-            couponMessage.classList.add('error');
-        }
-    });
 
     document.getElementById("placeOrderBtn").addEventListener("click", async function () {
     const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
@@ -738,6 +782,10 @@ const applyCouponBtn = document.getElementById('applyCouponBtn');
         return;
     }
 
+    const appliedCouponInput = document.getElementById("appliedCouponId");
+    const appliedCoupon = appliedCouponInput ? appliedCouponInput.value : null;
+    
+
     if (paymentMethod.value === "COD") {
         try {
             let response = await fetch("/order", {
@@ -746,7 +794,8 @@ const applyCouponBtn = document.getElementById('applyCouponBtn');
                 body: JSON.stringify({
                     userId: "<%= user._id %>", 
                     addressId: selectedAddress.value,
-                    paymentMethod: "COD"
+                    paymentMethod: "COD",
+                    appliedCoupon: appliedCoupon
                 })
             });
 
@@ -783,7 +832,13 @@ const applyCouponBtn = document.getElementById('applyCouponBtn');
 async function initiateRazorpayPayment(selectedAddress, orderId = null) {
     try {
         // Get total amount from the page
-        const totalAmount = parseFloat(document.getElementById("grand-total").textContent.replace("₹", ""));
+        const totalAmount = parseFloat(document.getElementById("grand-total").textContent.replace("₹", ""));        
+        const shippingCharge = parseFloat(document.getElementById("shippingCharge").textContent.replace("₹", ""));
+        const tax=parseFloat(document.getElementById("tax").textContent.replace("₹", ""));
+        const subtotal=parseFloat(document.getElementById("subtotal").textContent.replace("₹", ""));
+        const appliedCouponInput = document.getElementById("appliedCouponId");
+        const appliedCoupon = appliedCouponInput ? appliedCouponInput.value : null;        
+        
         
         // Get cart items (you may need to modify this based on how you store cart data)
         const cartItems = '<%= JSON.stringify(cart.items) %>';
@@ -800,7 +855,11 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
                     userId: "<%= user._id %>",
                     addressId: selectedAddress.value,
                     amount: totalAmount,
-                    products: cartItems
+                    products: cartItems,
+                    couponOff:appliedCoupon,
+                    shippingCharge:shippingCharge,
+                    tax:tax,
+                    subtotal:subtotal
                 })
             });
             
@@ -973,7 +1032,7 @@ async function cancelFailedOrder(orderId) {
         });
     }
 }
-
+    
 });
 
   </script>	

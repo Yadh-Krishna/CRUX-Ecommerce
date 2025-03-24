@@ -5,12 +5,14 @@ const bcrypt=require('bcryptjs');
 const Order=require('../models/orderModal')
 const Product=require('../models/productModel')
 const Category=require('../models/categoryModal');
+const Cart=require('../models/cartModel');
 
 dotenv.config();
 
 const connectDB = async()=>{
     try{
-        await mongoose.connect(process.env.MONGO_URI,{});       
+        await mongoose.connect(process.env.MONGO_URI,{});          
+       
      }catch(err){
         console.log(err);
         process.exit(1);

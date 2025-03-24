@@ -95,7 +95,7 @@ const blockCoupon=async(req,res)=>{
 
     }catch(err){
         console.error(err);
-        return res.status(statusCodes.SERVER_ERROR).json({success:false,message:"Internal Server error!!"});
+        return res.status(statusCodes.SERVER_ERROR).json({success:false,message:errorMessages.SERVER.SERVER_ERROR});
     }
 }
 

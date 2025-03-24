@@ -59,7 +59,7 @@ const orderDetails=async(req,res)=>{
     try{
         const orderId=req.params.id
         const order=await Order.findById(orderId).populate('address items.product').populate('user','fullName email mobile  ');
-        const orderStatusOptions = Order.schema.path("orderStatus").enumValues;
+        const orderStatusOptions = Order.schema.path("items.status").enumValues;
         order.shippingCost= order.totalAmount > 500 ?0:50; 
         res.render('adminOrderDetails',{order,orderStatusOptions});
     }catch(err){
@@ -148,11 +148,29 @@ const orderStatusManage = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+const downloadInvoice= async(req,res)=>{
+    try{
+        const orderId = req.params.orderId;
+        const filePath = path.join(__dirname, '../../public/invoices', `invoice_${orderId}.pdf`);
+    
+        // Check if the file exists
+        if (fs.existsSync(filePath)) {
+            res.download(filePath, `invoice_${orderId}.pdf`); // Download the file
+        } else {
+            res.status(404).json({ success: false, message: "Invoice not found" });
+        }
+       }catch(err){
+        console.error(err);
+       }
+    }
+
     
 
 
 module.exports={
     orderList,
     orderDetails,
-    orderStatusManage
+    orderStatusManage,
+    downloadInvoice
 }

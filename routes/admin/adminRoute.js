@@ -71,7 +71,7 @@ router.patch('/products/removeOffer/:id',auth,productController.removeOffer);
 router.get('/orders',auth,orderController.orderList);
 router.get('/orders/:id',auth,orderController.orderDetails);
 router.patch('/orders/:type/update-status/:id',auth,orderController.orderStatusManage);
-
+router.get('/orders/:orderId/invoice',auth,orderController.downloadInvoice)
 
 //Coupon Management
 router.get('/coupons/add',auth,couponController.createCoupon);

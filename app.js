@@ -24,6 +24,9 @@ dotenv.config();
 
 const app= express();
 
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb"  }));
+
 app.use(nocache());
 
   app.use(session({
@@ -44,14 +47,7 @@ app.use(nocache());
 
 
   app.use(methodOverride("_method"));
-
-  app.use((err, req, res, next) => {
-    console.error("Error:", err.message);    
-    // Set flash message for errors
-    req.flash("error", err.message || "Internal Server Error");
-    // Redirect back to the previous page or a generic error page
-    res.redirect("/admin/error"); 
-});
+ 
   // Initialize flash middleware
   app.use(flash());
 
@@ -61,9 +57,9 @@ app.use((req, res, next) => {
     next();
 });
   app.use(cookieParser());
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "50mb"  }));
- 
+
+
+
 
 //view engine
 app.set('views',[path.join(__dirname,'views/admin'),path.join(__dirname,'views/user')]);
@@ -74,8 +70,16 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 
 app.get("/auth/google/callback",  passport.authenticate("google", { failureRedirect: "/user/login",session: false }),googleAuth);
 
-app.use('/admin',nocache(),adminRoutes);
-app.use('/',nocache(),userRoutes);
+app.use('/admin',adminRoutes);
+app.use('/',userRoutes);
+
+app.use((err, req, res, next) => {
+  console.error("Error:", err.message);    
+  // Set flash message for errors
+  req.flash("error", err.message || "Internal Server Error");
+  // Redirect back to the previous page or a generic error page
+  res.redirect("/admin/error"); 
+}); 
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZOR_PAY_ID,

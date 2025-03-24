@@ -314,7 +314,7 @@
             
                             <!-- Order Status -->
                             <div class="order-status my-3">
-                                <h5>Order Status: 
+                                <!-- <h5>Order Status: 
                                     <span class="badge <%= order.orderStatus === 'Pending' ? 'badge-pending' : 
                                                           order.orderStatus === 'Processing' ? 'badge-processing' : 
                                                           order.orderStatus === 'Shipped' ? 'badge-shipped' : 
@@ -324,14 +324,14 @@
                                                           'badge-returned' %>">
                                         <%= order.orderStatus %>
                                     </span>
-                                </h5>
+                                </h5> -->
             
                                <!-- Order-Level Cancel & Return -->
                             <div class="mt-auto">
                                 <% if (order.orderStatus === 'Pending' || order.orderStatus === 'Processing' || order.orderStatus === 'Shipped') { %>
-                                    <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= order._id %>" data-type="order" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= order._id %>" data-type="order" data-bs-toggle="modal" data-bs-target="#cancelModal" data-order-id="<%=order._id%>">
                                         <i class="fas fa-times-circle me-1"></i> Cancel Order
-                                    </button>
+                                    </button>       
                                 <% } %>
 
                                 <% if (order.orderStatus === 'Delivered') { %>
@@ -352,7 +352,7 @@
                                 <% if (order.expectedDelivery) { %>
                                     <p><strong>Expected Delivery:</strong> <%= new Date(order.expectedDelivery).toDateString() %></p>
                                 <% } %>
-                                <% if (order.invoiceUrl) { %>
+                                <% if (order.invoiceUrl && !order.orderStatus === 'Returned') { %>
                                     <a href="/profile/my-orders/<%= order.orderId %>/invoice" class="btn btn-info btn-sm" target="_blank">
                                         <i class="fas fa-file-invoice"></i> Download Invoice
                                     </a>
@@ -377,7 +377,8 @@
                                                 <img src="<%= item.product.images[0] %>" class="card-img-top" alt="<%= item.product.name %>">
                                                 <div class="card-body d-flex flex-column">
                                                     <h5 class="card-title"><%= item.product.name %></h5>
-                                                    <p class="card-text">Price: ₹<%= item.finalPrice.toFixed(2) %></p>
+                                                    <p class="card-text">Price: <s class="text-muted">₹<%= (item.product.price || 0).toFixed(2) %></s>
+                                                        <span>₹<%= (item.product.finalPrice).toFixed(2) %></span></p>
                                                     <p class="card-text">Quantity: <%= item.quantity %></p>                                                        
                             
                                                     <p class="product-status">
@@ -393,11 +394,10 @@
                                                         </span>
                                                     </p>
                             
-                                                    <!-- Product Level Actions -->
-                                                   <!-- Item-Level Cancel & Return -->
-                                                        <!-- <div class="mt-auto">
+                                                    
+                                                        <div class="mt-auto">
                                                             <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
-                                                                <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                                                <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#cancelModal" data-order-id="<%=order._id%>">
                                                                     <i class="fas fa-times-circle me-1"></i> Cancel Item
                                                                 </button>
                                                             <% } %>
@@ -407,9 +407,9 @@
                                                                     <i class="fas fa-undo-alt me-1"></i> Return Item
                                                                 </button>
                                                             <% } %>
-                                                        </div> -->
+                                                        </div>
                                                         
-                                                         <!-- Button to open the modal -->
+                                                         
 
                                                         <div class="mt-auto">
                                                             <% if (item.status === 'Delivered') { %>
@@ -420,7 +420,7 @@
                                                             <% } %>
                                                         </div>
 
-                                                    <!-- Review Modal -->
+                                                    
                                                 <!-- Review Modal -->
                                                 <div class="modal fade" id="reviewModal-<%= item.product._id %>" tabindex="-1" aria-labelledby="reviewModalLabel-<%= item.product._id %>" aria-hidden="true">
                                                     <div class="modal-dialog">
@@ -477,6 +477,7 @@
                                     <form id="cancelForm">
                                         <div class="modal-body">
                                             <input type="hidden" id="cancelEntityId" name="entityId">
+                                            <input type="hidden" id="cancelOrderId" name="orderId">
                                             <input type="hidden" id="cancelType" name="type">
 
                                             <label for="cancelReason">Select Reason:</label>
@@ -582,7 +583,7 @@
                     document.querySelectorAll('.rating input').forEach(input => {
             input.addEventListener('change', () => {
                 const ratingValue = input.value;
-                console.log("Selected Rating:", ratingValue);
+                
             });
         });
             // Show/hide "Other" text area when "Other" is selected
@@ -607,9 +608,11 @@
                 btn.addEventListener("click", function () {
                     let entityId = this.getAttribute("data-id");
                     let entityType = this.getAttribute("data-type"); // 'order' or 'item'
-    
+                    let orderId=this.getAttribute('data-order-id');
+
                     document.getElementById("cancelEntityId").value = entityId;
                     document.getElementById("cancelType").value = entityType;
+                    document.getElementById('cancelOrderId').value=orderId;
                     // document.getElementById("cancelForm").action = `/cancel/${entityType}/${entityId}`;  
                 });
             });
@@ -635,9 +638,10 @@
             const entityId = document.getElementById("cancelEntityId").value;
             const type = document.getElementById("cancelType").value;
             const reason = document.getElementById("cancelReason").value;
+            const orderId = document.getElementById("cancelOrderId").value;
             const otherReason = document.getElementById("cancelOtherReason").value;
             try{
-                const response = await fetch(`/profile/cancel/${type}/${entityId}`, {
+                const response = await fetch(`/profile/cancel/${type}/${entityId}/${orderId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

@@ -25,6 +25,7 @@ const OrderSchema = new mongoose.Schema({
   tax: { type: Number, required: true }, // Tax amount
   shippingCharge: { type: Number, required: true }, // Shipping charges
   totalAmount: { type: Number, required: true }, // Final order total
+  couponPrice:{ type: Number, default: 0},
   paymentMethod: { type: String, enum: ["COD", "Online"], required: true }, // Payment mode
   paymentStatus: { 
     type: String, 
@@ -48,7 +49,7 @@ const OrderSchema = new mongoose.Schema({
   expectedDelivery: { type: Date },
   trackingId: { type: String, default: null }, // Tracking ID from courier service
   invoiceUrl: { type: String, default: null }, // Link to invoice PDF
-  isDeleted: { type: Boolean, default: false } // Soft delete for orders
+  couponApplied: { type: Boolean, default: false } // Soft delete for orders
 }, { timestamps: true });
 
 
@@ -59,12 +60,5 @@ const generateOrderId = () => {
   return `CRUX-${datePart}-${randomPart}`;
 };
 
-// // Pre-save hook to generate Order ID before saving
-// OrderSchema.pre("save", function (next) {
-//   if (!this.orderId) {
-//     this.orderId = generateOrderId();
-//   }
-//   next();
-// });
   
 module.exports = mongoose.model('Order', OrderSchema);

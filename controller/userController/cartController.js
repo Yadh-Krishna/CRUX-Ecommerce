@@ -15,12 +15,13 @@ const loadCart = async (req, res) => {
     try {
         const userId = req.user.userId;
         const user = await User.findById(userId);
-        const cart = await Cart.findOne({ user: userId }).populate("items.product");
+        let cart = await Cart.findOne({ user: userId }).populate("items.product");
 
         let subtotal = 0;
         let discount = 0;
 
-        if (!cart || cart.items.length === 0) {
+        if (!cart || cart.items.length === 0) {                   
+
             return res.render("cart", { 
                 user, 
                 cartItems: [], 

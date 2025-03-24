@@ -36,7 +36,7 @@ router.patch('/addresses/:id',verifyToken,manageUser.defaultAddress);
 router.get('/my-orders',verifyToken,manageUser.orderList);
 router.get('/my-orders/:id',verifyToken,manageUser.loadOrderDetails);
 router.get('/my-orders/:orderId/invoice',verifyToken,manageUser.downloadInvoice)
-router.patch('/cancel/:type/:entityId',verifyToken,orderController.cancelOrderItem);
+router.patch('/cancel/:type/:entityId/:orderId',verifyToken,orderController.cancelOrderItem);
 router.patch('/return/:type/:entityId/:orderId',verifyToken,orderController.returnOrderItem);
 router.post('/order/review/:productId',verifyToken,manageUser.submitReview)
 

@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const Coupon=require('../../models/couponModel')
 require("dotenv").config();
 const razorpay=require('../../config/razorPay');
+const mongoose=require('mongoose');
 const he=require('he')
 
 
@@ -16,13 +17,13 @@ const Product=require('../../models/productModel')
 const Cart=require('../../models/cartModel');
 const Order= require('../../models/orderModal');
 const { v4: uuidv4 } = require('uuid');
+const { STATUS_CODES } = require('http');
 const generateOrderId = () => {
     const today = new Date();
     const datePart = `${today.getFullYear()}${(today.getMonth() + 1).toString().padStart(2, "0")}${today.getDate().toString().padStart(2, "0")}`;
     const randomPart = Math.floor(100000 + Math.random() * 900000); // 6-digit random number
     return `CRUX-${datePart}-${randomPart}`;
   };
-
 
 const loadCheckout=async(req,res)=>{
     try {        
@@ -33,18 +34,18 @@ const loadCheckout=async(req,res)=>{
             return res.redirect('/login');
         }
         // Fetch cart details
-        let cart = await Cart.findOne({ user: userId }).populate('items.product').populate('items.product.category');
-    
+        let cart = await Cart.findOne({ user: userId }).populate('items.product');
         // Fetch user addresses
         const addresses = await Address.find({ user: userId ,isDeleted:false });
-    
+        
         if (!cart || cart.items.length === 0) {
           return res.render('checkout', { addresses, user,cart: { items: [], subtotal: 0, tax: 0, shipping: 0, total: 0 }});
-        }
-        
+        }       
+   
         // Calculate cart totals
         let subtotal = 0;
-        let couponApplied = 0;
+        let appliedCoupon = cart.appliedCoupon || null ;   
+
         cart.items.forEach(item => {
           const finalPrice = item.product.finalPrice;
           subtotal += finalPrice * item.quantity;
@@ -53,18 +54,45 @@ const loadCheckout=async(req,res)=>{
 
 
         const coupons=await Coupon.find({isActive:true,startDate:{$lte:new Date()},expireOn:{$gte:new Date()}});
-            
+        
+        let couponOff = 0;
+        
+        if (appliedCoupon && mongoose.Types.ObjectId.isValid(appliedCoupon)) {
+             let coupon = await Coupon.findById(appliedCoupon);
+
+            if(!coupon.isActive){
+                req.flash('error','Coupon is inactive');
+                appliedCoupon = null;
+                cart.appliedCoupon = null;
+                await cart.save();
+                    }
+
+            if (coupon && subtotal >= coupon.minimumPrice) {
+                couponOff = coupon.offerPrice; 
+                appliedCoupon=coupon;
+            } else {              
+                appliedCoupon = null;
+                cart.appliedCoupon = null;
+                await cart.save();
+            }
+        }
+
+       
+        
+        
         const taxRate = 0.1; // 10% tax rate
         const tax = subtotal * taxRate;
         const shipping = subtotal > 1000 ? 0 : 50; 
-        const total = subtotal + tax + shipping;        
+        const total = subtotal + tax + shipping - couponOff;        
 
         
+
         res.render('checkout', {
           addresses,
           availableCoupons:coupons,
           user,
-          couponApplied,
+          appliedCoupon: appliedCoupon ? appliedCoupon : null,
+          couponOff,
           cart: {
             items: cart.items,
             subtotal: subtotal.toFixed(2),
@@ -95,9 +123,80 @@ const loadOrder= async(req,res)=>{
     }
 }
 
+const applyCoupon = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { couponId ,subtotal} = req.body ;
+
+        if (!mongoose.Types.ObjectId.isValid(couponId)) {
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Invalid coupon ID" });
+        }
+
+        const cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(statusCodes.NOT_FOUND).json({ success: false, message: "Cart not found" });
+        }
+
+        const coupon = await Coupon.findById(couponId);
+        if (!coupon) {
+            return res.status(statusCodes.NOT_FOUND).json({ success: false, message: "Coupon not found" });
+        }
+
+        if (subtotal < coupon.minimumPrice) {
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: `Coupon minimum purchase price is ₹${coupon.minimumPrice}` });
+        }
+
+        if (coupon.userId.includes(userId)) {
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: `Coupon is already used before` });
+        }
+
+       
+        cart.appliedCoupon = coupon._id;    
+        await cart.save();            
+
+        return res.status(statusCodes.SUCCESS).json({ success: true, message: `Coupon applied successfully!` });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(statusCodes.SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const removeCoupon=async(req,res)=>{
+    try{   
+        const userId=req.user.userId;
+        const { couponId } = req.body
+
+        if (!mongoose.Types.ObjectId.isValid(couponId)) {
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Invalid coupon ID" });
+        }
+
+        const cart=await Cart.findOne({user:userId});
+        if (!cart) {
+            return res.status(statusCodes.NOT_FOUND).json({ success: false, message: "Cart not found" });
+        }
+        const coupon = await Coupon.findById(couponId);
+        if (!coupon) {
+            return res.status(statusCodes.NOT_FOUND).json({ success: false, message: "Coupon not found" });
+        }
+
+          if (cart.appliedCoupon && cart.appliedCoupon.toString() === couponId) {
+            cart.appliedCoupon = null;
+            await cart.save();
+            return res.status(statusCodes.SUCCESS).json({ success: true, message: "Coupon removed successfully!" });
+        } else {
+            return res.status(statusCodes.BAD_REQUEST).json({ success: false, message: "Coupon is not applied to the cart" });
+        }
+
+    }catch(err){
+        console.error(err);
+    }
+}
+
 const placeOrder = async (req, res) => {
     try {
-        const { userId, addressId, paymentMethod, paymentId, orderId } = req.body;
+        const { userId, addressId, paymentMethod, paymentId, orderId,appliedCoupon} = req.body;
         
         if (!userId || !addressId || !paymentMethod) {
             return res.status(400).json({ error: "Missing required details" });
@@ -105,9 +204,7 @@ const placeOrder = async (req, res) => {
         
         
         // If this is completing a Razorpay order
-        if (paymentMethod === "Online" && orderId) {
-            // The order was already created and payment verified
-            // Update the order status to show it's now complete
+        if (paymentMethod === "Online" && orderId) {           
             const order = await Order.findOne({ razorpayOrderId: orderId });
             
             if (!order) {
@@ -138,14 +235,22 @@ const placeOrder = async (req, res) => {
         const address = await Address.findById(addressId);
         if (!address) {
             return res.status(400).json({ error: "Invalid address" });
+        }        
+
+        const coupon=await Coupon.findById(appliedCoupon);
+        if(!coupon){
+            return res.status(400).json({ error: "Invalid Coupon " });
         }
+        const couponOff=coupon.offerPrice;
         
+        coupon.userId.push(userId);
+        await coupon.save();
         
         // Calculate amounts
         let subtotal = cart.items.reduce((acc, item) => acc + item.product.finalPrice * item.quantity, 0);
         let tax = subtotal * 0.1;
         let shippingCharge = subtotal > 1000 ? 0 : 50;
-        let totalAmount = subtotal + tax + shippingCharge;
+        let totalAmount = subtotal + tax + shippingCharge-couponOff;
         
         // Create order object
         let newOrder = new Order({
@@ -160,12 +265,14 @@ const placeOrder = async (req, res) => {
             subtotal,
             tax,
             shippingCharge,
-            totalAmount,
+            totalAmount,            
             paymentMethod: "COD", // For COD orders
             paymentStatus: "Pending",
             orderStatus: "Pending",
             address: addressId,
-            expectedDelivery: new Date(new Date().setDate(new Date().getDate() + 1))
+            expectedDelivery: new Date(new Date().setDate(new Date().getDate() + 1)),         
+            couponPrice:couponOff,
+            couponApplied:true
         });
         
         // Save order to database
@@ -195,7 +302,7 @@ const placeOrder = async (req, res) => {
 
 const createRazorPay = async (req, res) => {
     try {
-        const { userId, addressId, amount, products } = req.body;
+        const { userId, addressId, amount, products, couponOff, shippingCharge, tax, subtotal } = req.body;
         
         if (!userId || !addressId || !amount) {
             return res.status(400).json({ error: "Missing required details" });
@@ -209,11 +316,23 @@ const createRazorPay = async (req, res) => {
         };
         
         const items = typeof products === 'string' ? JSON.parse(he.decode(products)): products;
+
+        const coupon=await Coupon.findById(couponOff);
+        let couponOfferPrice
+        if(!coupon){
+            couponOfferPrice=0;
+        }else{
+         couponOfferPrice=coupon.offerPrice;
+        
+        coupon.userId.push(userId);
+        await coupon.save();
+        }    
+
         const order = await razorpay.orders.create(options);
         // Create a temporary order in the database
         const newOrder = new Order({
             user: userId,
-            orderId:generateOrderId(), 
+            orderId: generateOrderId(), 
             razorpayOrderId: order.id, // Store Razorpay order ID in a separate field for clarity
             address: addressId,
             totalAmount: amount,
@@ -222,9 +341,10 @@ const createRazorPay = async (req, res) => {
             orderStatus: 'Created',
             // Parse products if they came as a string
             items,
-            tax:0,
-            shippingCharge:0,
-            subtotal:0
+            tax,
+            shippingCharge,
+            subtotal,
+            couponPrice: couponOfferPrice || null
         });
         
         await newOrder.save();
@@ -267,10 +387,14 @@ const verifyOnlinePayment = async (req, res) => {
                 { 
                     paymentId: razorpay_payment_id,
                     paymentStatus: 'Paid',
-                    orderStatus: 'Processing'
+                    orderStatus: 'Processing',   
+                    "items.$[].status": "Processing", //update staus of all items                 
                 },
                 { new: true }
-            );
+            ).populate('items.product');
+
+
+           
             
             if (!updatedOrder) {
                 return res.status(404).json({
@@ -388,6 +512,8 @@ const cancelFailedOrder = async (req, res) => {
         loadCheckout,
         placeOrder,
         loadOrder,
+        applyCoupon,
+        removeCoupon,
         createRazorPay,
         verifyOnlinePayment,
         getOrderInfo,

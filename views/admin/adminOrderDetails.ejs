@@ -63,12 +63,14 @@
                                     <option value="Shipped" <%= order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
                                     <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
                                 </select> -->
-                                <button type="button" class="btn btn-primary" 
-                    onclick="openStatusModal('<%= order._id %>', '<%= order.orderStatus %>', '<%= order.returnReason || order.cancellationReason %>', 'order')"
-                    <%=(order.orderStatus==='Cancelled'||order.orderStatus==='Returned')? 'disabled': ''%>>
-                    Change Order Status
-                    </button>                                                       
-                            <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
+                                    <!-- <button type="button" class="btn btn-primary" 
+                        onclick="openStatusModal('<%= order._id %>', '<%= order.orderStatus %>', '<%= order.returnReason || order.cancellationReason %>', 'order')"
+                        <%=(order.orderStatus==='Cancelled'||order.orderStatus==='Returned')? 'disabled': ''%>>
+                        Change Order Status
+                            </button>-->
+                            <% if ( order.orderStatus === 'Delivered') { %>
+                            <a class="btn btn-secondary print ms-2" href="/admin/orders/:orderId/invoice"><i class="icon material-icons md-print"></i></a>
+                            <% } %>
                         </div>
                     </div>
                 </header>
@@ -128,8 +130,8 @@
                                             <th>Quantity</th>
                                             <th>Item Status</th>
                                             <th class="text-start">Total</th>
-                                            <!-- <th class="text-center">Action</th>
-                                            <th class="text-start">Reason</th>  -->
+                                            <th class="text-center">Action</th>
+                                            <th class="text-start">Reason</th> 
                                             <!-- Always include header to maintain column structure -->
                                         </tr>
                                     </thead>
@@ -145,7 +147,7 @@
                                                     <div class="info"><%= item.product.name %></div>
                                                 </a>
                                             </td>
-                                            <td>₹<%= item.product.price.toFixed(2) %></td>
+                                            <td>₹<%= item.product.finalPrice.toFixed(2) %></td>
                                             <td><%= item.quantity %></td>
                                             <td>
                                                 <span class="badge text-dark <%= item.status === 'Pending' ? 'alert-warning' : 
@@ -158,36 +160,48 @@
                                                     <%= item.status %>
                                                 </span>
                                             </td>
-                                            <td class="text-start">₹<%= (item.product.price * item.quantity).toFixed(2) %></td>
-                                            <!-- <td class="text-center">
-                                                <% if (item.status === 'Return Requested') { %>
+                                            <td class="text-start">₹<%= (item.product.finalPrice * item.quantity).toFixed(2) %></td>
+                                            <td class="text-center">
+                                                <!-- <% if (item.status === 'Return Requested') { %>
                                                     <button type="button"  class="btn btn-success refundPayment">Refund Payment</button>
-                                                <% } else { %>
+                                                <% } else { %> -->
                                                     <button type="button"  class="btn btn-primary cancelButton " 
-                                                            <%= (item.status === 'Delivered' || item.status === 'Cancelled' || item.status === 'Returned') ? 'disabled' : '' %>>
-                                                        Cancel Item
+                                                            <%= (item.status === 'Cancelled' || item.status === 'Returned') ? 'disabled' : '' %>>
+                                                        Chnage Item Status
                                                     </button>
-                                                <% } %>
+                                                <!-- <% } %> -->
                                             </td>
                                             <td class="text-start">
                                                 <% if (item.status === 'Return Requested') { %>
                                                     <%= item.returnReason || 'N/A' %> 
-                                                <% } else { %>
+                                                <% } else if(item.status === 'Cancelled') { %>
+                                                    <%= item.cancellationReason || 'N/A' %> 
+                                                <% }else{ %>
                                                     -
-                                                <% } %>
-                                            </td> -->
+                                                    <% } %>
+                                            </td>
                                         </tr>
                                         <% }); %>
                                             <td colspan="4">
                                                 <article class="float-end">
                                                     <dl class="dlist">
                                                         <dt>Subtotal:</dt>
-                                                        <dd>₹<%= order.totalAmount.toFixed(2) %></dd>
+                                                        <dd>₹<%= order.subtotal.toFixed(2) %></dd>
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Tax:</dt>
+                                                        <dd>₹<%= order.tax.toFixed(2) %></dd>
                                                     </dl>
                                                     <dl class="dlist">
                                                         <dt>Shipping cost:</dt>
-                                                        <dd>₹<%= order.shippingCost.toFixed(2) %></dd>
+                                                        <dd>₹<%= order.shippingCharge.toFixed(2) %></dd>
                                                     </dl>
+                                                    <%if(order.couponPrice){%>
+                                                        <dl class="dlist">
+                                                            <dt>Coupon Discount:</dt>
+                                                            <dd>-₹<%= order.couponPrice.toFixed(2) %></dd>
+                                                        </dl>
+                                                        <%}%>
                                                     <dl class="dlist">
                                                         <dt>Grand total:</dt>
                                                         <dd><b class="h5">₹<%= (order.totalAmount+order.shippingCost).toFixed(2) %></b></dd>
@@ -221,7 +235,7 @@
 
         <!-- Order/Item Status Modal -->
         <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
             <h5 class="modal-title" id="statusModalLabel">Change Status</h5>

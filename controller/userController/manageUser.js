@@ -376,6 +376,7 @@ const orderList=async(req,res)=>{
             res.redirect('/login');
         }
         const orders= await Order.find({user:userId}).populate('items.product').sort({createdAt:-1});
+        
         if(!orders){
             req.flash("error","No Orders Available");
             res.render('orders',{orders:null,user})
@@ -472,7 +473,7 @@ const loadOrderDetails = async (req, res) => {
                 return res.status(400).render("orderDetails", { order:null,user});
             }
     
-            res.render("orderDetails", { order, user});
+            res.status(statusCodes.SUCCESS).render("orderDetails", { order, user});
         } catch (error) {
             console.error("Error loading order details:", error);
             res.status(500).render("orderDetails", { order:null, user});;
