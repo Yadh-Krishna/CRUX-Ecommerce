@@ -249,6 +249,21 @@
     <%- include('./userPartials/header') %> 
 
     <div class="container profile-container">
+        <% if (messages && messages.success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i> <%= messages.success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+        
+        <% if (messages && messages.error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> <%= messages.error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+    <div class="container profile-container">
         <div class="row">
             <!-- Sidebar -->
              <div class="col-lg-3 col-md-4">
@@ -303,6 +318,8 @@
                     </ul>
                 </div>
             </div>
+
+
                         
                     <!-- Order Details Content -->
                     <div class="col-lg-9 col-md-8">
@@ -379,7 +396,15 @@
                                                     <h5 class="card-title"><%= item.product.name %></h5>
                                                     <p class="card-text">Price: <s class="text-muted">₹<%= (item.product.price || 0).toFixed(2) %></s>
                                                         <span>₹<%= (item.product.finalPrice).toFixed(2) %></span></p>
-                                                    <p class="card-text">Quantity: <%= item.quantity %></p>                                                        
+
+                                                     <div class="d-flex justify-content-between align-items-center">
+                                                        <p class="card-text mb-0">Quantity: <%= item.quantity %></p>
+                                                        <% if (item.status === 'Delivered') { %>
+                                                            <a href="/profile/my-orders/<%= order.orderId %>/invoice/<%=item._id%>" class="btn btn-outline-primary btn-sm">
+                                                                <i class="fas fa-file-invoice me-1"></i> Invoice
+                                                            </a>
+                                                        <% } %>
+                                                    </div>                                                       
                             
                                                     <p class="product-status">
                                                         Status: 
@@ -413,10 +438,10 @@
 
                                                         <div class="mt-auto">
                                                             <% if (item.status === 'Delivered') { %>
-                                                               
                                                                 <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal-<%= item.product._id %>">
                                                                     <i class="fas fa-star"></i> Write a Review
-                                                                </button>
+                                                                </button>    
+                                        
                                                             <% } %>
                                                         </div>
 
@@ -616,7 +641,7 @@
                     // document.getElementById("cancelForm").action = `/cancel/${entityType}/${entityId}`;  
                 });
             });
-    
+
             // Open return modal for both order and item
             document.querySelectorAll(".open-return-modal").forEach(function (btn) {
                 btn.addEventListener("click", function () {

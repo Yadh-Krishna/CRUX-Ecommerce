@@ -242,6 +242,9 @@
     }
        </style>
 	</head>
+    <body>
+        
+    
 	<div class="colorlib-loader"></div>
 
 <div id="page">
@@ -545,9 +548,9 @@ document.addEventListener("visibilitychange", async function () {
         });
         const result =await response.json();
         if(result.success){
-            console.log('Coupon Removed');            
+            // console.log('Coupon Removed');            
         }else{
-            console.log("Error Occured");
+            // console.log("Error Occured");
         }
         }
     });
@@ -632,9 +635,7 @@ document.addEventListener("visibilitychange", async function () {
                     });
                 }
             });
-        });
-        
-        
+        });            
 
 
       // Address form toggle
@@ -842,7 +843,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
         
         // Get cart items (you may need to modify this based on how you store cart data)
         const cartItems = '<%= JSON.stringify(cart.items) %>';
-        
+        // console.log(cartItems);
         // If orderId is provided, we're retrying a payment
         let orderResult;
         
@@ -916,7 +917,8 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
                                 addressId: selectedAddress.value,
                                 paymentMethod: "Online",
                                 paymentId: response.razorpay_payment_id,
-                                orderId: response.razorpay_order_id
+                                orderId: response.razorpay_order_id,
+                                appliedCoupon:appliedCoupon
                             })
                         });
                         
@@ -952,11 +954,28 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
             },
             theme: {
                 color: "#3399cc"
-            }
+            },
+            modal: {
+        escape: false,
+        backdropclose: false,
+        handleback: false,
+        confirm_close: true,
+        ondismiss: function () {  // This fires when the Razorpay modal is closed
+            
+            if (orderResult?.order?.id) {
+            window.location.href = `/payment-retry?orderId=${orderResult.order.id}`;
+        } else {
+            // console.log(orderResult.order);
+            window.location.href = "/checkout";
+           
+        }
+            
+        }
+    }    
         };
         
         const razorpayInstance = new Razorpay(options);
-        razorpayInstance.open();
+        razorpayInstance.open();            
         
         // Handle payment failure with retry option
         razorpayInstance.on('payment.failed', function (response) {
@@ -976,7 +995,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
                     cancelFailedOrder(response.error.metadata.order_id);
                 }
             });
-        });
+        });      
         
     } catch (error) {
         Swal.fire({

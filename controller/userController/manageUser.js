@@ -494,7 +494,8 @@ const loadWallet = async (req, res) => {
             // Fetch transactions with pagination
             const page = parseInt(req.query.page) || 1;
             const limit = 10;
-            const transactions = wallet.transactions.slice((page - 1) * limit, page * limit);
+            const transactions = wallet.transactions.sort((a,b)=> b.transactionDate-a.transactionDate)
+            .slice((page - 1) * limit, page * limit);
     
             res.render('wallet', { user, wallet,balance, transactions, currentPage: page, totalPages: Math.ceil(wallet.transactions.length / limit) });
         } catch (err) {
@@ -536,13 +537,16 @@ const loadWallet = async (req, res) => {
 const downloadInvoice=async(req,res)=>{
    try{
     const orderId = req.params.orderId;
-    const filePath = path.join(__dirname, '../../public/invoices', `invoice_${orderId}.pdf`);
+    const itemId= req.params.itemId;
+    const filePath = path.join(__dirname, '../../public/invoices', `invoice_${orderId}_${itemId}.pdf`);
+    const order= await Order.findOne({orderId});
 
     // Check if the file exists
     if (fs.existsSync(filePath)) {
-        res.download(filePath, `invoice_${orderId}.pdf`); // Download the file
+        res.download(filePath, `invoice_${orderId}_${itemId}.pdf`); // Download the file
     } else {
-        res.status(404).json({ success: false, message: "Invoice not found" });
+        req.flash('error','Invoice not found')
+        res.redirect(`/profile/my-orders/${order._id}`);
     }
    }catch(err){
     console.error(err);

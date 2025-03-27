@@ -57,6 +57,9 @@ router.post('/order/create-razorpay-order',verifyToken,checkoutController.create
 router.post('/order/verify-payment',verifyToken,checkoutController.verifyOnlinePayment);
 router.get('/order/get-order-info/:orderId', verifyToken, checkoutController.getOrderInfo);
 router.post('/order/cancel-failed-order', verifyToken, checkoutController.cancelFailedOrder);
+router.patch('/order/retry-payment',verifyToken,checkoutController.retryPayment)
+router.get('/payment-retry',verifyToken,checkoutController.loadRetry);
+
 
 
 

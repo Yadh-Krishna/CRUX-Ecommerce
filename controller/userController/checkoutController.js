@@ -75,17 +75,13 @@ const loadCheckout=async(req,res)=>{
                 cart.appliedCoupon = null;
                 await cart.save();
             }
-        }
-
-       
+        }      
         
         
         const taxRate = 0.1; // 10% tax rate
         const tax = subtotal * taxRate;
         const shipping = subtotal > 1000 ? 0 : 50; 
-        const total = subtotal + tax + shipping - couponOff;        
-
-        
+        const total = subtotal + tax + shipping - couponOff;               
 
         res.render('checkout', {
           addresses,
@@ -196,7 +192,7 @@ const removeCoupon=async(req,res)=>{
 
 const placeOrder = async (req, res) => {
     try {
-        const { userId, addressId, paymentMethod, paymentId, orderId,appliedCoupon} = req.body;
+        const { userId, addressId, paymentMethod, paymentId, orderId,appliedCoupon} = req.body;        
         
         if (!userId || !addressId || !paymentMethod) {
             return res.status(400).json({ error: "Missing required details" });
@@ -210,6 +206,16 @@ const placeOrder = async (req, res) => {
             if (!order) {
                 return res.status(404).json({ error: "Order not found" });
             }
+            if(mongoose.Types.ObjectId.isValid(appliedCoupon)){
+            const coupon=await Coupon.findById(appliedCoupon);
+            if(coupon){            
+            order.couponApplied=true;  
+            await order.save();
+
+            coupon.userId.push(userId);
+            await coupon.save();
+            }
+        }
             
             return res.json({
                 success: true,
@@ -237,20 +243,25 @@ const placeOrder = async (req, res) => {
             return res.status(400).json({ error: "Invalid address" });
         }        
 
-        const coupon=await Coupon.findById(appliedCoupon);
+       let couponOff;
+    //    console.log("ApliedCoupon ",appliedCoupon);
+        if(mongoose.Types.ObjectId.isValid(appliedCoupon)){
+         const coupon=await Coupon.findById(appliedCoupon);
         if(!coupon){
-            return res.status(400).json({ error: "Invalid Coupon " });
+            return res.status(400).json({ success:false,message: "Invalid Coupon " });
         }
-        const couponOff=coupon.offerPrice;
+         couponOff=coupon.offerPrice;
         
         coupon.userId.push(userId);
         await coupon.save();
+        }
+        // console.log("CouponOFF ",typeof coupon.offerPrice, coupon.offerPrice)
         
         // Calculate amounts
         let subtotal = cart.items.reduce((acc, item) => acc + item.product.finalPrice * item.quantity, 0);
         let tax = subtotal * 0.1;
         let shippingCharge = subtotal > 1000 ? 0 : 50;
-        let totalAmount = subtotal + tax + shippingCharge-couponOff;
+        let totalAmount = subtotal + tax + shippingCharge - (couponOff||0);
         
         // Create order object
         let newOrder = new Order({
@@ -259,8 +270,8 @@ const placeOrder = async (req, res) => {
             items: cart.items.map(item => ({
                 product: item.product._id,
                 quantity: item.quantity,
-                price: item.product.price,
-                finalPrice: item.product.finalPrice
+                price: item.product.finalPrice,
+                finalPrice: (item.product.finalPrice * item.quantity).toFixed(2),//After computing with quantity
             })),
             subtotal,
             tax,
@@ -271,7 +282,7 @@ const placeOrder = async (req, res) => {
             orderStatus: "Pending",
             address: addressId,
             expectedDelivery: new Date(new Date().setDate(new Date().getDate() + 1)),         
-            couponPrice:couponOff,
+            couponPrice: couponOff||0,
             couponApplied:true
         });
         
@@ -303,7 +314,7 @@ const placeOrder = async (req, res) => {
 const createRazorPay = async (req, res) => {
     try {
         const { userId, addressId, amount, products, couponOff, shippingCharge, tax, subtotal } = req.body;
-        
+        // console.log("Products",products);
         if (!userId || !addressId || !amount) {
             return res.status(400).json({ error: "Missing required details" });
         }
@@ -316,17 +327,27 @@ const createRazorPay = async (req, res) => {
         };
         
         const items = typeof products === 'string' ? JSON.parse(he.decode(products)): products;
-
-        const coupon=await Coupon.findById(couponOff);
-        let couponOfferPrice
+        // console.log(items)
+        for (let x of items) {
+            if (x.product && x.product.finalPrice) {
+                x.price = parseFloat(x.product.finalPrice.toFixed(2)); // Ensure numeric format
+                x.finalPrice = x.price * x.quantity;
+            } else {
+                x.price = 0;
+                x.finalPrice = 0;
+            }
+        }
+        // console.log(items);
+        let couponOfferPrice,coupon;
+        if(mongoose.Types.ObjectId.isValid(couponOff)){
+        coupon=await Coupon.findById(couponOff);        
         if(!coupon){
             couponOfferPrice=0;
         }else{
-         couponOfferPrice=coupon.offerPrice;
+         couponOfferPrice=coupon.offerPrice;       
         
-        coupon.userId.push(userId);
-        await coupon.save();
         }    
+        }
 
         const order = await razorpay.orders.create(options);
         // Create a temporary order in the database
@@ -338,13 +359,12 @@ const createRazorPay = async (req, res) => {
             totalAmount: amount,
             paymentStatus: 'Pending',
             paymentMethod: 'Online',
-            orderStatus: 'Created',
-            // Parse products if they came as a string
+            orderStatus: 'Created',            
             items,
             tax,
             shippingCharge,
             subtotal,
-            couponPrice: couponOfferPrice || null
+            couponPrice: couponOfferPrice || null,           
         });
         
         await newOrder.save();
@@ -381,7 +401,9 @@ const verifyOnlinePayment = async (req, res) => {
         const generatedSignature = hmac.digest('hex');
         
         if (generatedSignature === razorpay_signature) {
+
             // Payment is verified, update order status
+
             const updatedOrder = await Order.findOneAndUpdate(
                 { razorpayOrderId: razorpay_order_id },
                 { 
@@ -391,10 +413,7 @@ const verifyOnlinePayment = async (req, res) => {
                     "items.$[].status": "Processing", //update staus of all items                 
                 },
                 { new: true }
-            ).populate('items.product');
-
-
-           
+            ).populate('items.product');           
             
             if (!updatedOrder) {
                 return res.status(404).json({
@@ -504,10 +523,56 @@ const cancelFailedOrder = async (req, res) => {
         }
     };
 
+const loadRetry=async(req,res)=>{
+        try {
+            const userId=req.user.userId;
+            const { orderId } = req.query;
+            const user=await User.findById(userId);
 
+            const order = await Order.findOne({ razorpayOrderId: orderId });
+            if(!order){
+                return res.redirect('/checkout');
+            }
 
+            return res.render('retry-page',{order,user});
 
+        }catch(err){
+            console.error("Error loading retry:", err);
+        }
+    }
 
+    const retryPayment=async(req,res)=>{
+        try {
+            const { orderId } = req.query;
+            if (!orderId) {
+                return res.status(400).json({ success: false, error: "Order ID is required" });
+            }
+    
+            // Fetch the order details from the database
+            const order = await Order.findOne({ razorpayOrderId: orderId });
+    
+            if (!order) {
+                return res.status(404).json({ success: false, error: "Order not found" });
+            }
+    
+            // Create a new Razorpay payment order for retry
+            const razorpayOrder = await razorpay.orders.create({
+                amount: order.totalAmount * 100, // Amount in paise
+                currency: "INR",
+                receipt: `retry_${order._id}`,
+            });
+    
+            // Save the new order ID in the database
+            order.razorpayOrderId = razorpayOrder.id;
+            await order.save();
+    
+            res.json({ success: true, orderId: order.razorpayOrderId, amount: order.totalAmount });
+        } catch (error) {
+            console.error("Error retrying payment:", error);
+            res.status(500).json({ success: false, error: "Internal Server Error" });
+        }
+}
+   
     module.exports={
         loadCheckout,
         placeOrder,
@@ -517,6 +582,9 @@ const cancelFailedOrder = async (req, res) => {
         createRazorPay,
         verifyOnlinePayment,
         getOrderInfo,
-        cancelFailedOrder
+        cancelFailedOrder,
+        loadRetry,
+        retryPayment,
+        // paymentRetrySuccessPage
 
     }

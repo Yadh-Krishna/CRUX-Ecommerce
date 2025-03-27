@@ -485,7 +485,7 @@
                                     </div>
                                     
                                     <div class="transaction-amount <%= transaction.transactionType %>">
-                                        <%= transaction.transactionType === 'CREDIT' || transaction.transactionType === 'REFUND' ? '+' : '-' %>₹<%= transaction.transactionAmount.toFixed(2) %>
+                                        <%= transaction.transactionType.toUpperCase() === 'CREDIT' || transaction.transactionType.toUpperCase() === 'REFUND' ? '+' : '-' %>₹<%= transaction.transactionAmount.toFixed(2) %>
                                     </div>
                                 </li>
                             <% }); %>

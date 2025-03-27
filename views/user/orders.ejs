@@ -402,11 +402,11 @@
                                     
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="order-status status-<%= (order.status || order.orderStatus).toLowerCase() %>"><%= order.status || order.orderStatus %></span>
-                                        <% if ((order.status || order.orderStatus) === 'Delivered') { %>
+                                        <!-- <% if ((order.status || order.orderStatus) === 'Delivered') { %>
                                             <a href="/profile/my-orders/<%= order.orderId %>/invoice" class="btn-details">
                                                 <i class="fas fa-file-invoice me-1"></i> Invoice
                                             </a>
-                                        <% } %>
+                                        <% } %> -->
                                     </div>
                                 </div>
                                 
@@ -459,10 +459,10 @@
                                         <span class="fw-medium">
                                             <% if (order.paymentMethod === 'COD') { %>
                                                 <i class="fas fa-money-bill-wave me-1"></i> Cash on Delivery
-                                            <% } else if (order.paymentMethod === 'CARD') { %>
+                                            <!-- <% } else if (order.paymentMethod === 'CARD') { %>
                                                 <i class="fas fa-credit-card me-1"></i> Credit/Debit Card
                                             <% } else if (order.paymentMethod === 'WALLET') { %>
-                                                <i class="fas fa-wallet me-1"></i> Wallet
+                                                <i class="fas fa-wallet me-1"></i> Wallet -->
                                             <% } else { %>
                                                 <%= order.paymentMethod || 'Online Payment' %>
                                             <% } %>
@@ -470,11 +470,11 @@
                                     </div>
                                     
                                     <div>
-                                        <% if ((order.status || order.orderStatus) === 'Shipped') { %>
+                                        <!-- <% if ((order.status || order.orderStatus) === 'Shipped') { %>
                                             <a href="/profile/my-orders/<%= order._id %>/track" class="btn-track">
                                                 <i class="fas fa-truck me-1"></i> Track Order
                                             </a>
-                                        <% } %>
+                                        <% } %> -->
                                         <a href="/profile/my-orders/<%= order._id %>" class="btn-details ms-2">
                                             <i class="fas fa-eye me-1"></i> View Details
                                         </a>

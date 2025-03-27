@@ -25,6 +25,11 @@ router.post('/login',adminDashboard.login);//providing creds
 router.get('/dashboard',auth,adminDashboard.loadDashboard);//Loading dashboard
 router.get("/logout",adminDashboard.logout);//logging out of admin management
 
+//Sales Report
+router.get('/sales-report',auth,adminDashboard.loadSales);
+router.get('/sales-report/export-pdf',auth,adminDashboard.pdfExport);
+router.get('/sales-report/export-excel',auth,adminDashboard.excelExport);
+
 //user Management
 router.get("/users",auth, UserManagement.loadUsers);  //Customer User page  
 router.get("/users/search", UserManagement.liveSearchUsers);
@@ -80,4 +85,6 @@ router.get('/coupons',auth,couponController.couponList);
 router.get('/coupons/edit/:id',auth,couponController.editCouponLoad);
 router.put('/coupons/edit/:id',auth,couponController.updateCoupon);
 router.patch('/coupons/toggle/:id',auth,couponController.blockCoupon);
+
+
 module.exports=router;

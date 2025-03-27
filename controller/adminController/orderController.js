@@ -10,6 +10,7 @@ const fs=require('fs');
 const path=require('path');
 const sharp=require('sharp');
 const {generateInvoice}=require('../../utils/invoiceWrite')
+const Coupon=require('../../models/couponModel');
 
 const orderList= async(req,res)=>{
            try {
@@ -64,90 +65,123 @@ const orderDetails=async(req,res)=>{
         res.render('adminOrderDetails',{order,orderStatusOptions});
     }catch(err){
         console.error(err);
+        req.flash("error","Internal Server error!!");
+        res.render('adminOrderDetails',{order:null,orderStatusOptions:null});
+        
     }
     
 }
 
 const orderStatusManage = async (req, res) => {
-    try {
-        const { id, type } = req.params;
-        const { status } = req.body;
+        try {
+            const { id, type } = req.params;
+            const { status, orderId } = req.body;
 
-        // Find the order and populate product details
-        const order = await Order.findById(id).populate("items.product").populate('address user');
-        if (!order) {
-            return res.status(404).json({ success: false, message: "Order not found" });
-        }
+            const order = await Order.findById(orderId)
+                .populate("items.product")
+                .populate("address user");
 
-        // Handle cancellation or return
-        if (status === "Cancelled" || status === "Returned") {
-            // Check if the order was not already cancelled or returned
-            if (order.orderStatus !== "Cancelled" && order.orderStatus !== "Returned") {
-                // Restore stock for each item in the order
-                for (const item of order.items) {
-                    const product = item.product;
-                    if (product) {
-                        product.stock += item.quantity; // Restore stock
-                        await product.save(); // Save each product inside the loop
-                    }
-                }
+            if (!order) {
+                return res.status(404).json({ success: false, message: "Order not found" });
             }
 
-            // Refund to wallet if returned
-            if (status === "Returned") {
-                const user = await User.findById(order.user);
-                if (user) {
-                    let wallet = await Wallet.findOne({ userId: order.user });
-                    if (!wallet) {
-                        // Create a new wallet if it doesn't exist
-                        wallet = new Wallet({
-                            userId: order.user,
-                            transactions: [],
+            const item = order.items.find(item => item._id.toString() === id);
+            if (!item) {
+                return res.status(404).json({ success: false, message: "Item not found in order" });
+            }
+
+            let refundAmount = (item.product.finalPrice * item.quantity)+((item.product.finalPrice * item.quantity)*0.1);
+            let walletUpdated = false;
+
+            // Handle Cancellation & Return Logic
+            if (status === "Cancelled" || status === "Returned") {
+                if (order.orderStatus !== "Cancelled" && order.orderStatus !== "Returned") {
+                    if (item.product) {
+                        item.product.stock += item.quantity;
+                        await item.product.save();
+                    }
+                }
+
+                // Wallet Refund (only for Returned)
+                if (status === "Returned") {
+                    const user = await User.findById(order.user);
+                    if (user) {
+                        let wallet = await Wallet.findOne({ userId: order.user });
+                        if (!wallet) {
+                            wallet = new Wallet({ userId: order.user, transactions: [] });
+                        }
+
+                        // Adjust refund based on coupon
+                        if (order.couponPrice) {
+                            const coupon = await Coupon.findOne({offerPrice:order.couponPrice});
+                            const maxCouponAmount = coupon.minimumPrice;
+                            let remainingTotal = order.items
+                                .filter(i => i.status !== "Cancelled" && i.status !== "Returned")
+                                .reduce((sum, i) => sum + i.finalPrice, 0);
+                            
+                                if (remainingTotal === 0) {
+                                    refundAmount -= order.couponPrice;
+                                } else if (remainingTotal < maxCouponAmount) {                                           
+                                    refundAmount-= order.couponPrice;                                               
+                               }
+                        }
+
+                        let remainingItems = order.items.filter(i => 
+                            i.status !== "Cancelled" && 
+                            i.status !== "Returned" && 
+                            i._id.toString() !== item._id.toString()
+                        );
+
+                        // Deduct delivery charge only if this is the last item being canceled 
+                        if (remainingItems.length === 0) {
+                        refundAmount += order.shippingCharge || 0; // Default delivery charge ₹50
+                        }
+
+                        wallet.transactions.push({
+                            orderId: order._id,
+                            transactionType: "credit",
+                            transactionAmount: refundAmount > 0 ? refundAmount : 0,
+                            transactionDescription: `Refund for returned item ${item._id}`,
                         });
+
+                        await wallet.save();
+                        walletUpdated = true;
                     }
-                    try{
-                        // Add refund transaction to the wallet
-                    wallet.transactions.push({
-                        orderId: order._id, // Use order._id instead of order.orderId
-                        transactionType: "credit",
-                        transactionAmount: order.totalAmount,
-                        transactionDescription: `Refund for returned order ${order.orderId}`,
-                    });
-                    
-                    await wallet.save(); // Ensure the wallet is saved after adding the transaction                   
-                }catch(err){
-                    console.log(err);
                 }
-                    }
-                    
             }
+
+            // Generate Invoice for Delivered Items
+            if (status === "Delivered") {
+                const invoiceFileName = `invoice_${order.orderId}_${item._id}.pdf`;
+                const invoicePath = path.join(__dirname, "../../public/invoices", invoiceFileName);
+
+                generateInvoice(order, item, invoicePath);
+                item.invoiceUrl = `/invoices/${invoiceFileName}`;
+            }
+
+            // Update Item Status
+            item.status = status;
+            await order.save();
+
+            // Check if all items have the same status, update order status accordingly
+
+            const uniqueStatuses = new Set(order.items.map(i => i.status));
+            if (uniqueStatuses.size === 1) {
+                order.orderStatus = [...uniqueStatuses][0]; // Set order status to the common status
+            }
+            await order.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Order status updated successfully",
+                walletUpdated: walletUpdated,
+                refundAmount: walletUpdated ? refundAmount : 0,
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ success: false, message: "Server error" });
         }
-
-        // Update order status and item statuses
-        order.orderStatus = status;
-        for (const item of order.items) {
-            item.status = status; // Update item status to match order status
-        }
-
-        if (status === "Delivered") {
-            const invoiceFileName = `invoice_${order.orderId}.pdf`;
-            const invoicePath = path.join(__dirname, '../../public/invoices', invoiceFileName);
-
-            // Generate the invoice
-            const relativeInvoicePath = generateInvoice(order, invoicePath);
-
-            // Save the invoice URL in the order document
-            order.invoiceUrl = `/invoices/${invoiceFileName}`;
-        }
-
-        await order.save();
-
-        res.status(200).json({ success: true, message: "Order status updated successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
+    };
 
 const downloadInvoice= async(req,res)=>{
     try{
@@ -163,9 +197,7 @@ const downloadInvoice= async(req,res)=>{
        }catch(err){
         console.error(err);
        }
-    }
-
-    
+    }   
 
 
 module.exports={

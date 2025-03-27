@@ -100,7 +100,7 @@ const blockCoupon=async(req,res)=>{
 }
 
     module.exports={
-    couponList,
+    couponList, 
     createCoupon,
     addCoupon,
     editCouponLoad,

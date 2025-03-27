@@ -3,7 +3,7 @@ const bcrypt=require('bcrypt');
 const asyncHandler=require('express-async-handler');
 
 const loadUsers=  asyncHandler(async (req, res) => {
-    let { search = "", status = "Show all", limit = 20, page = 1 } = req.query;
+    let { search = "", status = "Show all", limit = 10, page = 1 } = req.query;
     
     limit = parseInt(limit);
     page = parseInt(page);

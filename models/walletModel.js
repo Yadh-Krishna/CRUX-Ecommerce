@@ -56,7 +56,7 @@
     //  Virtual field: Calculates wallet balance dynamically
     walletSchema.virtual("calculatedBalance").get(function () {
     return this.transactions.reduce((total, txn) => {
-        return txn.transactionType === "credit"
+        return txn.transactionType === "credit"//|| txn.transactionType === "refund"
         ? total + txn.transactionAmount
         : total - txn.transactionAmount;
     }, 0);

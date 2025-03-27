@@ -17,6 +17,7 @@ const OrderSchema = new mongoose.Schema({
         enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested", "Returned"], 
         default: "Pending" 
       },
+      invoiceUrl :{ type: String, default: null },
       cancellationReason: { type: String, default: null }, // Item-level cancellation reason
       returnReason: { type: String }, 
     }

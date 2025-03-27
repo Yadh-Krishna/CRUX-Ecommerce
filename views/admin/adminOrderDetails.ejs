@@ -162,14 +162,18 @@
                                             </td>
                                             <td class="text-start">₹<%= (item.product.finalPrice * item.quantity).toFixed(2) %></td>
                                             <td class="text-center">
-                                                <!-- <% if (item.status === 'Return Requested') { %>
-                                                    <button type="button"  class="btn btn-success refundPayment">Refund Payment</button>
-                                                <% } else { %> -->
-                                                    <button type="button"  class="btn btn-primary cancelButton " 
-                                                            <%= (item.status === 'Cancelled' || item.status === 'Returned') ? 'disabled' : '' %>>
-                                                        Chnage Item Status
-                                                    </button>
-                                                <!-- <% } %> -->
+                                                
+                                                <button type="button" 
+                                                id="changeStatus" 
+                                                data-status="<%= item.status %>" 
+                                                data-id="<%= item._id %>" 
+                                                data-order-id="<%= order._id %>" 
+                                                class="btn btn-primary cancelButton"
+                                                onclick="openStatusModal('<%= item._id %>', '<%= item.status %>', '<%= item.returnReason || item.cancellationReason %>', 'item', '<%= order._id %>')"
+                                                <%= (item.status === 'Cancelled' || item.status === 'Returned') ? 'disabled' : '' %>>
+                                                Change Item Status
+                                            </button>
+                                               
                                             </td>
                                             <td class="text-start">
                                                 <% if (item.status === 'Return Requested') { %>
@@ -177,7 +181,7 @@
                                                 <% } else if(item.status === 'Cancelled') { %>
                                                     <%= item.cancellationReason || 'N/A' %> 
                                                 <% }else{ %>
-                                                    -
+                                                        -
                                                     <% } %>
                                             </td>
                                         </tr>
@@ -249,12 +253,12 @@
             </div>
             <form id="statusForm" method="POST">
                 <label for="newStatus">Update Status:</label>
-                <select id="newStatus" name="status" class="form-select">
-                    <% orderStatusOptions.forEach(status => { %>
-                        <option value="<%= status %>"><%= status %></option>
-                    <% }) %>               
-                </select>
+                <input type="hidden" id="hiddenItemStatus" value="">               
+
+                <select id="newStatus" name="status" class="form-select"></select>  
+
                 <input type="hidden" id="updateUrl">
+                <input type="hidden" id="orderId">
             </form>
             </div>
             <div class="modal-footer">
@@ -276,31 +280,88 @@
     <!-- Main Script -->
     <script src="/assets/js/main.js" type="text/javascript"></script>
     <script>
-    function openStatusModal(id, currentStatus, reason, type) {
-    // Set the modal values
-    document.getElementById('modalStatus').innerText = currentStatus;
-    document.getElementById('modalReason').value = reason;
+        document.addEventListener("DOMContentLoaded",function(){
 
-    // Show reason section only if status is "Return Requested" or "Cancelled"
-    if (currentStatus === "Return Requested" || currentStatus === "Cancelled") {
-        document.getElementById('reasonSection').classList.remove('d-none');
-    } else {
-        document.getElementById('reasonSection').classList.add('d-none');
-    }
+        
+    // window.openStatusModal= function(id, currentStatus, reason, type,orderId) {
+    // // Set the modal values
+    // document.getElementById('modalStatus').innerText = currentStatus;
+    // document.getElementById('modalReason').value = reason;    
+    // document.getElementById('orderId').value= orderId;
+    // document.getElementById('hiddenItemStatus').value = currentStatus;
+    // // Show reason section only if status is "Return Requested" or "Cancelled"
+    // if (currentStatus === "Return Requested" || currentStatus === "Cancelled") {
+    //     document.getElementById('reasonSection').classList.remove('d-none');
+    // } else {
+    //     document.getElementById('reasonSection').classList.add('d-none');
+    // }
 
-    // Set the update URL based on the type (order or item)
-    document.getElementById('updateUrl').value = `/admin/orders/${type}/update-status/${id}`;
+    // // Set the update URL based on the type (order or item)
+    // document.getElementById('updateUrl').value = `/admin/orders/${type}/update-status/${id}`;
 
-    // Open the modal
-    const statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
-    statusModal.show();
-}
+    // // Open the modal
+    // const statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+    // statusModal.show();
+
+    // }
+
+    const statusFlow = {
+        "Pending": ["Processing", "Shipped", "Delivered"],
+        "Processing": ["Shipped", "Delivered"],
+        "Shipped": ["Delivered"],
+        "Delivered": [],
+        "Return Requested": ["Returned"],
+        "Cancelled": [],
+        "Returned": []
+    };
+
+    window.openStatusModal = function (id, currentStatus, reason, type, orderId) {
+        // Set current status in modal
+        document.getElementById('modalStatus').innerText = currentStatus;
+        document.getElementById('modalReason').value = reason;
+        document.getElementById('orderId').value = orderId;
+        document.getElementById('hiddenItemStatus').value = currentStatus;
+
+        // Show/hide reason section based on status
+        if (currentStatus === "Return Requested" || currentStatus === "Cancelled") {
+            document.getElementById('reasonSection').classList.remove('d-none');
+        } else {
+            document.getElementById('reasonSection').classList.add('d-none');
+        }
+
+        // Populate select options dynamically
+        const newStatusSelect = document.getElementById('newStatus');
+        newStatusSelect.innerHTML = ""; // Clear previous options
+
+        // Get allowed status transitions
+        const allowedStatuses = statusFlow[currentStatus] || [];
+
+        if (allowedStatuses.length === 0) {
+            newStatusSelect.innerHTML = `<option value="" disabled>No further updates allowed</option>`;
+        } else {
+            allowedStatuses.forEach(status => {
+                let option = document.createElement("option");
+                option.value = status;
+                option.textContent = status;
+                newStatusSelect.appendChild(option);
+            });
+        }
+
+        // Set update URL dynamically
+        document.getElementById('updateUrl').value = `/admin/orders/${type}/update-status/${id}`;
+
+        // Open the modal
+        const statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+        statusModal.show();
+    };
+
 
        
-async function submitStatusUpdate() {
+window.submitStatusUpdate=async function() {
     const newStatus = document.getElementById('newStatus').value;
     const updateUrl = document.getElementById('updateUrl').value;
-
+    const orderId = document.getElementById('orderId').value;
+    console.log("OrderId & updateUrl",orderId,updateUrl);
     try {
         const response = await fetch(updateUrl, {
             method: "PATCH",
@@ -309,6 +370,7 @@ async function submitStatusUpdate() {
             },
             body: JSON.stringify({
                 status: newStatus,
+                orderId:orderId
             }),
         });
 
@@ -337,7 +399,9 @@ async function submitStatusUpdate() {
         confirmButtonText: "OK"
     });
 }
-}   
+}  
+});
+
     </script>
 </body>
 
