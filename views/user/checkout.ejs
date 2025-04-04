@@ -456,10 +456,10 @@
                             <span>Shipping</span>
                             <span id="shippingCharge" class="price">₹<%= cart && cart.shipping ? cart.shipping : '0.00' %></span>
                         </li>
-                        <% if (appliedCoupon && couponOff > 0) { %>
+                        <% if ((appliedCoupon && couponOff)|| 0 > 0) { %>
                             <li class="cart-summary-item text-success">
                                 <span>Coupon Applied (<%= appliedCoupon.name %>)</span>
-                                <span id="couponOff" class="price">-₹<%= couponOff.toFixed(2) %></span>
+                                <span id="couponOff" class="price">-₹<%= couponOff %></span>
                             </li>
                         <% } %>
                         <li class="cart-summary-item total fw-bold pt-2">
@@ -468,29 +468,39 @@
                         </li>
                     </ul>
                     <input type="hidden" id="appliedCouponId" value="<%= appliedCoupon ? appliedCoupon._id : '' %>">
-                </div>               
+                </div>
 
                 <div class="cart-detail">
                     <h2>Available Coupons</h2>
                     <div class="available-coupons">
-                        <% if (availableCoupons && availableCoupons.length > 0) { %>
-                            <% availableCoupons.forEach((coupon) => { %>
+                        <% 
+                        // Filter coupons based on general availability or referral-based restrictions
+                        const userSpecificCoupons = availableCoupons.filter(coupon => 
+                            !coupon.generatedByReferral || (coupon.generatedByReferral && coupon.rewardUsers.includes(user._id))
+                        );
+                
+                        if (userSpecificCoupons.length > 0) { 
+                        %>
+                            <% userSpecificCoupons.forEach((coupon) => { %>
                                 <div class="coupon-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                    
                                     <div>
                                         <span class="coupon-code fw-bold"><%= coupon.name %></span>
                                         <p class="coupon-description mb-0 small">
-                                            <span>Minimum Purchase:</span> ₹<%= coupon.minimumPrice %> <br>
-                                            <span>Discount:</span> ₹<%= coupon.offerPrice %> <br>                                           
+                                            <span>Coupon Code: </span><%= coupon.code %> <br>
+                                            <span>Discount:</span> <%= coupon.offerPrice %>%<br> 
+                                            <span>Minimum Purchase: </span> ₹<%= coupon.minimumPrice %> <br>                                            
+                                            <span>Maximum Discount: </span>₹<%= coupon.maximumDiscount %>                                          
                                         </p>
                                     </div>
-                
+                    
                                     <!-- Apply Button -->
                                     <button class="btn btn-sm btn-outline-primary apply-coupon-btn 
                                         <% if (appliedCoupon && appliedCoupon.name === coupon.name) { %> d-none <% } %>" 
                                         data-coupon="<%= coupon._id %>">
                                         Apply
                                     </button>
-                
+                    
                                     <!-- Remove Button -->
                                     <button class="btn btn-sm btn-danger remove-coupon-btn 
                                         <% if (!appliedCoupon || appliedCoupon.name !== coupon.name) { %> d-none <% } %>" 
@@ -504,6 +514,45 @@
                         <% } %>
                     </div>
                 </div>
+                
+
+                <!-- <div class="cart-detail">
+                    <h2>Available Coupons</h2>
+                    <div class="available-coupons">
+                        <% if (availableCoupons && availableCoupons.length > 0) { %>
+                            <% availableCoupons.forEach((coupon) => { %>
+                                <div class="coupon-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                   
+                                    <div>
+                                        <span class="coupon-code fw-bold"><%= coupon.name %></span>
+                                        <p class="coupon-description mb-0 small">
+                                            <span>Coupon Code: </span><%= coupon.code %> <br>
+                                            <span>Discount:</span> <%= coupon.offerPrice %>%<br> 
+                                            <span>Minimum Purchase: </span> ₹<%= coupon.minimumPrice %> <br>                                            
+                                            <span>Maximum Discount: <span>₹<%= coupon.maximumDiscount%></span></span>                                          
+                                        </p>
+                                    </div>
+                
+                                 
+                                    <button class="btn btn-sm btn-outline-primary apply-coupon-btn 
+                                        <% if (appliedCoupon && appliedCoupon.name === coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Apply
+                                    </button>
+                
+                                    
+                                    <button class="btn btn-sm btn-danger remove-coupon-btn 
+                                        <% if (!appliedCoupon || appliedCoupon.name !== coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Remove
+                                    </button>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-center">No coupons available at the moment</p>
+                        <% } %>
+                    </div>
+                </div> -->
 
                 <!-- Payment Method Section -->
                 <div class="cart-detail">
@@ -548,9 +597,9 @@ document.addEventListener("visibilitychange", async function () {
         });
         const result =await response.json();
         if(result.success){
-            // console.log('Coupon Removed');            
+            console.log('Coupon Removed');            
         }else{
-            // console.log("Error Occured");
+            console.log("Error Occured");
         }
         }
     });
@@ -562,7 +611,7 @@ document.addEventListener("visibilitychange", async function () {
     apply.addEventListener('click', async function() {
         let couponId = this.getAttribute('data-coupon');       
         let subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('₹', ''));
-
+        
         try {
             const response = await fetch(`/apply-coupon`, {
                 method: "PATCH",
@@ -883,6 +932,7 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
             }
         }
         
+        console.log("Order result ",orderResult.key_id);
         // Open Razorpay payment form
         const options = {
             key: orderResult.key_id,

@@ -8,7 +8,8 @@ const categoryManage=require('../../controller/adminController/categoryManage');
 const brandManage=require('../../controller/adminController/brandManage');
 const productController= require('../../controller/adminController/productController'); 
 const orderController= require('../../controller/adminController/orderController');
-const couponController=require('../../controller/adminController/couponController')
+const couponController=require('../../controller/adminController/couponController');
+const walletController=require('../../controller/adminController/walletController')
 const auth = require("../../middleware/adminAuth");
 const User = require("../../models/userModel");
 
@@ -23,6 +24,7 @@ router.post('/login',adminDashboard.login);//providing creds
 
 //Dashboard
 router.get('/dashboard',auth,adminDashboard.loadDashboard);//Loading dashboard
+router.get('/dashboard-data',auth,adminDashboard.getDashboardData)
 router.get("/logout",adminDashboard.logout);//logging out of admin management
 
 //Sales Report
@@ -86,5 +88,8 @@ router.get('/coupons/edit/:id',auth,couponController.editCouponLoad);
 router.put('/coupons/edit/:id',auth,couponController.updateCoupon);
 router.patch('/coupons/toggle/:id',auth,couponController.blockCoupon);
 
+//Wallet Management
+
+router.get('/wallet',auth,walletController.loadWalletPage);
 
 module.exports=router;

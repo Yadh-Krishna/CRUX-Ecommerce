@@ -50,7 +50,8 @@ const OrderSchema = new mongoose.Schema({
   expectedDelivery: { type: Date },
   trackingId: { type: String, default: null }, // Tracking ID from courier service
   invoiceUrl: { type: String, default: null }, // Link to invoice PDF
-  couponApplied: { type: Boolean, default: false } // Soft delete for orders
+  couponApplied: { type: Boolean, default: false }, // Soft delete for orders
+  couponId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Coupon', default: null }
 }, { timestamps: true });
 
 

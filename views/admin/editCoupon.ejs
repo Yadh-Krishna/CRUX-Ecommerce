@@ -60,6 +60,12 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="maximumDiscount" class="form-label">Maximum Discount Price (₹)</label>
+                            <input type="number" id="maximumDiscount" name="maximumDiscount" class="form-control"  min="0" value="<%= coupon.maximumDiscount %>">
+                            <small class="text-danger" id="maximumDiscountError"></small>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
                             <input type="date" id="startDate" name="startDate" class="form-control" value="<%= coupon.startDate.toISOString().split('T')[0] %>">
                             <small class="text-danger" id="startDateError"></small>
@@ -112,7 +118,8 @@
             offerPrice: parseFloat(document.getElementById("offerPrice").value),
             minimumPrice: parseFloat(document.getElementById("minimumPrice").value),
             startDate: document.getElementById("startDate").value,
-            expireOn: document.getElementById("expireOn").value
+            expireOn: document.getElementById("expireOn").value,
+            maximumDiscount: document.getElementById('maximumDiscount').value
         };
 
         const response = await fetch(`/admin/coupons/edit/${couponId}`, {

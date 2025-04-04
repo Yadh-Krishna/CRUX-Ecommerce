@@ -68,6 +68,17 @@
                             <input class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" type="password">
                             <small class="text-danger" id="confirmPasswordError"></small>
                         </div>
+
+                        <div class="mb-3">
+                            <input type="checkbox" id="haveReferral" class="form-check-input"> 
+                            <label for="haveReferral" class="form-check-label">I have a referral code</label>
+                        </div>
+                    
+                        <div class="mb-3" id="referralSection" style="display: none;">
+                            <label class="form-label">Referral Code</label>  
+                            <input class="form-control" name="referralCode" id="referralCode" placeholder="Referral Code" type="text">
+                            <small class="text-danger" id="referralCodeError"></small>
+                        </div>
                     
                         <div class="mb-3">
                             <p class="small text-center text-muted">By signing up, you confirm that you’ve read and accepted our User Notice and Privacy Policy.</p>
@@ -107,6 +118,20 @@
     <!-- Main Script -->
     <script src="/assets/js/main.js" type="text/javascript"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralCode = urlParams.get('referralCode');
+        if (referralCode) {
+            document.getElementById('haveReferral').checked = true;
+            document.getElementById('referralSection').style.display = 'block';
+            document.getElementById('referralCode').value = referralCode;
+        }
+    });
+    document.getElementById('haveReferral').addEventListener('change', function() {
+        document.getElementById('referralSection').style.display = this.checked ? 'block' : 'none';
+    });
+
+
 
         if (window.history.replaceState) {
                 window.history.replaceState(null, null, window.location.href);

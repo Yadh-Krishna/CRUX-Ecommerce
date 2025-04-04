@@ -4,7 +4,12 @@ const jwt = require("jsonwebtoken");
 const statusCodes=require('../../utils/statusCodes');
 const errorMessages=require('../../utils/errorMessages')
 const crypto = require("crypto");
+const Referral=require('../../models/referralModel')
+const Coupon=require('../../models/couponModel')
 require("dotenv").config();
+const generateCouponCode = () => {
+    return "REF" + Math.random().toString(36).substr(2, 8).toUpperCase();
+};
 
 const sendOTP =require('../../utils/sendOTP');       
 
@@ -56,13 +61,27 @@ const registerPage = (req, res) => {
 // Register User
 const registerUser = async (req, res) => {
     try {
-        const { name, email, mobile, password } = req.body;
-
+        // console.log("Register route hit"); 
+        const { name, email, mobile, password ,referralCode} = req.body;
+        // console.log("Referral ", referralCode);
         // Check if user already exists
         let user = await User.findOne({ email });
         if (user) {
-            return res.render("register", { error: "Email already exists!" });
+            req.flash('error','Email already exists!')
+            return res.redirect("/register");
         }
+        if(referralCode){
+            
+        //  console.log("Referral Code Provided:", referralCode);
+
+        const referral= await Referral.findOne({referralCode:referralCode});
+        if (!referral) {
+            req.flash("error", "Referral code not valid");
+            return res.redirect("/register");
+        }
+        }
+        
+
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -72,7 +91,7 @@ const registerUser = async (req, res) => {
         const otpExpires = Date.now() + 60000; // OTP expires in 1 minute
         console.log(otp);
         // Store user details temporarily in cookies (encrypted)
-        res.cookie("tempUser", JSON.stringify({ name, email, mobile, password: hashedPassword, otp, otpExpires }), {
+        res.cookie("tempUser", JSON.stringify({ name, email, mobile,referralCode, password: hashedPassword, otp, otpExpires }), {
             httpOnly: true, // Prevent client-side access to cookies
             secure: false, 
             maxAge: 5 * 60000 // Expire in 5 minutes
@@ -80,9 +99,12 @@ const registerUser = async (req, res) => {
 
         // Send OTP via email
         await sendOTP(email, otp,"signup");
-
-        // Redirect to OTP verification page
-        res.redirect("/verify-otp");
+        // console.log("Redirecting to /verify-otp");
+        res.cookie("otpStart", true, {
+            httpOnly: false,
+            maxAge: 5 * 60000
+        });
+        res.redirect("/verify-OTP");
     } catch (error) {
         console.error("Error in registerUser:", error);
         res.render("register", { error: "Server error. Try again later!" });
@@ -96,9 +118,7 @@ const verifyOtp= async (req,res)=>{
 
 const authenticateOtp =  async (req, res) => {
     try {
-        const { otp } = req.body;
-
-        
+        const { otp } = req.body;        
         const tempUser = req.cookies.tempUser ? JSON.parse(req.cookies.tempUser) : null;
 
         if (!tempUser) {
@@ -106,8 +126,8 @@ const authenticateOtp =  async (req, res) => {
             return res.redirect("/register");
         }
 
-        const { name, email, mobile, password, otp: storedOTP, otpExpires } = tempUser;
-
+        const { name, email, mobile, password, otp: storedOTP, otpExpires,referralCode } = tempUser;
+        // console.log("Referral ",referralCode);
        
         if (otp !== storedOTP || otpExpires < Date.now()) {
             req.flash("error", "Invalid or expired OTP!");
@@ -124,8 +144,42 @@ const authenticateOtp =  async (req, res) => {
             otpExpires,
             isVerified: true
         });
-
         await newUser.save();
+
+        // const referral= await Referral.findOne({referralCode}).populate('userId');
+        // if(referral){          
+        //     if(referree){
+        //         referree.referredUsers.push(newUser._id);    
+        //         await referree.save();           
+        //     }    
+        // }
+        // console.log(" Outside referrral code command",referralCode);
+        if (referralCode) {
+            console.log(" Inside referrral code command",referralCode);
+            const referral = await Referral.findOne({ referralCode }).populate("userId");
+
+            if (referral && referral.userId) {
+                referral.referredUsers.push(newUser._id);
+                await referral.save();
+
+                // Generate referral coupon
+                // const couponCode = ;
+                const referralCoupon = new Coupon({
+                    name: "Referral Bonus",
+                    code: generateCouponCode(),
+                    startDate: new Date(),
+                    expireOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), //30 days expiry
+                    offerPrice: 20, 
+                    minimumPrice: 500, 
+                    maximumDiscount: 100,
+                    isActive: true,
+                    rewardUsers: [newUser._id, referral.userId._id], 
+                    generatedByReferral: true
+                });
+
+                await referralCoupon.save();
+            }
+        }
 
         // Clear temp user cookie after verification
         res.clearCookie("tempUser");
@@ -135,7 +189,7 @@ const authenticateOtp =  async (req, res) => {
     } catch (error) {
         console.error("Error in verifyOTP:", error);
         req.flash("error", "Server error. Try again later!");
-        res.render("/register");
+        res.redirect("/register");
     }
 };
 

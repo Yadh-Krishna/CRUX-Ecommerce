@@ -4,23 +4,28 @@ const Coupon=require('../../models/couponModel')
 const asyncHandler=require('express-async-handler');
 const statusCodes=require('../../utils/statusCodes');
 const errorMessages=require('../../utils/errorMessages')
+const generateCouponCode = () => {
+    return "COUP" + Math.random().toString(36).substr(2, 8).toUpperCase();
+};
 const createCoupon=async(req,res)=>{
     res.render('createCoupon');
 }
 
 const addCoupon=async(req,res)=>{
     try{
-        const {name,offerPrice,minimumPrice,startDate,expireOn}=req.body;        
+        const {name,offerPrice,minimumPrice,startDate,expireOn,maximumDiscount}=req.body;        
         let coupon= await Coupon.findOne({name});                
         if(!coupon){
             const expire = new Date(expireOn);
-            expire.setHours(23, 59, 59, 999); // Set to end of day
+            expire.setHours(23, 59, 59, 999); 
          coupon= new Coupon({
             name,
             startDate:new Date(startDate),
             expireOn:expire,
             offerPrice,
-            minimumPrice
+            minimumPrice,
+            maximumDiscount,
+            code:generateCouponCode(),
         })
         await coupon.save();
         req.flash("success","Coupon added Successfully");
@@ -64,7 +69,7 @@ const editCouponLoad= async(req, res)=>{
 
 const updateCoupon=async(req,res)=>{
     try{
-        const {name,offerPrice,startDate,expireOn,minimumPrice}=req.body;
+        const {name,offerPrice,startDate,expireOn,minimumPrice,maximumDiscount}=req.body;
         const id=req.params.id;
         let coupon=await Coupon.findById(id);
         if(!coupon){
@@ -72,7 +77,7 @@ const updateCoupon=async(req,res)=>{
         }
         const expire = new Date(expireOn);
         expire.setHours(23, 59, 59, 999); // Set to end of day
-        coupon=await Coupon.findByIdAndUpdate(id,{name,offerPrice,startDate:new Date(startDate),expireOn:expire,minimumPrice});
+        coupon=await Coupon.findByIdAndUpdate(id,{name,offerPrice,startDate:new Date(startDate),expireOn:expire,minimumPrice,maximumDiscount});
        
         return res.status(statusCodes.SUCCESS).json({success:true,message:"Coupon updated successfully"})
     }catch(err){

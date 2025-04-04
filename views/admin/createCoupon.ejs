@@ -9,7 +9,7 @@
     <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
 </head>
 <body>
     <%- include("../partials/sidebar") %>
@@ -46,7 +46,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="offerPrice" class="form-label">Offer Price(₹)</label>
+                            <label for="offerPrice" class="form-label">Offer Percentage(%)</label>
                             <input type="number" id="offerPrice" name="offerPrice" class="form-control"  min="0">
                             <small class="text-danger" id="offerPriceError"></small>                            
                         </div>
@@ -55,6 +55,12 @@
                             <label for="minimumPrice" class="form-label">Minimum Purchase Price (₹)</label>
                             <input type="number" id="minimumPrice" name="minimumPrice" class="form-control"  min="0">
                             <small class="text-danger" id="minimumPriceError"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="maximumDiscount" class="form-label">Maximum Discount Price (₹)</label>
+                            <input type="number" id="maximumDiscount" name="maximumDiscount" class="form-control"  min="0">
+                            <small class="text-danger" id="maximumDiscountError"></small>
                         </div>
 
                         <div class="mb-3">
@@ -85,118 +91,131 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         //Validation
-            document.addEventListener("DOMContentLoaded", function () {
-            const couponForm = document.getElementById("couponForm");
+        document.addEventListener("DOMContentLoaded", function () {
+    const couponForm = document.getElementById("couponForm");
 
-            // Attach input event listeners for real-time validation
-            document.getElementById("name").addEventListener("input", validateName);
-            document.getElementById("offerPrice").addEventListener("input", validateOfferPrice);
-            document.getElementById("minimumPrice").addEventListener("input", validateMinimumPrice);
-            document.getElementById("startDate").addEventListener("change", validateStartDate);
-            document.getElementById("expireOn").addEventListener("change", validateExpireOn);
+    // Attach input event listeners for real-time validation
+    document.getElementById("name").addEventListener("input", validateName);
+    document.getElementById("offerPrice").addEventListener("input", validateOfferPrice);
+    document.getElementById("minimumPrice").addEventListener("input", validateMinimumPrice);
+    document.getElementById("maximumDiscount").addEventListener("input", validateMaximumDiscount);
+    document.getElementById("startDate").addEventListener("change", validateStartDate);
+    document.getElementById("expireOn").addEventListener("change", validateExpireOn);
 
-            // Form submission event
-            couponForm.addEventListener("submit", function (event) {
-                if (!validateCouponForm()) {
-                    event.preventDefault(); // Prevent form submission if validation fails
-                }
-            });
-        });
-
-        function validateName() {
-            let name = document.getElementById("name").value.trim();
-            let nameError = document.getElementById("nameError");
-
-            if (!name) {
-                nameError.innerText = "Coupon name is required.";
-                return false;
-            }
-            nameError.innerText = "";
-            return true;
+    // Form submission event
+    couponForm.addEventListener("submit", function (event) {
+        if (!validateCouponForm()) {
+            event.preventDefault(); // Prevent form submission if validation fails
         }
+    });
+});
 
-        function validateOfferPrice() {
-            let offerPrice = parseFloat(document.getElementById("offerPrice").value);
-            let offerPriceError = document.getElementById("offerPriceError");
+function validateName() {
+    let name = document.getElementById("name").value.trim();
+    let nameError = document.getElementById("nameError");
 
-            if (isNaN(offerPrice) || offerPrice < 0) {
-                offerPriceError.innerText = "Offer price must be 0 or greater.";
-                return false;
-            }
+    if (!name) {
+        nameError.innerText = "Coupon name is required.";
+        return false;
+    }
+    nameError.innerText = "";
+    return true;
+}
 
-            // Ensure offer price is not greater than minimum price
-            let minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
-            if (!isNaN(minimumPrice) && offerPrice > minimumPrice) {
-                offerPriceError.innerText = "Offer price cannot be greater than minimum price.";
-                return false;
-            }
+function validateOfferPrice() {
+    let offerPrice = parseFloat(document.getElementById("offerPrice").value);
+    let offerPriceError = document.getElementById("offerPriceError");
 
-            offerPriceError.innerText = "";
-            return true;
-        }
+    if (isNaN(offerPrice) || offerPrice <= 0 || offerPrice > 50) {
+        offerPriceError.innerText = "Offer price must be greater than 0 and less than 50.";
+        return false;
+    }
+    
+    offerPriceError.innerText = "";
+    return true;
+}
 
-        function validateMinimumPrice() {
-            let minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
-            let minimumPriceError = document.getElementById("minimumPriceError");
+function validateMinimumPrice() {
+    let minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
+    let minimumPriceError = document.getElementById("minimumPriceError");
 
-            if (isNaN(minimumPrice) || minimumPrice <= 0) {
-                minimumPriceError.innerText = "Minimum price is required and must be greater than 0.";
-                return false;
-            }
+    if (isNaN(minimumPrice) || minimumPrice <= 0) {
+        minimumPriceError.innerText = "Minimum price is required and must be greater than 0.";
+        return false;
+    }
+    
+    minimumPriceError.innerText = "";
+    return true;
+}
 
-            // Ensure offer price is not greater than minimum price
-            validateOfferPrice();
+function validateMaximumDiscount() {
+    let maximumDiscount = parseFloat(document.getElementById("maximumDiscount").value);
+    let minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
+    let maximumDiscountError = document.getElementById("maximumDiscountError");
 
-            minimumPriceError.innerText = "";
-            return true;
-        }
+    // Check if maximum discount is a valid number
+    if (isNaN(maximumDiscount) || maximumDiscount <= 0) {
+        maximumDiscountError.innerText = "Maximum discount is required and must be greater than 0.";
+        return false;
+    }
 
-        function validateStartDate() {
-            let startDate = document.getElementById("startDate").value;
-            let startDateError = document.getElementById("startDateError");
-            let today = new Date().toISOString().split("T")[0];
+    // Check if maximum discount is less than or equal to minimum price
+    if (maximumDiscount > minimumPrice) {
+        maximumDiscountError.innerText = "Maximum discount cannot be greater than minimum purchase price.";
+        return false;
+    }
 
-            if (!startDate) {
-                startDateError.innerText = "Start date is required.";
-                return false;
-            } else if (startDate < today) {
-                startDateError.innerText = "Start date cannot be in the past.";
-                return false;
-            }
+    maximumDiscountError.innerText = "";
+    return true;
+}
 
-            startDateError.innerText = "";
-            return true;
-        }
+function validateStartDate() {
+    let startDate = document.getElementById("startDate").value;
+    let startDateError = document.getElementById("startDateError");
+    let today = new Date().toISOString().split("T")[0];
 
-        function validateExpireOn() {
-            let startDate = document.getElementById("startDate").value;
-            let expireOn = document.getElementById("expireOn").value;
-            let expireOnError = document.getElementById("expireOnError");
+    if (!startDate) {
+        startDateError.innerText = "Start date is required.";
+        return false;
+    } else if (startDate < today) {
+        startDateError.innerText = "Start date cannot be in the past.";
+        return false;
+    }
 
-            if (!expireOn) {
-                expireOnError.innerText = "Expiration date is required.";
-                return false;
-            } else if (startDate && expireOn <= startDate) {
-                expireOnError.innerText = "Expiration date must be after the start date.";
-                return false;
-            }
+    startDateError.innerText = "";
+    return true;
+}
 
-            expireOnError.innerText = "";
-            return true;
-        }
+function validateExpireOn() {
+    let startDate = document.getElementById("startDate").value;
+    let expireOn = document.getElementById("expireOn").value;
+    let expireOnError = document.getElementById("expireOnError");
 
-        // Master validation function (called on form submission)
-        function validateCouponForm() {
-            let valid = true;
+    if (!expireOn) {
+        expireOnError.innerText = "Expiration date is required.";
+        return false;
+    } else if (startDate && expireOn <= startDate) {
+        expireOnError.innerText = "Expiration date must be after the start date.";
+        return false;
+    }
 
-            if (!validateName()) valid = false;
-            if (!validateOfferPrice()) valid = false;
-            if (!validateMinimumPrice()) valid = false;
-            if (!validateStartDate()) valid = false;
-            if (!validateExpireOn()) valid = false;
+    expireOnError.innerText = "";
+    return true;
+}
 
-            return valid;
-        }
+// Master validation function (called on form submission)
+function validateCouponForm() {
+    let valid = true;
+
+    if (!validateName()) valid = false;
+    if (!validateOfferPrice()) valid = false;
+    if (!validateMinimumPrice()) valid = false;
+    if (!validateMaximumDiscount()) valid = false;
+    if (!validateStartDate()) valid = false;
+    if (!validateExpireOn()) valid = false;
+
+    return valid;
+}
     </script>
 </body>
 </html>

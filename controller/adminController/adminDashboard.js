@@ -14,7 +14,7 @@ const ExcelJS = require("exceljs");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
-
+const dashboardAnalytics=require('../../utils/dashboardAnalytics');
 
 const loadLogin = (req, res) => {
     const token = req.cookies.adminToken; // Read token from cookies
@@ -70,12 +70,26 @@ const loadDashboard = (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.admin = decoded; // Attach admin data for use in the template
         
-        res.render("dashboard", { products: [] }); // Pass admin data to view
+        res.render("dashboard",); // Pass admin data to view
     } catch (error) {
         res.clearCookie("adminToken"); // Clear invalid token
         return res.redirect("/admin/login"); // Redirect to login
     }
 };
+
+const getDashboardData = async (req, res) => {
+    try {
+        const timeFilter = req.query.timeFilter || 'monthly';
+        const dashboardData = await dashboardAnalytics.getDashboardData(timeFilter);
+        return res.json(dashboardData);
+    } catch (err) {
+        console.error('Dashboard data error:', err);
+        return res.status(500).json({ 
+            error: 'Failed to load dashboard data',
+            message: err.message 
+        });
+    }
+}
 
 const logout = (req, res) => {
     res.clearCookie("adminToken"); // Remove the token from cookies
@@ -137,7 +151,7 @@ const loadSales=async(req,res)=>{
             const totalOrders = await Order.countDocuments(query);
             const orders = await Order.find(query)
                 .populate("user", "fullName email")
-                .populate('items.product','name')
+                .populate('items.product','name').populate('couponId')
                 .skip((page - 1) * limit)
                 .limit(limit)
                 .sort({ createdAt: -1 });
@@ -158,9 +172,9 @@ const loadSales=async(req,res)=>{
                         paymentMethods[order.paymentMethod] = (paymentMethods[order.paymentMethod] || 0) + 1;
     
                         // Track coupon usage
-                        if (order.coupon) {
-                            coupons[order.coupon.code] = (coupons[order.coupon.code] || 0) + order.coupon.discount;
-                        }
+                        // if (order.couponApplied) {
+                        //     coupons[order.couponId.name] = (coupons[order.couponId.name] || 0) + order.coupon.discount;
+                        // }
                     }
                 });
             });
@@ -174,7 +188,7 @@ const loadSales=async(req,res)=>{
                 currentPage: page,
                 totalPages: Math.ceil(totalOrders / limit),
                 paymentMethods: Object.keys(paymentMethods).map(key => ({ name: key, count: paymentMethods[key] })),
-                coupons: Object.keys(coupons).map(key => ({ code: key, totalDiscount: coupons[key] })),
+               // coupons: Object.keys(coupons).map(key => ({ code: key, totalDiscount: coupons[key] })),
                 filterParams: `&period=${period}&dateFrom=${dateFrom || ""}&dateTo=${dateTo || ""}&search=${search || ""}`
             });
     
@@ -434,6 +448,7 @@ module.exports={
     loadLogin,
     login,
     loadDashboard,
+    getDashboardData,
     logout,  
     loadSales,
     pdfExport,

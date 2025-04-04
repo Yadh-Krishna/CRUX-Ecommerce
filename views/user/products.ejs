@@ -365,11 +365,55 @@
 	.add-to-cart:hover {
 		background-color: #7f7f80; /* Darker blue on hover */
 	}
+
+	#loaderOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .loader-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 		</style>
 	</head>
 	<body>
 		
-	<div class="colorlib-loader"></div>
+	<!-- <div class="colorlib-loader"></div> -->
+
+	<div id="loaderOverlay">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p class="mb-0 font-weight-medium">Processing your request...</p>
+        </div>
+    </div>
 
 	<div id="page">
 		<%- include('./userPartials/header') %>    
@@ -430,7 +474,7 @@
 									<% for (let i = 1; i <= 5; i++) { %>
 										<i class="fa <%= i <= product.ratings ? 'fa-star text-warning' : 'fa-star text-muted' %>"></i>
 									<% } %>
-									<span>(<%= product.ratings.toFixed(2) %> Ratings)</span>
+									<span>(<%= product.ratings.toFixed(1) %> Ratings)</span>
 								</p>
 								<div class="stock">
 									<% if(product.stock > 5) { %>
@@ -568,7 +612,7 @@
 									<% } %>
 								</div>
 								<div class="card-body">
-									<a class="nav-link" href="/products/<%= product.slug %>"><p class="card-title"><%= product.name %></p></a>
+									<a class="nav-link" href="/products/<%= product.slug %>"><p class="card-title" ><%= product.name %></p></a>
 									<p class="card-text">
 										<strong>₹<%= product.finalPrice %></strong>
 										<% if (product.discount) { %>
@@ -623,7 +667,15 @@
 	<script src="/front/js/main.js"></script>
 
 	<script>
-	
+		// showloader();
+function showLoader() {
+            document.getElementById('loaderOverlay').style.display = 'flex';
+        }
+
+        // Function to hide loader
+        function hideLoader() {
+            document.getElementById('loaderOverlay').style.display = 'none';
+        }
 	const mainImage = document.getElementById('mainImage');
 	const zoomLens = document.getElementById('zoomLens');
 	const zoomPreview = document.getElementById('zoomPreview');

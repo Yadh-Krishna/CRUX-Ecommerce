@@ -13,6 +13,7 @@ const guestToken=require('../../middleware/guestUser')
 const userProductController=require('../../controller/userController/userProductController');
 const cartController=require('../../controller/userController/cartController');
 const orderController=require('../../controller/userController/orderController');
+const referralController=require('../../controller/userController/referralController')
 
 
 
@@ -47,5 +48,9 @@ router.post('/wishlist/add',verifyToken,manageUser.addWishlist);
 //Wallet
 router.get('/wallet',verifyToken,manageUser.loadWallet);
 router.post('/wallet',verifyToken,manageUser.addMoney);
+
+//Referral
+router.get('/referrals',verifyToken,referralController.loadReferrals);
+router.patch('/referrals',verifyToken,referralController.sendReferralInvite)
 
 module.exports=router;

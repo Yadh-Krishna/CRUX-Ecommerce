@@ -5,11 +5,12 @@ const Brand=require('../../models/brandModel');
 const asyncHandler = require('express-async-handler');
 const Order=require('../../models/orderModal');
 const Wallet=require('../../models/walletModel');
+const Admin= require('../../models/adminModal');
 const upload = require("../../middleware/upload");  //multer 
 const fs=require('fs');
 const path=require('path');
 const sharp=require('sharp');
-const {generateInvoice}=require('../../utils/invoiceWrite')
+const {generateInvoice}=require('../../utils/invoiceWrite');
 const Coupon=require('../../models/couponModel');
 
 const orderList= async(req,res)=>{
@@ -79,11 +80,13 @@ const orderStatusManage = async (req, res) => {
 
             const order = await Order.findById(orderId)
                 .populate("items.product")
-                .populate("address user");
+                .populate("address user").populate('couponId');
 
             if (!order) {
                 return res.status(404).json({ success: false, message: "Order not found" });
             }
+
+            const admin= await Admin.findOne({name:'Administrator'})
 
             const item = order.items.find(item => item._id.toString() === id);
             if (!item) {
@@ -112,17 +115,17 @@ const orderStatusManage = async (req, res) => {
                         }
 
                         // Adjust refund based on coupon
-                        if (order.couponPrice) {
-                            const coupon = await Coupon.findOne({offerPrice:order.couponPrice});
-                            const maxCouponAmount = coupon.minimumPrice;
+                        if (order.couponId) {
+                            // const coupon = await Coupon.findOne({offerPrice:order.couponPrice});
+                            const maxCouponAmount = order.couponId.minimumPrice;
                             let remainingTotal = order.items
-                                .filter(i => i.status !== "Cancelled" && i.status !== "Returned")
+                                .filter(i => i.status !== "Cancelled" && i.status !== "Returned" && i._id.toString() !== item._id.toString())
                                 .reduce((sum, i) => sum + i.finalPrice, 0);
-                            
+                            console.log("Remaining Total", remainingTotal);
                                 if (remainingTotal === 0) {
-                                    refundAmount -= order.couponPrice;
+                                    refundAmount =refundAmount- order.couponPrice;
                                 } else if (remainingTotal < maxCouponAmount) {                                           
-                                    refundAmount-= order.couponPrice;                                               
+                                    refundAmount= refundAmount-order.couponPrice;                                               
                                }
                         }
 
@@ -132,9 +135,9 @@ const orderStatusManage = async (req, res) => {
                             i._id.toString() !== item._id.toString()
                         );
 
-                        // Deduct delivery charge only if this is the last item being canceled 
+                        //Deduct delivery charge only if this is the last item being canceled 
                         if (remainingItems.length === 0) {
-                        refundAmount += order.shippingCharge || 0; // Default delivery charge ₹50
+                        refundAmount -= order.shippingCharge || 0; // Default delivery charge ₹50
                         }
 
                         wallet.transactions.push({
@@ -146,6 +149,19 @@ const orderStatusManage = async (req, res) => {
 
                         await wallet.save();
                         walletUpdated = true;
+
+                           
+                           wallet =await Wallet.findOne({userId:admin._id});
+                            if(wallet){
+                             wallet.transactions.push({
+                             orderId:order._id,
+                             transactionType:"debit",
+                             transactionAmount:refundAmount > 0 ? refundAmount : 0,
+                             transactionStatus:"completed",
+                             transactionDescription:`Refund for return order ${order.orderId}`
+                             });
+                              }
+                              await wallet.save();                                           
                     }
                 }
             }
@@ -157,6 +173,18 @@ const orderStatusManage = async (req, res) => {
 
                 generateInvoice(order, item, invoicePath);
                 item.invoiceUrl = `/invoices/${invoiceFileName}`;
+                let wallet =await Wallet.findOne({userId:admin._id});
+                            if(wallet){
+                             wallet.transactions.push({
+                             orderId:order._id,
+                             transactionType:"credit",
+                             transactionAmount:order.totalAmount,
+                             transactionStatus:"completed",
+                             transactionDescription:`Credited amount for order ${order.orderId}`
+                             });
+                              }
+                              await wallet.save();    
+
             }
 
             // Update Item Status

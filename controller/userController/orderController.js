@@ -11,6 +11,7 @@ const sendOTP =require('../../utils/sendOTP');
 const Product=require('../../models/productModel')
 const Cart=require('../../models/cartModel');
 const Wallet=require('../../models/walletModel');
+const Admin=require('../../models/adminModal');
 const Coupon=require('../../models/couponModel');
 
 
@@ -68,12 +69,24 @@ const cancelOrderItem=async(req,res)=>{
                     transactionDescription:`Refund for cancelled order ${order.orderId}`
                 })
                 await wallet.save();
+                const admin= await Admin.findOne({name:'Administrator'})
+                wallet =await Wallet.findOne({userId:admin._id});
+                if(wallet){
+                    wallet.transactions.push({
+                    orderId:order._id,
+                    transactionType:"debit",
+                    transactionAmount:order.totalAmount,
+                    transactionStatus:"completed",
+                    transactionDescription:`Refund for cancelled order ${order.orderId}`
+                    });
+                }
+                await wallet.save();                
             }   
             await order.save();
             res.status(statusCodes.SUCCESS).json({success:true, message: "Order cancelled successfully" });
             }
             } else if (type === "item") {
-            const order = await Order.findById(orderId).populate("items.product");
+            const order = await Order.findById(orderId).populate("items.product").populate("couponId");
             if (!order) {
                 return res.status(404).json({ success:true, message: "Order or item not found" });
             }
@@ -108,20 +121,21 @@ const cancelOrderItem=async(req,res)=>{
                        }               
                      // Adjust refund based on coupon
                       
-                                       if (order.couponPrice) {
-                                           const coupon = await Coupon.findOne({offerPrice:order.couponPrice});
-                                           const maxCouponAmount = coupon.minimumPrice;
+                                      if(order.couponId){
+                                        //   const coupon = await Coupon.findById({offerPrice:order.couponPrice});
+                                           const maxCouponAmount = order.couponId.minimumPrice;
                                            let remainingTotal = order.items
-                                               .filter(i => i.status !== "Cancelled" && i.status !== "Returned")
-                                               .reduce((sum, i) => sum + i.finalPrice, 0);   
-                                               
+                                               .filter(i => i.status !== "Cancelled" && i.status !== "Returned" && i._id.toString() !== item._id.toString())
+                                               .reduce((sum, i) => sum + i.finalPrice, 0);  
+                                                
+                                               console.log("Remaining Total", remainingTotal,);
+
                                             if (remainingTotal === 0 ) {
                                                 refundAmount -= order.couponPrice;//Deducting the coupon 
                                             } else if (remainingTotal < maxCouponAmount) {                                           
-                                                refundAmount-= order.couponPrice;;                                                
+                                                refundAmount-= order.couponPrice;                                                
                                            }
-
-                                       } 
+                                        }                                      
 
                                        let remainingItems = order.items.filter(i => 
                                         i.status !== "Cancelled" && 
@@ -129,12 +143,10 @@ const cancelOrderItem=async(req,res)=>{
                                         i._id.toString() !== item._id.toString()
                                     );
 
-                 // Deduct delivery charge **only if this is the last item being canceled**
+                 
                 if (remainingItems.length === 0) {
-                refundAmount -= order.shippingCharge || 0; // Default delivery charge ₹50
-                }
-
-                                       
+                refundAmount += order.shippingCharge || 0; // Default delivery charge ₹50                
+                }                                       
                                        wallet.transactions.push({
                                            orderId: order._id,
                                            transactionType: "credit",
@@ -143,6 +155,19 @@ const cancelOrderItem=async(req,res)=>{
                                        });               
                                        await wallet.save();
                                        walletUpdated = true;
+                                    
+                                       const admin= await Admin.findOne({name:'Administrator'})
+                                       wallet =await Wallet.findOne({userId:admin._id});
+                                       if(wallet){
+                                           wallet.transactions.push({
+                                           orderId:order._id,
+                                           transactionType:"debit",
+                                           transactionAmount:refundAmount > 0 ? refundAmount : 0,
+                                           transactionStatus:"completed",
+                                           transactionDescription:`Refund for cancelled order ${order.orderId}`
+                                           });
+                                       }
+                                       await wallet.save(); 
                                    }                
             }
             await order.save();
@@ -204,14 +229,7 @@ const returnOrderItem = async (req, res) => {
 
             // Update item status and reason
             item.status = "Return Requested";
-            item.refundReason = otherReason || reason;
-
-            // Restore product stock
-            // const product = item.product;
-            // if (product) {
-            //     product.stock += item.quantity;
-            //     await product.save();
-            // }
+            item.refundReason = otherReason || reason;           
 
             // Check if all items in the order are cancelled
             const allItemsCancelled = order.items.every((item) => item.status === "Return Requested");

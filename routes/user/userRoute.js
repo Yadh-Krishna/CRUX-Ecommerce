@@ -15,6 +15,7 @@ const profileRoutes=require('./profileRoutes');
 
 //Login
 router.use(userAuthenticate.blockCheck);
+
 router.get("/login",verifyToken, userController.loadLogin);
 router.post("/login",  userController.loginUser);
 router.get("/register",verifyToken, userController.registerPage);

@@ -85,52 +85,75 @@
     <script>
 
 document.addEventListener("DOMContentLoaded", function () {
-    const errorAlert = document.querySelector(".alert-danger");
-
-    // Remove error alert after 5 seconds
-    if (errorAlert) {
-        setTimeout(() => {
-            errorAlert.style.display = "none";
-        }, 5000);
-    }
-
-    let countdown = 60;
-    let timer;
     const countdownElement = document.getElementById("countdown");
     const resendButton = document.getElementById("resendOtp");
+    let timer;
+    let countdown;
 
-    // Function to start countdown timer
+    // Check if backend set cookie
+    const otpStartFromBackend = document.cookie.includes("otpStart=true");
+
     function startTimer() {
-        clearInterval(timer); // Prevent multiple timers
+        clearInterval(timer);
+        const startTime = Date.now();
+        localStorage.setItem("otpTimerStart", startTime);
 
         countdown = 60;
-        countdownElement.textContent = countdown;
-        resendButton.setAttribute("disabled", true);
-
-        timer = setInterval(() => {
-            countdown--;
-            countdownElement.textContent = countdown;
-            if (countdown === 0) {
-                clearInterval(timer);
-                resendButton.removeAttribute("disabled"); // Enable button when timer ends
-            }
-        }, 1000);
+        updateCountdown();
+        timer = setInterval(updateCountdown, 1000);
     }
 
-    // Function to resend OTP
-    async function resendOTP() {
-        resendButton.setAttribute("disabled", true); // Disable button immediately
-        try {
-            const response = await fetch("/resend-otp", { method: "PATCH" });
-            const data = await response.json();
+    function updateCountdown() {
+        const startTime = localStorage.getItem("otpTimerStart");
+        if (!startTime) return;
 
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        countdown = Math.max(60 - elapsedTime, 0);
+
+        if (countdownElement) countdownElement.textContent = countdown;
+
+        if (countdown === 0) {
+            clearInterval(timer);
+            resendButton.removeAttribute("disabled");
+            localStorage.removeItem("otpTimerStart");
+        } else {
+            resendButton.setAttribute("disabled", true);
+        }
+    }
+
+    if (otpStartFromBackend) {
+        // Fresh visit from signup, so start timer
+        startTimer();
+
+        // Clear cookie after usage (so it doesn't persist on refresh)
+        document.cookie = "otpStart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    } else if (localStorage.getItem("otpTimerStart")) {
+        // Resuming existing timer on refresh
+        updateCountdown();
+        timer = setInterval(updateCountdown, 1000);
+    } else {
+        // No valid timer, allow resend
+        if (countdownElement) countdownElement.textContent = "0";
+        resendButton.removeAttribute("disabled");
+    }    
+
+    async function resendOTP() {
+        if (resendButton) {
+            resendButton.setAttribute("disabled", true); 
+        }
+        
+        try {
+            const response = await fetch("/resend-otp", {
+                method: "PATCH"
+            });
+            const data = await response.json();
             if (response.ok) {
                 Swal.fire({
                     icon: "success",
                     text: data.message,
                     showConfirmButton: true
                 }).then(() => {
-                    startTimer(); // Restart countdown after user dismisses Swal
+                    startTimer(); 
                 });
             } else {
                 Swal.fire({
@@ -138,7 +161,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     title: "Error",
                     text: data.error || "Failed to resend OTP. Please try again."
                 });
-                resendButton.removeAttribute("disabled"); // Enable button if resend fails
+                if (resendButton) {
+                    resendButton.removeAttribute("disabled"); 
+                }
             }
         } catch (err) {
             console.error("Error resending OTP:", err);
@@ -147,18 +172,145 @@ document.addEventListener("DOMContentLoaded", function () {
                 title: "Error",
                 text: "Something went wrong. Please try again later."
             });
-            resendButton.removeAttribute("disabled"); // Ensure button is enabled on failure
+            if (resendButton) {
+                resendButton.removeAttribute("disabled"); 
+            }
         }
     }
 
-    // Attach event listener to the "Resend OTP" button
-    resendButton.addEventListener("click", function () {
-        resendOTP();
-    });
-
-    // Start countdown when page loads
-    startTimer();
+   
+    if (resendButton) {
+        resendButton.addEventListener("click", function () {
+            resendOTP();
+        });
+    }
 });
+        
+//     document.addEventListener("DOMContentLoaded", function () {
+//     const errorAlert = document.querySelector(".alert-danger");
+   
+//     if (errorAlert) {
+//         setTimeout(() => {
+//             errorAlert.style.display = "none";
+//         }, 5000);
+//     }
+
+//     let countdown;
+//     let timer;
+//     const countdownElement = document.getElementById("countdown");
+//     const resendButton = document.getElementById("resendOtp");
+
+//     // Function to start countdown timer
+//     function startTimer() {
+//         clearInterval(timer); 
+        
+//         const startTime = Date.now();
+//         localStorage.setItem("otpTimerStart", startTime);
+//         countdown = 60; // Reset timer
+//         updateCountdown();
+//         timer = setInterval(updateCountdown, 1000);
+//     }
+
+    
+//     function updateCountdown() {
+//         const startTime = localStorage.getItem("otpTimerStart");
+//         if (!startTime) return; // If no timer data, return
+        
+//         const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+//         countdown = Math.max(60 - elapsedTime, 0);
+        
+//         // Make sure countdownElement exists before updating it
+//         if (countdownElement) {
+//             countdownElement.textContent = countdown;
+//         }
+        
+//         if (countdown === 0) {
+//             clearInterval(timer);
+//             if (resendButton) {
+//                 resendButton.removeAttribute("disabled");
+//             }
+//             localStorage.removeItem("otpTimerStart"); // Clear storage after countdown
+//         } else {
+//             if (resendButton) {
+//                 resendButton.setAttribute("disabled", true);
+//             }
+//         }
+//     }
+
+//     // Check for page load source - is this a fresh OTP request or page refresh?
+//     const isInitialOtpPage = !localStorage.getItem("otpPageVisited");
+    
+//     // If this is the first time loading the OTP page in this session
+//     if (isInitialOtpPage) {
+//         localStorage.setItem("otpPageVisited", "true");
+//         // Start a fresh timer for new OTP requests
+//         startTimer();
+//     } else {
+//         // This is a page refresh or return to the page
+//         if (localStorage.getItem("otpTimerStart")) {
+//             // Resume existing timer
+//             updateCountdown();
+//             timer = setInterval(updateCountdown, 1000);
+//         } else {
+//             // No active timer but not a fresh visit - timer probably expired
+//             countdown = 0;
+//             if (countdownElement) countdownElement.textContent = "0";
+//             if (resendButton) resendButton.removeAttribute("disabled");
+//         }
+//     }
+
+    
+//     async function resendOTP() {
+//         if (resendButton) {
+//             resendButton.setAttribute("disabled", true); 
+//         }
+        
+//         try {
+//             const response = await fetch("/resend-otp", {
+//                 method: "PATCH"
+//             });
+//             const data = await response.json();
+//             if (response.ok) {
+//                 Swal.fire({
+//                     icon: "success",
+//                     text: data.message,
+//                     showConfirmButton: true
+//                 }).then(() => {
+//                     startTimer(); 
+//                 });
+//             } else {
+//                 Swal.fire({
+//                     icon: "error",
+//                     title: "Error",
+//                     text: data.error || "Failed to resend OTP. Please try again."
+//                 });
+//                 if (resendButton) {
+//                     resendButton.removeAttribute("disabled"); 
+//                 }
+//             }
+//         } catch (err) {
+//             console.error("Error resending OTP:", err);
+//             Swal.fire({
+//                 icon: "error",
+//                 title: "Error",
+//                 text: "Something went wrong. Please try again later."
+//             });
+//             if (resendButton) {
+//                 resendButton.removeAttribute("disabled"); 
+//             }
+//         }
+//     }
+
+   
+//     if (resendButton) {
+//         resendButton.addEventListener("click", function () {
+//             resendOTP();
+//         });
+//     }
+// });
+
+
+
 
     </script>
 </body>

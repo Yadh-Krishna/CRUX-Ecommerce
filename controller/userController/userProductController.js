@@ -190,7 +190,7 @@ const productList=async(req,res)=>{
         }
 
         // Pagination
-        const pageSize = 8; 
+        const pageSize = 5; 
         const currentPage = parseInt(page) || 1;
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / pageSize);
