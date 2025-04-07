@@ -1,0 +1,1134 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>CRUX | Checkout</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="/front/css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/icomoon.css">
+	<!-- Ion Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/ionicons.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="/front/css/magnific-popup.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="/front/css/flexslider.css">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+	
+	<!-- Date Picker -->
+	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+	<!-- Flaticons  -->
+	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="/front/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+       <style>
+        /* Checkout Page - Aligned with Home Page */
+    .checkout-wrap {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .checkout-wrap h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    .cart-list table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cart-list th,
+    .cart-list td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .cart-list th {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .product-img img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .product-name h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+
+    .price {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+
+    .original-price {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 0.9rem;
+        margin-right: 5px;
+    }
+
+    .address-card {
+        border: 1px solid var(--medium-gray);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        transition: all 0.3s;
+    }
+
+    .address-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .address-card .form-check-label {
+        font-size: 1rem;
+        color: var(--primary-color);
+    }
+
+    .address-card .badge {
+        font-size: 0.8rem;
+        margin-left: 5px;
+    }
+
+    .address-actions .btn {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        margin-right: 5px;
+    }
+
+    .cart-detail {
+        background-color: var(--light-gray);
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .cart-detail h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .cart-summary {
+        list-style: none;
+        padding: 0;
+    }
+
+    .cart-summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--medium-gray);
+    }
+
+    .cart-summary-item.total {
+        font-weight: 700;
+        color: var(--primary-color);
+        border-bottom: none;
+    }
+
+    .cart-summary-item .price {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+
+    .payment-method .form-group {
+        margin-bottom: 15px;
+    }
+
+    .payment-method .radio label {
+        font-size: 1rem;
+        color: var(--primary-color);
+    }
+
+    #placeOrderBtn {
+        width: 100%;
+        padding: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 30px;
+        transition: all 0.3s;
+    }
+
+    #placeOrderBtn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 767px) {
+        .checkout-wrap h2 {
+            font-size: 1.5rem;
+        }
+
+        .product-img img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .product-name h3 {
+            font-size: 1rem;
+        }
+
+        .price {
+            font-size: 1rem;
+        }
+
+        .cart-summary-item .price {
+            font-size: 1rem;
+        }
+
+        #placeOrderBtn {
+            font-size: 1rem;
+        }
+    }
+    .cart-detail h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    #couponCode {
+        border: 1px solid var(--medium-gray);
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1rem;
+    }
+    #couponMessage {
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        margin-top: 10px;
+    }
+
+    #couponMessage.success {
+        color: green;
+    }
+
+    #couponMessage.error {
+        color: red;
+    }
+       </style>
+	</head>
+    <body>
+        
+    
+	<div class="colorlib-loader"></div>
+
+<div id="page">
+  <%- include('./userPartials/header') %>
+
+  <% if (messages.success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= messages.success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<% if (messages.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= messages.error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+  <div class="colorlib-product">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Order Summary Section -->
+                <div class="checkout-wrap">
+                    <h2>Order Summary</h2>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="cart-list">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Product</th>
+                                            <th class="text-start">Price</th>
+                                            <th >Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (cart && cart.items && cart.items.length > 0) { %>
+                                            <% cart.items.forEach(function(item) {%>
+                                                <tr>
+                                                    <td>
+                                                        <div class="product-img">
+                                                            <img src="<%= item.product.images[0] %>" alt="<%= item.product.name %>" class="img-fluid">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="product-name align-middle">
+                                                            <h3><%= item.product.name %></h3>
+                                                            <!-- <% if (item.product.discount > 0) { %>
+                                                                <span class="badge bg-success"><%= item.product.discount  %>% OFF</span>
+                                                            <% } %> -->
+                                                        </div>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                      <% if (item.product.discount > 0) { %>
+                                                            <div class="price">
+                                                                <span class="original-price text-muted"><s>₹<%= item.product.price.toFixed(2) %></s></span>
+                                                                <span class="discounted-price">₹<%= item.product.finalPrice %></span>
+                                                            </div>
+                                                         <% } else { %>
+                                                            <div class="price">₹<%= item.product.price.toFixed(2) %></div>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="align-middle"><%= item.quantity %></td>
+                                                    <td class="align-middle">₹<%= (item.product.finalPrice * item.quantity) %></td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5" class="text-center">Your cart is empty</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address Section -->
+                    <h2>Shipping Address</h2>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <% if (addresses && addresses.length > 0) { %>
+                                <div class="saved-addresses">
+                                    <% addresses.forEach(function(address, index) { %>
+                                        <div class="address-card mb-3 p-3 border <%= address.isDefault ? 'border-primary' : '' %>">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="selectedAddress" id="address<%= index %>" 
+                                                    value="<%= address._id %>" <%= address.isDefault ? 'checked' : '' %>>
+                                                <label class="form-check-label" for="address<%= index %>">
+                                                    <strong><%= address.name %></strong>
+                                                    <% if (address.isDefault) { %>
+                                                        <span class="badge bg-primary text-white ml-2">Default</span>
+                                                    <% } %>
+                                                    <p class="mb-1"><%= address.hName %>, <%= address.street %>, <%= address.city %></p>
+                                                    <p class="mb-1"><%= address.state %> - <%= address.pin %></p>
+                                                    <p class="mb-1">Phone: <%= address.mobile_number %></p>
+                                                </label>
+                                            </div>
+                                            <div class="address-actions mt-2">
+                                                <a href="/profile/addresses/<%= address._id %>">
+                                                    <button class="btn btn-sm btn-secondary edit-address-btn" data-address-id="<%= address._id %>">Edit</button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <p>No saved addresses found.</p>
+                            <% } %>
+                            <button class="btn btn-outline-primary" id="addNewAddress">+ Add New Address</button>
+                        </div>
+                    </div>
+
+                    <!-- New Address Form (Hidden by default) -->
+                    <div class="row mb-4" id="addressForm" style="display: none;">
+                        <div class="col-md-12">
+                            <form id="shippingAddressForm" action="/profile/addresses" method="POST">
+                                <input type="hidden" id="addressId" name="addressId" value="">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name">Full Name</label>
+                                        <input type="text" class="form-control" id="name" name="name">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hName">House Name</label>
+                                    <input type="text" class="form-control" id="hName" name="hName">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="street">Street Address</label>
+                                    <input type="text" class="form-control" id="street" name="street">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="country">Country</label>
+                                        <input type="text" class="form-control" id="country" name="country">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="state">State</label>
+                                        <input type="text" class="form-control" id="state" name="state">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="city">City</label>
+                                        <input type="text" class="form-control" id="city" name="city">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="zip">ZIP Code</label>
+                                        <input type="text" class="form-control" id="zip" name="zip">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="type">Address Type</label>
+                                        <select class="form-select" id="type" name="type">
+                                            <option value="Home">Home</option>
+                                            <option value="Work">Work</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="makeDefault" name="makeDefault">
+                                    <label class="form-check-label" for="makeDefault">Make this my default address</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Address</button>
+                                <button type="button" class="btn btn-outline-secondary" id="cancelAddressForm">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Total and Payment Section -->
+            <div class="col-lg-4">
+                <div class="cart-detail">
+                    <h2>Cart Total</h2>
+                    <ul class="cart-summary">
+                        <li>
+                            <ul class="cart-items">
+                                <% if (cart && cart.items && cart.items.length > 0) { %>
+                                    <% cart.items.forEach(function(item) { %>
+                                        <li class="cart-item">
+                                            <span class="item-name"><%= item.quantity %> x <%= item.product.name %></span>
+                                            <span class="item-price">₹<%= (item.product.finalPrice * item.quantity).toFixed(2) %></span>
+                                        </li>
+                                    <% }); %>
+                                <% } %>
+                            </ul>
+                        </li>
+                        <li class="cart-summary-item">
+                            <span>Subtotal</span>
+                            <span  class="price" id="subtotal">₹<%= cart ? cart.subtotal : '0.00' %></span>
+                        </li>
+                        <% if (cart && cart.tax > 0) { %>
+                            <li class="cart-summary-item">
+                                <span>Tax</span>
+                                <span id="tax" class="price">₹<%= cart.tax %></span>
+                            </li>
+                        <% } %>
+                        <li class="cart-summary-item">
+                            <span>Shipping</span>
+                            <span id="shippingCharge" class="price">₹<%= cart && cart.shipping ? cart.shipping : '0.00' %></span>
+                        </li>
+                        <% if ((appliedCoupon && couponOff)|| 0 > 0) { %>
+                            <li class="cart-summary-item text-success">
+                                <span>Coupon Applied (<%= appliedCoupon.name %>)</span>
+                                <span id="couponOff" class="price">-₹<%= couponOff %></span>
+                            </li>
+                        <% } %>
+                        <li class="cart-summary-item total fw-bold pt-2">
+                            <span>Order Total</span>
+                            <span id="grand-total" class="price">₹<%= cart ? cart.total : '0.00' %></span>
+                        </li>
+                    </ul>
+                    <input type="hidden" id="appliedCouponId" value="<%= appliedCoupon ? appliedCoupon._id : '' %>">
+                </div>
+
+                <div class="cart-detail">
+                    <h2>Available Coupons</h2>
+                    <div class="available-coupons">
+                        <% 
+                        // Filter coupons based on general availability or referral-based restrictions
+                        const userSpecificCoupons = availableCoupons.filter(coupon => 
+                            !coupon.generatedByReferral || (coupon.generatedByReferral && coupon.rewardUsers.includes(user._id))
+                        );
+                
+                        if (userSpecificCoupons.length > 0) { 
+                        %>
+                            <% userSpecificCoupons.forEach((coupon) => { %>
+                                <div class="coupon-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                    
+                                    <div>
+                                        <span class="coupon-code fw-bold"><%= coupon.name %></span>
+                                        <p class="coupon-description mb-0 small">
+                                            <span>Coupon Code: </span><%= coupon.code %> <br>
+                                            <span>Discount:</span> <%= coupon.offerPrice %>%<br> 
+                                            <span>Minimum Purchase: </span> ₹<%= coupon.minimumPrice %> <br>                                            
+                                            <span>Maximum Discount: </span>₹<%= coupon.maximumDiscount %>                                          
+                                        </p>
+                                    </div>
+                    
+                                    <!-- Apply Button -->
+                                    <button class="btn btn-sm btn-outline-primary apply-coupon-btn 
+                                        <% if (appliedCoupon && appliedCoupon.name === coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Apply
+                                    </button>
+                    
+                                    <!-- Remove Button -->
+                                    <button class="btn btn-sm btn-danger remove-coupon-btn 
+                                        <% if (!appliedCoupon || appliedCoupon.name !== coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Remove
+                                    </button>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-center">No coupons available at the moment</p>
+                        <% } %>
+                    </div>
+                </div>
+                
+
+                <!-- <div class="cart-detail">
+                    <h2>Available Coupons</h2>
+                    <div class="available-coupons">
+                        <% if (availableCoupons && availableCoupons.length > 0) { %>
+                            <% availableCoupons.forEach((coupon) => { %>
+                                <div class="coupon-item d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                   
+                                    <div>
+                                        <span class="coupon-code fw-bold"><%= coupon.name %></span>
+                                        <p class="coupon-description mb-0 small">
+                                            <span>Coupon Code: </span><%= coupon.code %> <br>
+                                            <span>Discount:</span> <%= coupon.offerPrice %>%<br> 
+                                            <span>Minimum Purchase: </span> ₹<%= coupon.minimumPrice %> <br>                                            
+                                            <span>Maximum Discount: <span>₹<%= coupon.maximumDiscount%></span></span>                                          
+                                        </p>
+                                    </div>
+                
+                                 
+                                    <button class="btn btn-sm btn-outline-primary apply-coupon-btn 
+                                        <% if (appliedCoupon && appliedCoupon.name === coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Apply
+                                    </button>
+                
+                                    
+                                    <button class="btn btn-sm btn-danger remove-coupon-btn 
+                                        <% if (!appliedCoupon || appliedCoupon.name !== coupon.name) { %> d-none <% } %>" 
+                                        data-coupon="<%= coupon._id %>">
+                                        Remove
+                                    </button>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-center">No coupons available at the moment</p>
+                        <% } %>
+                    </div>
+                </div> -->
+
+                <!-- Payment Method Section -->
+                <div class="cart-detail">
+                    <h2>Payment Method</h2>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="radio">
+                                <label><input type="radio" name="optradio" value="COD"> Cash on Delivery</label>
+                                <label><input type="radio" name="optradio" value="Online"> Online Payment</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Place Order Button -->
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <button id="placeOrderBtn" class="btn btn-primary" disabled>Place an order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <%- include('./userPartials/footer') %>
+</div>
+
+<div class="gototop js-top">
+  <a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+
+document.addEventListener("visibilitychange", async function () {
+    const couponId="<%= appliedCoupon ? appliedCoupon._id : '' %>";
+        if (document.visibilityState === "hidden") {           
+             const response=await fetch("/remove-coupon", { method: "PATCH" ,headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify({couponId})
+        });
+        const result =await response.json();
+        if(result.success){
+            console.log('Coupon Removed');            
+        }else{
+            console.log("Error Occured");
+        }
+        }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        document.querySelectorAll('.apply-coupon-btn').forEach(apply => {
+    apply.addEventListener('click', async function() {
+        let couponId = this.getAttribute('data-coupon');       
+        let subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('₹', ''));
+        
+        try {
+            const response = await fetch(`/apply-coupon`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ couponId ,subtotal})
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: 'Coupon Applied',
+                    text: result.message,
+                    confirmButtonText: "OK"
+                }).then(() => location.reload());
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: 'Error',
+                    text: result.message,
+                    confirmButtonText: "OK"
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: "error",
+                title: 'Error',
+                text: "Internal Server Error!!",
+                confirmButtonText: "OK"
+            });
+        }
+    });
+});     
+
+        document.querySelectorAll('.remove-coupon-btn').forEach(remove => {
+            remove.addEventListener('click', async function() {
+                let couponId = this.getAttribute('data-coupon');                
+
+                try {
+                    const response = await fetch(`/remove-coupon`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ couponId })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: 'Coupon Removed',
+                            text: result.message,
+                            confirmButtonText: "OK"
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: 'Error',
+                            text: result.message,
+                            confirmButtonText: "OK"
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire({
+                        icon: "error",
+                        title: 'Error',
+                        text: "Internal Server Error!!",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        });            
+
+
+      // Address form toggle
+      const addNewAddressBtn = document.getElementById('addNewAddress');
+      const addressForm = document.getElementById('addressForm');
+      const cancelAddressFormBtn = document.getElementById('cancelAddressForm');
+      
+      addNewAddressBtn.addEventListener('click', function() {
+        // Reset form
+        document.getElementById('shippingAddressForm').reset();
+        document.getElementById('addressId').value = '';
+        addressForm.style.display = 'block';
+      });
+      
+      cancelAddressFormBtn.addEventListener('click', function() {
+        window.location.href='#';
+        addressForm.style.display = 'none';       
+      });
+      
+       
+      // Make default address buttons
+      const defaultButtons = document.querySelectorAll('.make-default');
+      defaultButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const addressId = this.getAttribute('data-id');
+          // Here you would send a request to make this the default address
+          // makeDefaultAddress(addressId);
+        });
+      });
+      
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    const paymentMethods = document.querySelectorAll('input[name="optradio"]');
+
+    // Disable Place Order button by default
+    placeOrderBtn.disabled = true;
+
+    // Enable button when a payment method is selected
+    paymentMethods.forEach(method => {
+        method.addEventListener('change', function() {
+            placeOrderBtn.disabled = false;
+        });
+    });  
+
+    const addAddressForm = document.getElementById('shippingAddressForm');
+
+    addAddressForm.addEventListener('submit', function (event) {
+    let isValid = true;
+
+    // Get form values
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const hName = document.getElementById('hName').value.trim();
+    const street = document.getElementById('street').value.trim();
+    const country = document.getElementById('country').value.trim();
+    const state = document.getElementById('state').value.trim();
+    const city = document.getElementById('city').value.trim();
+    const zip = document.getElementById('zip').value.trim();
+    const type = document.getElementById('type').value;
+
+    // Validation function
+    function showError(inputId, message) {
+        const inputElement = document.getElementById(inputId);
+        let errorElement = inputElement.nextElementSibling;
+
+        if (!errorElement || !errorElement.classList.contains('error-message')) {
+            errorElement = document.createElement('small');
+            errorElement.classList.add('error-message');
+            errorElement.style.color = 'red';
+            inputElement.parentNode.appendChild(errorElement);
+        }
+
+        errorElement.textContent = message;
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    }
+
+    // Clear previous errors
+    clearErrors();
+
+    // Validate each field
+    if (!name) {
+        showError('name', 'Full Name is required');
+        isValid = false;
+    }
+    if (!phone.match(/^\d{10}$/)) {
+        showError('phone', 'Phone number must be 10 digits');
+        isValid = false;
+    }
+    if (!hName) {
+        showError('hName', 'House Name is required');
+        isValid = false;
+    }
+    if (!street) {
+        showError('street', 'Street Address is required');
+        isValid = false;
+    }
+    if (!country) {
+        showError('country', 'Country is required');
+        isValid = false;
+    }
+    if (!state) {
+        showError('state', 'State is required');
+        isValid = false;
+    }
+    if (!city) {
+        showError('city', 'City is required');
+        isValid = false;
+    }
+    if (!zip.match(/^\d{6}$/)) {
+        showError('zip', 'ZIP Code must be 6 digits');
+        isValid = false;
+    }
+    if (!type) {
+        showError('type', 'Address Type is required');
+        isValid = false;
+    }
+
+    // Prevent form submission if validation fails
+    if (!isValid) {
+        event.preventDefault();
+    }
+});
+
+
+    document.getElementById("placeOrderBtn").addEventListener("click", async function () {
+    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+    if (!selectedAddress) {
+        Swal.fire({
+            icon: "warning",
+            title: "Missing Address",
+            text: "Please select a shipping address.",
+        });
+        return;
+    }
+
+    const paymentMethod = document.querySelector('input[name="optradio"]:checked');
+    if (!paymentMethod) {
+        Swal.fire({
+            icon: "warning",
+            title: "Missing Payment Method",
+            text: "Please select a payment method.",
+        });
+        return;
+    }
+
+    const appliedCouponInput = document.getElementById("appliedCouponId");
+    const appliedCoupon = appliedCouponInput ? appliedCouponInput.value : null;
+    
+
+    if (paymentMethod.value === "COD") {
+        try {
+            let response = await fetch("/order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: "<%= user._id %>", 
+                    addressId: selectedAddress.value,
+                    paymentMethod: "COD",
+                    appliedCoupon: appliedCoupon
+                })
+            });
+
+            let result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Order Placed!",
+                    text: result.message,
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    window.location.href = "/order";
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Order Failed",
+                    text: result.error,
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong. Please try again later.",
+            });
+        }
+    } else if (paymentMethod.value === "Online") {
+        initiateRazorpayPayment(selectedAddress);
+    }
+});
+
+async function initiateRazorpayPayment(selectedAddress, orderId = null) {
+    try {
+        // Get total amount from the page
+        const totalAmount = parseFloat(document.getElementById("grand-total").textContent.replace("₹", ""));        
+        const shippingCharge = parseFloat(document.getElementById("shippingCharge").textContent.replace("₹", ""));
+        const tax=parseFloat(document.getElementById("tax").textContent.replace("₹", ""));
+        const subtotal=parseFloat(document.getElementById("subtotal").textContent.replace("₹", ""));
+        const appliedCouponInput = document.getElementById("appliedCouponId");
+        const appliedCoupon = appliedCouponInput ? appliedCouponInput.value : null;        
+        
+        
+        // Get cart items (you may need to modify this based on how you store cart data)
+        const cartItems = '<%= JSON.stringify(cart.items) %>';
+        // console.log(cartItems);
+        // If orderId is provided, we're retrying a payment
+        let orderResult;
+        
+        if (!orderId) {
+            // Create a new Razorpay order
+            let orderResponse = await fetch("/order/create-razorpay-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: "<%= user._id %>",
+                    addressId: selectedAddress.value,
+                    amount: totalAmount,
+                    products: cartItems,
+                    couponOff:appliedCoupon,
+                    shippingCharge:shippingCharge,
+                    tax:tax,
+                    subtotal:subtotal
+                })
+            });
+            
+            orderResult = await orderResponse.json();
+            
+            if (!orderResult.success) {
+                throw new Error(orderResult.error || "Failed to create order");
+            }
+        } else {
+            // For retrying, get existing order info
+            let orderInfoResponse = await fetch(`/order/get-order-info/${orderId}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
+            });
+            
+            orderResult = await orderInfoResponse.json();
+            
+            if (!orderResult.success) {
+                throw new Error(orderResult.error || "Failed to retrieve order information");
+            }
+        }
+        
+        console.log("Order result ",orderResult.key_id);
+        // Open Razorpay payment form
+        const options = {
+            key: orderResult.key_id,
+            amount: orderResult.order.amount,
+            currency: "INR",
+            name: "CRUX",
+            description: "Purchase from CRUX",
+            order_id: orderResult.order.id,
+            handler: async function (response) {
+                // This function runs after successful payment
+                try {
+                    // Verify payment on the server
+                    let verifyResponse = await fetch("/order/verify-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    });
+                    
+                    let verifyResult = await verifyResponse.json();
+                    
+                    if (verifyResult.success) {
+                        // Complete the order
+                        let orderCompleteResponse = await fetch("/order", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                userId: "<%= user._id %>",
+                                addressId: selectedAddress.value,
+                                paymentMethod: "Online",
+                                paymentId: response.razorpay_payment_id,
+                                orderId: response.razorpay_order_id,
+                                appliedCoupon:appliedCoupon
+                            })
+                        });
+                        
+                        let orderCompleteResult = await orderCompleteResponse.json();
+                        
+                        if (orderCompleteResult.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Payment Successful!",
+                                text: "Your order has been placed successfully.",
+                                confirmButtonText: "OK",
+                            }).then(() => {
+                                window.location.href = "/order";
+                            });
+                        } else {
+                            throw new Error(orderCompleteResult.error);
+                        }
+                    } else {
+                        throw new Error(verifyResult.error);
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Payment Verification Failed",
+                        text: error.message || "Failed to verify payment. Please contact support.",
+                    });
+                }
+            },
+            prefill: {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>",
+                contact: "<%= user.phone %>" // If available
+            },
+            theme: {
+                color: "#3399cc"
+            },
+            modal: {
+        escape: false,
+        backdropclose: false,
+        handleback: false,
+        confirm_close: true,
+        ondismiss: function () {  // This fires when the Razorpay modal is closed
+            
+            if (orderResult?.order?.id) {
+            window.location.href = `/payment-retry?orderId=${orderResult.order.id}`;
+        } else {
+            // console.log(orderResult.order);
+            window.location.href = "/checkout";
+           
+        }
+            
+        }
+    }    
+        };
+        
+        const razorpayInstance = new Razorpay(options);
+        razorpayInstance.open();            
+        
+        // Handle payment failure with retry option
+        razorpayInstance.on('payment.failed', function (response) {
+            Swal.fire({
+                icon: "error",
+                title: "Payment Failed",
+                text: response.error.description,
+                showCancelButton: true,
+                confirmButtonText: "Retry Payment",
+                cancelButtonText: "Cancel Order"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Retry payment with the same order ID
+                    initiateRazorpayPayment(selectedAddress, response.error.metadata.order_id);
+                } else {
+                    // Cancel the order
+                    cancelFailedOrder(response.error.metadata.order_id);
+                }
+            });
+        });      
+        
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message || "Something went wrong. Please try again later.",
+            showCancelButton: true,
+            confirmButtonText: "Retry",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Retry the entire payment process
+                initiateRazorpayPayment(selectedAddress);
+            }
+        });
+    }
+}
+
+// Function to cancel failed orders
+async function cancelFailedOrder(orderId) {
+    try {
+        let response = await fetch("/order/cancel-failed-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                orderId: orderId
+            })
+        });
+        
+        let result = await response.json();
+        
+        if (result.success) {
+            Swal.fire({
+                icon: "info",
+                title: "Order Cancelled",
+                text: "Your order has been cancelled.",
+                confirmButtonText: "OK",
+            }).then(() => {
+                window.location.href = "/cart";
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: result.error || "Failed to cancel order."
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Something went wrong. Please try again later."
+        });
+    }
+}
+    
+});
+
+  </script>	
+	<!-- jQuery -->
+	<script src="/front/js/jquery.min.js"></script>
+   <!-- popper -->
+   <script src="/front/js/popper.min.js"></script>
+   <!-- bootstrap 4.1 -->
+   <script src="/front/js/bootstrap.min.js"></script>
+   <!-- jQuery easing -->
+   <script src="/front/js/jquery.easing.1.3.js"></script>
+	<!-- Waypoints -->
+	<script src="/front/js/jquery.waypoints.min.js"></script>
+	<!-- Flexslider -->
+	<script src="/front/js/jquery.flexslider-min.js"></script>
+	<!-- Owl carousel -->
+	<script src="/front/js/owl.carousel.min.js"></script>
+	<!-- Magnific Popup -->
+	<script src="/front/js/jquery.magnific-popup.min.js"></script>
+	<script src="/front/js/magnific-popup-options.js"></script>
+	<!-- Date Picker -->
+	<script src="/front/js/bootstrap-datepicker.js"></script>
+	<!-- Stellar Parallax -->
+	<script src="/front/js/jquery.stellar.min.js"></script>
+	<!-- Main -->
+	<script src="/front/js/main.js"></script>
+
+	</body>
+</html>
+

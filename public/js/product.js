@@ -107,3 +107,12 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById(elementId).textContent = message;
   }
 });
+
+ // Auto fade-out alerts after 5 seconds
+ setTimeout(() => {
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(alert => {
+      alert.classList.add('fade'); // Bootstrap fade class
+      setTimeout(() => alert.remove(), 500); // Remove after fade animation
+  });
+}, 5000);

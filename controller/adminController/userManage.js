@@ -1,9 +1,9 @@
-const User=require('../../models/dbuser');
+const User=require('../../models/userModel');
 const bcrypt=require('bcrypt');
 const asyncHandler=require('express-async-handler');
 
 const loadUsers=  asyncHandler(async (req, res) => {
-    let { search = "", status = "Show all", limit = 20, page = 1 } = req.query;
+    let { search = "", status = "Show all", limit = 10, page = 1 } = req.query;
     
     limit = parseInt(limit);
     page = parseInt(page);
@@ -38,6 +38,55 @@ const loadUsers=  asyncHandler(async (req, res) => {
     });
 });
 
+const liveSearchUsers = asyncHandler(async (req, res) => {
+    try {
+      let search = req.query.search || "";
+      let status = req.query.status || "";
+      let limit = parseInt(req.query.limit) || 10;
+      let page = parseInt(req.query.page) || 1;
+      let skip = (page - 1) * limit;
+  
+      let filter = {};
+  
+      if (search) {
+        filter.fullName = { $regex: search, $options: "i" }; // Case-insensitive name search
+      }
+  
+      if (status === "Active") {
+        filter.isActive = true;
+      } else if (status === "Disabled") {
+        filter.isActive = false;
+      }
+  
+      let users = await User.find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+  
+      const formatDate = (date) => {
+        const d = new Date(date);
+        return d.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      };
+  
+      let formattedUsers = users.map((user) => ({
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        isActive: user.isActive,
+        image: user.image || "/assets/imgs/default-user.jpg",
+        formattedDate: formatDate(user.createdAt),
+      }));
+  
+      let totalUsers = await User.countDocuments(filter);
+      let totalPages = Math.ceil(totalUsers / limit);
+  
+      res.json({ users: formattedUsers, totalPages, currentPage: page });
+    } catch (error) {
+      console.error("Error in live search:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
 
 const blockUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
@@ -58,4 +107,5 @@ const blockUser = asyncHandler(async (req, res) => {
 module.exports={
     loadUsers,
     blockUser,
+    liveSearchUsers
 }

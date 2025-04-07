@@ -21,6 +21,36 @@
     <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <style>
+      /* Ensure modal takes full height */
+      .modal-dialog {
+        max-width: 70vw; 
+      }
+
+      .modal-body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-height: 80vh; /* Prevents overflow */
+        overflow: hidden;
+      }
+
+      /* Ensure image fits within modal */
+      .crop-container {
+        width: 100%;
+        max-height: 70vh; /* Keeps image within modal height */
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #cropperImage {
+        max-width: 100%;
+        max-height: 70vh;
+        object-fit: contain;
+      }
+    </style>
 </head>
 
 <body>
@@ -141,7 +171,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body text-center">
-        <img id="cropperImage" style="max-width: 100%;" />
+        <img id="cropperImage" style="max-width: 90%;" />
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

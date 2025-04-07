@@ -1,7 +1,12 @@
 const ERROR_MESSAGES = Object.freeze({
+   
+    SERVER:{
+        SERVER_ERROR:"Internal Server Error"
+    },
     USER: {
         NOT_FOUND: "User not found.",
         ALREADY_EXISTS: "User already exists.",
+        ALREADY_VERIFIED: "User already verified.",
         INVALID_CREDENTIALS: "Invalid email or password.",
         UNAUTHORIZED: "Unauthorized access.",
         BLOCKED: "Your account has been blocked. Please contact support."
