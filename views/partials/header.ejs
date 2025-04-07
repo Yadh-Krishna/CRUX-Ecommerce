@@ -1,24 +1,30 @@
-<nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">
-        <img src="/logo/logo-white.png" alt="Logo" height="40">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+<header class="main-header navbar">
+  <div class="col-search">
+      <form class="searchform">
+          <div class="input-group">
+              <input type="text" type="text" class="form-control" placeholder="Search term">
+              <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+          </div>
+        </form>
+  </div>
+  <div class="col-nav">
+      <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+      <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="#">
-              <i class="fas fa-bell"></i>
-            </a>
+              <a class="nav-link btn-icon" href="#">
+                  <i class="material-icons md-notifications animation-shake"></i>
+                  <span class="badge rounded-pill">3</span>
+              </a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link " href="#" id="navbarDropdown" >
-              <i class="fas fa-user-circle"></i> Admin
-            </a>
+         <li class="dropdown nav-item">
+              <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="assets/imgs/people/avatar2.jpg" alt="User"></a>
+              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                  <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                  <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item text-danger" href="/admin/logout"><i class="material-icons md-exit_to_app"></i>Logout</a>
+              </div>
           </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+      </ul>
+  </div>
+</header>

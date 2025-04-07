@@ -1,0 +1,762 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>CRUX | Order Details</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/front/css/style.css">
+    <style>
+        /* Custom CSS for Order Details Page */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .profile-container {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-sidebar {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            padding: 2rem 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .profile-image {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .profile-image img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            object-fit: cover;
+        }
+        
+        .profile-image .edit-avatar {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366F1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .profile-image .edit-avatar:hover {
+            background: #f0f0f0;
+        }
+        
+        .nav-menu {
+            padding: 1rem 0;
+        }
+        
+        .nav-menu .nav-item {
+            padding: 0;
+        }
+        
+        .nav-menu .nav-link {
+            padding: 0.75rem 1.5rem;
+            color: #4B5563;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-menu .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-menu .nav-link:hover {
+            background-color: #F3F4F6;
+            color: #6366F1;
+        }
+        
+        .nav-menu .nav-link.active {
+            background-color: #F3F4F6;
+            color: #6366F1;
+            border-left: 3px solid #6366F1;
+            font-weight: 500;
+        }
+
+        .content-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .content-card h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .order-status .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+        .order-status .badge-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .order-status .badge-processing {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .order-status .badge-shipped {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .order-status .badge-delivered {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .order-status .badge-cancelled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .order-status .badge-return-requested {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .order-status .badge-returned {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .order-actions {
+            margin-bottom: 20px;
+        }
+
+        .order-actions .btn {
+            margin-right: 10px;
+        }
+
+        .order-products {
+            margin-top: 20px;
+        }
+
+        .order-products .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .order-products .card-img-top {
+            border-radius: 10px 10px 0 0;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .order-products .card-body {
+            padding: 15px;
+        }
+
+        .order-products .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .order-products .card-text {
+            font-size: 16px;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .order-products .product-status {
+            font-size: 14px;
+            color: #6c757d;
+        }
+                .rating {
+            display: flex;
+            flex-direction: row-reverse; /* Reverse the order visually */
+            justify-content: flex-end;
+        }
+
+        .rating input {
+            display: none; /* Hide the radio buttons */
+        }
+
+        .rating label {
+            cursor: pointer;
+            color: #ddd; /* Default star color */
+            font-size: 24px;
+        }
+
+        .rating input:checked ~ label {
+            color: #ffc107; /* Highlight selected stars */
+        }
+
+        .rating label:hover,
+        .rating label:hover ~ label {
+            color: #ffc107; /* Highlight stars on hover */
+        }
+
+    .badge-pending { background-color: #6c757d; color: white; }  /* Pending */
+    .badge-processing { background-color: #007bff; color: white; }  /* Processing */
+    .badge-shipped { background-color: #6f42c1; color: white; }  /* Shipped */
+    .badge-delivered { background-color: #28a745; color: white; }  /* Delivered */
+    .badge-cancelled { background-color: #dc3545; color: white; }  /* Cancelled */
+    .badge-return-requested { background-color: #fd7e14; color: white; }  /* Return Requested */
+    .badge-returned { background-color: #ffc107; color: black; }  /* Returned */
+    </style>
+</head>
+<body>
+    <%- include('./userPartials/header') %> 
+
+    <div class="container profile-container">
+        <% if (messages && messages.success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i> <%= messages.success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+        
+        <% if (messages && messages.error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i> <%= messages.error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+    <div class="container profile-container">
+        <div class="row">
+            <!-- Sidebar -->
+             <div class="col-lg-3 col-md-4">
+                <div class="profile-sidebar">
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            <img src="<%= user.image %>" alt="<%= user.fullName %>" class="img-fluid">
+                            <a href="/profile/edit" class="edit-avatar">
+                                <i class="fas fa-camera"></i>
+                            </a>
+                        </div>
+                        <h4 class="mt-3 mb-1"><%= user.fullName %></h4>
+                        <p class="mb-0"><%= user.email %></p>
+                    </div>
+                    
+                    <ul class="nav flex-column nav-menu">
+                        <li class="nav-item">
+                            <a class="nav-link " href="/profile">
+                                <i class="fas fa-user"></i> Account Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/profile/my-orders">
+                                <i class="fas fa-shopping-bag"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile/addresses">
+                                <i class="fas fa-map-marker-alt"></i> Manage Addresses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile/wallet">
+                                <i class="fas fa-wallet"></i> Wallet
+                            </a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" href="/profile/coupons">
+                                <i class="fas fa-ticket-alt"></i> Coupons
+                            </a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link " href="/profile/wishlist">
+                                <i class="fas fa-heart"></i> Wishlist
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="/profile/referrals">
+                                <i class="fas fa-user"></i>Referrals
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+                        
+                    <!-- Order Details Content -->
+                    <div class="col-lg-9 col-md-8">
+                        <div class="content-card">
+                            <h2>
+                                <i class="fas fa-shopping-bag me-2"></i>
+                                Order Details - <%= order.orderId %>
+                            </h2>
+            
+                            <!-- Order Status -->
+                            <div class="order-status my-3">
+                                <!-- <h5>Order Status: 
+                                    <span class="badge <%= order.orderStatus === 'Pending' ? 'badge-pending' : 
+                                                          order.orderStatus === 'Processing' ? 'badge-processing' : 
+                                                          order.orderStatus === 'Shipped' ? 'badge-shipped' : 
+                                                          order.orderStatus === 'Delivered' ? 'badge-delivered' : 
+                                                          order.orderStatus === 'Cancelled' ? 'badge-cancelled' : 
+                                                          order.orderStatus === 'Return Request' ? 'badge-return-requested' : 
+                                                          'badge-returned' %>">
+                                        <%= order.orderStatus %>
+                                    </span>
+                                </h5> -->
+            
+                               <!-- Order-Level Cancel & Return -->
+                            <div class="mt-auto">
+                                <% if (order.orderStatus === 'Pending' || order.orderStatus === 'Processing' || order.orderStatus === 'Shipped') { %>
+                                    <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= order._id %>" data-type="order" data-bs-toggle="modal" data-bs-target="#cancelModal" data-order-id="<%=order._id%>">
+                                        <i class="fas fa-times-circle me-1"></i> Cancel Order
+                                    </button>       
+                                <% } %>
+
+                                <% if (order.orderStatus === 'Delivered') { %>
+                                    <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= order._id %>" data-type="order" data-order-id="<%=order._id%>" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                        <i class="fas fa-undo-alt me-1"></i> Return Order
+                                    </button>
+                                <% } %>
+                            </div>
+   
+                            </div>
+            
+                            <!-- Order Details -->
+                            <div class="order-info mb-4">
+                                <h5>Order Information:</h5>
+                                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+                                <p><strong>Total Amount:</strong> ₹<%= order.totalAmount.toFixed(2) %></p>
+                                <% if (order.expectedDelivery) { %>
+                                    <p><strong>Expected Delivery:</strong> <%= new Date(order.expectedDelivery).toDateString() %></p>
+                                <% } %>
+                                <% if (order.invoiceUrl && !order.orderStatus === 'Returned') { %>
+                                    <a href="/profile/my-orders/<%= order.orderId %>/invoice" class="btn btn-info btn-sm" target="_blank">
+                                        <i class="fas fa-file-invoice"></i> Download Invoice
+                                    </a>
+                                <% } %>
+                            </div>
+            
+                            <!-- Shipping Address -->
+                            <div class="order-address mb-4">
+                                <h5>Shipping Address:</h5>
+                                <p><strong>Name:</strong> <%= order.address.name %></p>
+                                <p><strong>Address:</strong> <%= order.address.hName %>,<%= order.address.street %>,<%= order.address.city %>, <%= order.address.state %>, <%= order.address.zip %></p>
+                                <p><strong>Phone:</strong> <%= order.address.mobile_number %></p>
+                            </div>
+            
+                            <!-- Order Products -->
+                            <div class="order-products">
+                                <h5>Ordered Items:</h5>
+                                <div class="row">
+                                    <% order.items.forEach(item => { %>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="card h-100">
+                                                <img src="<%= item.product.images[0] %>" class="card-img-top" alt="<%= item.product.name %>">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h5 class="card-title"><%= item.product.name %></h5>
+                                                    <p class="card-text">Price: <s class="text-muted">₹<%= (item.product.price || 0).toFixed(2) %></s>
+                                                        <span>₹<%= (item.product.finalPrice).toFixed(2) %></span></p>
+
+                                                     <div class="d-flex justify-content-between align-items-center">
+                                                        <p class="card-text mb-0">Quantity: <%= item.quantity %></p>
+                                                        <% if (item.status === 'Delivered') { %>
+                                                            <a href="/profile/my-orders/<%= order.orderId %>/invoice/<%=item._id%>" class="btn btn-outline-primary btn-sm">
+                                                                <i class="fas fa-file-invoice me-1"></i> Invoice
+                                                            </a>
+                                                        <% } %>
+                                                    </div>                                                       
+                            
+                                                    <p class="product-status">
+                                                        Status: 
+                                                        <span class="badge <%= item.status === 'Pending' ? 'badge-pending' : 
+                                                                              item.status === 'Processing' ? 'badge-processing' : 
+                                                                              item.status === 'Shipped' ? 'badge-shipped' : 
+                                                                              item.status === 'Delivered' ? 'badge-delivered' : 
+                                                                              item.status === 'Cancelled' ? 'badge-cancelled' : 
+                                                                              item.status === 'Return Requested' ? 'badge-return-requested' : 
+                                                                              'badge-returned' %>">
+                                                            <%= item.status %>
+                                                        </span>
+                                                    </p>
+                            
+                                                    
+                                                        <div class="mt-auto">
+                                                            <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
+                                                                <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#cancelModal" data-order-id="<%=order._id%>">
+                                                                    <i class="fas fa-times-circle me-1"></i> Cancel Item
+                                                                </button>
+                                                            <% } %>
+
+                                                            <% if (item.status === 'Delivered') { %>
+                                                                <button class="btn btn-warning btn-sm open-return-modal" data-id="<%= item._id %>" data-type="item" data-order-id="<%=order._id%>" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                                                    <i class="fas fa-undo-alt me-1"></i> Return Item
+                                                                </button>
+                                                            <% } %>
+                                                        </div>
+                                                        
+                                                         
+
+                                                        <div class="mt-auto">
+                                                            <% if (item.status === 'Delivered') { %>
+                                                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal-<%= item.product._id %>">
+                                                                    <i class="fas fa-star"></i> Write a Review
+                                                                </button>    
+                                        
+                                                            <% } %>
+                                                        </div>
+
+                                                    
+                                                <!-- Review Modal -->
+                                                <div class="modal fade" id="reviewModal-<%= item.product._id %>" tabindex="-1" aria-labelledby="reviewModalLabel-<%= item.product._id %>" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="reviewModalLabel-<%= item.product._id %>">Write a Review</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form action="/profile/order/review/<%= item.product._id %>" method="POST">
+                                                                <div class="modal-body">
+                                                                    <!-- Rating Input -->
+                                                                    <label class="form-label">Rating</label>
+                                                                    <div class="rating mb-3">
+                                                                        <input type="radio" name="rating" value="5" id="star1-<%= item.product._id %>" required>
+                                                                        <label for="star1-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="4" id="star2-<%= item.product._id %>">
+                                                                        <label for="star2-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="3" id="star3-<%= item.product._id %>">
+                                                                        <label for="star3-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="2" id="star4-<%= item.product._id %>">
+                                                                        <label for="star4-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                        <input type="radio" name="rating" value="1" id="star5-<%= item.product._id %>">
+                                                                        <label for="star5-<%= item.product._id %>"><i class="fas fa-star"></i></label>
+                                                                    </div>
+
+                                                                    <!-- Review Textarea -->
+                                                                    <label for="reviewText-<%= item.product._id %>" class="form-label">Your Review</label>
+                                                                    <textarea class="form-control" name="review" id="reviewText-<%= item.product._id %>" rows="4" placeholder="Write your review here..." required></textarea>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-success">Submit Review</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                            
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    <% }); %> <!-- 🚀 Correctly closing the forEach loop here -->
+                                </div>
+                            </div>
+
+                    <!-- CANCEL Modal (Handles Order & Item Cancellation) -->
+                        <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cancelLabel">Cancel</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="cancelForm">
+                                        <div class="modal-body">
+                                            <input type="hidden" id="cancelEntityId" name="entityId">
+                                            <input type="hidden" id="cancelOrderId" name="orderId">
+                                            <input type="hidden" id="cancelType" name="type">
+
+                                            <label for="cancelReason">Select Reason:</label>
+                                            <select class="form-select reason-select" id="cancelReason" name="reason" required>
+                                                <option value="">-- Select Reason --</option>
+                                                <option value="Not Required Anymore">Not Required Anymore</option>
+                                                <option value="Changed my mind">Changed my mind</option>
+                                                <option value="Ordered by mistake">Ordered by mistake</option>
+                                                <option value="Found a better price">Found a better price</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <div class="mt-3 other-reason d-none">
+                                                <label for="cancelOtherReason">Provide reason:</label>
+                                                <textarea class="form-control" id="cancelOtherReason" name="otherReason"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger cancel-order">Confirm Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RETURN Modal (Handles Order & Item Return) -->
+                        <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="returnLabel">Return</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="returnForm" method="POST">
+                                        <div class="modal-body">
+                                            <input type="hidden" id="returnEntityId" name="entityId">
+                                            <input type="hidden" id="returnOrderId" name="orderId">
+                                            <input type="hidden" id="returnType" name="type">
+
+                                            <label for="returnReason">Select Reason:</label>
+                                            <select class="form-select reason-select" id="returnReason" name="reason" required>
+                                                <option value="">-- Select Reason --</option>
+                                                <option value="Item defective">Item defective</option>
+                                                <option value="Wrong item received">Wrong item received</option>
+                                                <option value="Not as described">Not as described</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <div class="mt-3 other-reason d-none">
+                                                <label for="returnOtherReason">Provide reason:</label>
+                                                <textarea class="form-control" id="returnOtherReason" name="otherReason"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-warning">Confirm Return</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    
+                            <!-- <div class="order-products">
+                                <h5>Ordered Items:</h5>
+                                <div class="row">
+                                    <% order.items.forEach(item => { %>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="card h-100">
+                                                <img src="<%= item.product.images[0] %>" class="card-img-top" alt="<%= item.product.name %>">
+                                                <div class="card-body d-flex flex-column">
+                                                    <h5 class="card-title"><%= item.product.name %></h5>
+                                                    <p class="card-text">Price: ₹<%= item.finalPrice.toFixed(2) %></p>
+                                                    <p class="card-text">Quantity: <%= item.quantity %></p>                                                           
+                                                    
+                                                         <div class="mt-auto">
+                                                        <% if (order.orderStatus === 'Delivered') { %>
+                                                            <a href="/product/review/<%= item.product._id %>" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-star"></i> Write a Review
+                                                            </a>
+                                                        <% } %>
+                                                        <% }); %> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                    
+                                </div>
+                            </div> -->
+
+                        </div>
+                    </div>
+                <!-- </div>
+            </div> -->
+             
+           
+        </div>
+    </div>
+
+    <%- include('./userPartials/footer') %> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+                    document.querySelectorAll('.rating input').forEach(input => {
+            input.addEventListener('change', () => {
+                const ratingValue = input.value;
+                
+            });
+        });
+            // Show/hide "Other" text area when "Other" is selected
+            document.querySelectorAll(".reason-select").forEach(function (select) {
+                select.addEventListener("change", function () {
+                    let selectedOption = this.value;
+                    let parent = this.closest(".modal-body");
+                    let otherReasonField = parent.querySelector(".other-reason");
+    
+                    if (selectedOption === "Other") {
+                        otherReasonField.classList.remove("d-none");
+                        otherReasonField.querySelector("textarea").setAttribute("required", "true");
+                    } else {
+                        otherReasonField.classList.add("d-none");
+                        otherReasonField.querySelector("textarea").removeAttribute("required");
+                    }
+                });
+            });
+    
+            // Open cancel modal for both order and item
+            document.querySelectorAll(".open-cancel-modal").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let entityId = this.getAttribute("data-id");
+                    let entityType = this.getAttribute("data-type"); // 'order' or 'item'
+                    let orderId=this.getAttribute('data-order-id');
+
+                    document.getElementById("cancelEntityId").value = entityId;
+                    document.getElementById("cancelType").value = entityType;
+                    document.getElementById('cancelOrderId').value=orderId;
+                    // document.getElementById("cancelForm").action = `/cancel/${entityType}/${entityId}`;  
+                });
+            });
+
+            // Open return modal for both order and item
+            document.querySelectorAll(".open-return-modal").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    let entityId = this.getAttribute("data-id");
+                    let entityType = this.getAttribute("data-type"); // 'order' or 'item'
+                    let orderId=this.getAttribute('data-order-id');
+
+                    document.getElementById("returnEntityId").value = entityId;
+                    document.getElementById("returnType").value = entityType;
+                    document.getElementById('returnOrderId').value=orderId;
+                    // document.getElementById("returnForm").action = `/return/${entityType}/${entityId}`;
+                });
+            });
+
+            // Cancel Order or Item
+        document.getElementById("cancelForm").addEventListener("submit", async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const entityId = document.getElementById("cancelEntityId").value;
+            const type = document.getElementById("cancelType").value;
+            const reason = document.getElementById("cancelReason").value;
+            const orderId = document.getElementById("cancelOrderId").value;
+            const otherReason = document.getElementById("cancelOtherReason").value;
+            try{
+                const response = await fetch(`/profile/cancel/${type}/${entityId}/${orderId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    reason: reason,
+                    otherReason: otherReason,
+                }),
+            });
+            const result=await response.json();
+            if (result.success) {
+                Swal.fire({
+                    icon:"success",
+                    title:"Cancellation success",
+                    text: result.message,
+                    confirmButtonText: "OK"
+                }).then(()=>location.reload())              
+            } else {
+                Swal.fire({
+                    icon:"error",
+                    title:"Error!!",
+                    text: result.message,
+                    confirmButtonText: "OK"
+                })
+            }
+            }catch(err){
+                console.error(err);
+                Swal.fire({
+                    icon:"error",
+                    title:"Error!!",
+                    text:"Somnething Went Wrong!!",
+                    confirmButtonText: "OK"
+                })
+            }
+            
+        });
+
+        document.getElementById("returnForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Prevent default form submission
+
+    const entityId = document.getElementById("returnEntityId").value;
+    const type = document.getElementById("returnType").value;
+    const orderId = document.getElementById("returnOrderId").value;
+    const reason = document.getElementById("returnReason").value;
+    const otherReason = document.getElementById("returnOtherReason").value;
+            console.log(orderId);
+    try {
+        const response = await fetch(`/profile/return/${type}/${entityId}/${orderId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                reason: reason,
+                otherReason: otherReason,
+            }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Return Request Sent",
+                text: result.message,
+                confirmButtonText: "OK",
+            }).then(() => location.reload());
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error!!",
+                text: result.message,
+                confirmButtonText: "OK",
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire({
+            icon: "error",
+            title: "Error!!",
+            text: "Something Went Wrong!!",
+            confirmButtonText: "OK",
+        });
+    }
+});
+        });
+    </script>
+</body>
+</html>

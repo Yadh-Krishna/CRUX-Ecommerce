@@ -1,82 +1,53 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const editButtons = document.querySelectorAll(".edit-brand");
-  
-    editButtons.forEach(button => {
-      button.addEventListener("click", function () {
-        const brandId = this.getAttribute("data-id");
-        const brandName = this.getAttribute("data-name");
-        const brandDescription = this.getAttribute("data-description");
-        const brandImage = this.getAttribute("data-image"); // Existing image
-  
-        // Populate modal fields
-        document.getElementById("editBrandId").value = brandId;
-        document.getElementById("editBrandName").value = brandName;
-        document.getElementById("editBrandDescription").value = brandDescription;
-  
-        // Show existing image if available
-        const editImagePreview = document.getElementById("editImagePreview");
-        if (brandImage) {
-          editImagePreview.src = brandImage;
-          editImagePreview.style.display = "block";
-        } else {
-          editImagePreview.style.display = "none";
-        }
-  
-        // Show modal
-        const editBrandModal = new bootstrap.Modal(document.getElementById("editBrandModal"));
-        editBrandModal.show();
-      });
-    });
+
+//Form Validation
+document.getElementById("brandForm").addEventListener("submit", function (event) {
+  let isValid = true;  
+
+  // Validate Name (No Numbers)
+  const nameInput = document.getElementById("brand_name");
+  const nameError = document.getElementById("nameError");
+  if (/\d/.test(nameInput.value)|| !nameInput.value.trim()) {
+      nameError.classList.remove("d-none");
+      isValid = false;
+  } else {
+      nameError.classList.add("d-none");
+  }
+
+  // Validate Description (At least 15 words)
+  const descriptionInput = document.getElementById("brand_description");
+  const descriptionError = document.getElementById("descriptionError");
+  const wordCount = descriptionInput.value.trim().split(/\s+/).length;
+  if (wordCount < 15) {
+      descriptionError.classList.remove("d-none");
+      isValid = false;
+  } else {
+      descriptionError.classList.add("d-none");
+  }
+
+  // Validate Image Upload
+  const imageInput = document.getElementById("brand_image");
+  const imageError = document.getElementById("imageError");
+  if (!imageInput.files.length) {
+      imageError.classList.remove("d-none");
+      isValid = false;
+  } else {
+      imageError.classList.add("d-none");
+  }
+
+  // Prevent form submission if validation fails
+  if (!isValid) {
+      event.preventDefault();
+  }
+});
+
+// Auto fade-out alerts after 5 seconds
+setTimeout(() => {
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(alert => {
+      alert.classList.add('fade'); // Bootstrap fade class
+      setTimeout(() => alert.remove(), 500); // Remove after fade animation
   });
-  
-  // Handle Edit Form Submission (PUT Request)
-  document.getElementById("editBrandForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    
-    const brandId = document.getElementById("editBrandId").value;
-    const formData = new FormData(this);
-  
-    try {
-      const response = await fetch(`/admin/brands/${brandId}`, {
-        method: "PUT",
-        body: formData,
-      });
-  
-      const result = await response.json();
-      if (response.ok) {
-        alert("Category updated successfully.");
-        window.location.reload();
-      } else {
-        alert(result.error || "Failed to update category.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while updating category.");
-    }
-  });
-  
-   // Handle Block/Unblock Button Click (PATCH Request)
-   document.querySelectorAll(".toggle-brand-status").forEach(button => {
-    button.addEventListener("click", async function () {
-      const brandId = this.getAttribute("data-id");
-      
-      try {
-        const response = await fetch(`/admin/brands/${brandId}/toggle-status`, {
-          method: "PATCH",
-        });
-  
-        const result = await response.json();
-        if (response.ok) {
-          alert(result.message);
-          window.location.reload();
-        } else {
-          alert(result.error || "Failed to update brand status.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred while updating brand status.");
-      }
-    });
-   });
-  
-  
+}, 5000);
+
+ 
+

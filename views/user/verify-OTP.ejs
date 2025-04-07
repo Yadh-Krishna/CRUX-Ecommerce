@@ -1,0 +1,318 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Crux OTP verification</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="">
+    <!-- Template CSS -->
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <main>
+        <section class="content-main mt-80 mb-80">
+            <div class="card mx-auto card-login">
+                <div class="card-body">
+                    <img class="d-block mx-auto mb-3" src="/logo/logo-white.png" alt="CRUX">
+                    <h4 class="card-title mb-4 text-center">OTP Verification</h4>
+
+                    <% if (messages.success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <%= messages.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                    
+                    <% if (messages.error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= messages.error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+<!--                     
+                    <% if (error) { %>
+                        <div class="alert alert-danger"><%= error %></div>
+                    <% } %> -->
+                    
+                    <form id="otpForm" action="/verify-otp" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Enter OTP</label>
+                            <input class="form-control text-center" name='otp' id="otp" placeholder="Enter 6-digit OTP" type="number" required>
+                            <small class="text-danger" id="otpError"></small>
+                        </div>
+                        
+                        <div class="mb-3 text-center">
+                            <p id="timer" class="text-muted">Resend OTP in <span id="countdown">60</span> seconds</p>
+                            <button type="button" id="resendOtp" class="btn btn-link"  disabled>Resend OTP</button>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <button type="submit" class="btn btn-primary w-100"> Verify OTP </button>
+                        </div>
+                    </form>
+                    
+                    <p class="text-center small text-muted mb-15">or sign in with</p>              
+                    <p class="text-center mb-2">Didn't sign up? <a href="/register">Go Back</a></p>
+                </div>
+            </div>
+        </section>      
+       
+        <footer class="main-footer text-center">
+            <p class="font-xs">
+                <script>
+                document.write(new Date().getFullYear())
+                </script> ©, CRUX - Ecommerce Platform .
+            </p>
+            <p class="font-xs mb-30">All rights reserved</p>
+        </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="/assets/js/main.js" type="text/javascript"></script>
+    
+    <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const countdownElement = document.getElementById("countdown");
+    const resendButton = document.getElementById("resendOtp");
+    let timer;
+    let countdown;
+
+    // Check if backend set cookie
+    const otpStartFromBackend = document.cookie.includes("otpStart=true");
+
+    function startTimer() {
+        clearInterval(timer);
+        const startTime = Date.now();
+        localStorage.setItem("otpTimerStart", startTime);
+
+        countdown = 60;
+        updateCountdown();
+        timer = setInterval(updateCountdown, 1000);
+    }
+
+    function updateCountdown() {
+        const startTime = localStorage.getItem("otpTimerStart");
+        if (!startTime) return;
+
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        countdown = Math.max(60 - elapsedTime, 0);
+
+        if (countdownElement) countdownElement.textContent = countdown;
+
+        if (countdown === 0) {
+            clearInterval(timer);
+            resendButton.removeAttribute("disabled");
+            localStorage.removeItem("otpTimerStart");
+        } else {
+            resendButton.setAttribute("disabled", true);
+        }
+    }
+
+    if (otpStartFromBackend) {
+        // Fresh visit from signup, so start timer
+        startTimer();
+
+        // Clear cookie after usage (so it doesn't persist on refresh)
+        document.cookie = "otpStart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    } else if (localStorage.getItem("otpTimerStart")) {
+        // Resuming existing timer on refresh
+        updateCountdown();
+        timer = setInterval(updateCountdown, 1000);
+    } else {
+        // No valid timer, allow resend
+        if (countdownElement) countdownElement.textContent = "0";
+        resendButton.removeAttribute("disabled");
+    }    
+
+    async function resendOTP() {
+        if (resendButton) {
+            resendButton.setAttribute("disabled", true); 
+        }
+        
+        try {
+            const response = await fetch("/resend-otp", {
+                method: "PATCH"
+            });
+            const data = await response.json();
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    text: data.message,
+                    showConfirmButton: true
+                }).then(() => {
+                    startTimer(); 
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: data.error || "Failed to resend OTP. Please try again."
+                });
+                if (resendButton) {
+                    resendButton.removeAttribute("disabled"); 
+                }
+            }
+        } catch (err) {
+            console.error("Error resending OTP:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong. Please try again later."
+            });
+            if (resendButton) {
+                resendButton.removeAttribute("disabled"); 
+            }
+        }
+    }
+
+   
+    if (resendButton) {
+        resendButton.addEventListener("click", function () {
+            resendOTP();
+        });
+    }
+});
+        
+//     document.addEventListener("DOMContentLoaded", function () {
+//     const errorAlert = document.querySelector(".alert-danger");
+   
+//     if (errorAlert) {
+//         setTimeout(() => {
+//             errorAlert.style.display = "none";
+//         }, 5000);
+//     }
+
+//     let countdown;
+//     let timer;
+//     const countdownElement = document.getElementById("countdown");
+//     const resendButton = document.getElementById("resendOtp");
+
+//     // Function to start countdown timer
+//     function startTimer() {
+//         clearInterval(timer); 
+        
+//         const startTime = Date.now();
+//         localStorage.setItem("otpTimerStart", startTime);
+//         countdown = 60; // Reset timer
+//         updateCountdown();
+//         timer = setInterval(updateCountdown, 1000);
+//     }
+
+    
+//     function updateCountdown() {
+//         const startTime = localStorage.getItem("otpTimerStart");
+//         if (!startTime) return; // If no timer data, return
+        
+//         const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+//         countdown = Math.max(60 - elapsedTime, 0);
+        
+//         // Make sure countdownElement exists before updating it
+//         if (countdownElement) {
+//             countdownElement.textContent = countdown;
+//         }
+        
+//         if (countdown === 0) {
+//             clearInterval(timer);
+//             if (resendButton) {
+//                 resendButton.removeAttribute("disabled");
+//             }
+//             localStorage.removeItem("otpTimerStart"); // Clear storage after countdown
+//         } else {
+//             if (resendButton) {
+//                 resendButton.setAttribute("disabled", true);
+//             }
+//         }
+//     }
+
+//     // Check for page load source - is this a fresh OTP request or page refresh?
+//     const isInitialOtpPage = !localStorage.getItem("otpPageVisited");
+    
+//     // If this is the first time loading the OTP page in this session
+//     if (isInitialOtpPage) {
+//         localStorage.setItem("otpPageVisited", "true");
+//         // Start a fresh timer for new OTP requests
+//         startTimer();
+//     } else {
+//         // This is a page refresh or return to the page
+//         if (localStorage.getItem("otpTimerStart")) {
+//             // Resume existing timer
+//             updateCountdown();
+//             timer = setInterval(updateCountdown, 1000);
+//         } else {
+//             // No active timer but not a fresh visit - timer probably expired
+//             countdown = 0;
+//             if (countdownElement) countdownElement.textContent = "0";
+//             if (resendButton) resendButton.removeAttribute("disabled");
+//         }
+//     }
+
+    
+//     async function resendOTP() {
+//         if (resendButton) {
+//             resendButton.setAttribute("disabled", true); 
+//         }
+        
+//         try {
+//             const response = await fetch("/resend-otp", {
+//                 method: "PATCH"
+//             });
+//             const data = await response.json();
+//             if (response.ok) {
+//                 Swal.fire({
+//                     icon: "success",
+//                     text: data.message,
+//                     showConfirmButton: true
+//                 }).then(() => {
+//                     startTimer(); 
+//                 });
+//             } else {
+//                 Swal.fire({
+//                     icon: "error",
+//                     title: "Error",
+//                     text: data.error || "Failed to resend OTP. Please try again."
+//                 });
+//                 if (resendButton) {
+//                     resendButton.removeAttribute("disabled"); 
+//                 }
+//             }
+//         } catch (err) {
+//             console.error("Error resending OTP:", err);
+//             Swal.fire({
+//                 icon: "error",
+//                 title: "Error",
+//                 text: "Something went wrong. Please try again later."
+//             });
+//             if (resendButton) {
+//                 resendButton.removeAttribute("disabled"); 
+//             }
+//         }
+//     }
+
+   
+//     if (resendButton) {
+//         resendButton.addEventListener("click", function () {
+//             resendOTP();
+//         });
+//     }
+// });
+
+
+
+
+    </script>
+</body>
+
+</html>

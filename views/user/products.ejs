@@ -1,0 +1,843 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>CRUX | Product Details</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="/front/css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="/front//css/icomoon.css">
+	<!-- Ion Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/ionicons.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="/front/css/magnific-popup.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="/front/css/flexslider.css">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+	
+	<!-- Date Picker -->
+	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+	<!-- Flaticons  -->
+	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="/front/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<style>			
+		.product-list {
+			display: flex;
+			overflow-x: auto;
+			scroll-behavior: smooth;
+			padding-bottom: 10px;
+		}
+		.scroll-btn {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			background: white;
+			border: none;
+			cursor: pointer;
+			font-size: 24px;
+			padding: 10px;
+			box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+			z-index: 10;
+		}
+		.left { left: -10px; }
+		.right { right: -10px; }
+
+		.main-image img {
+		width: 400px;  /* Fixed width */
+		height: 400px; /* Fixed height */
+		object-fit: contain; /* Ensures image fits without distortion */
+		border: 1px solid #ddd;
+		padding: 10px;
+		background: #fff;
+	}
+			.image-container {
+			position: relative;
+			width: 400px;
+			height: 400px;
+			border: 1px solid #ddd;
+			overflow: hidden;
+			background: #fff;
+		}
+
+		#mainImage {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			cursor: crosshair;
+		}
+
+		/* Zoom Lens (Frame that appears on hover) */
+		.zoom-lens {
+			position: absolute;
+			width: 150px;
+			height: 150px;
+			background: rgba(255, 255, 255, 0.4);
+			border: 1px solid #ddd;
+			pointer-events: none;
+			display: none;
+		}
+
+		/* Zoomed Image Preview */
+		.zoom-preview {
+			position: absolute;
+			width: 600px;  /* Takes 1/3 of the page */
+			height: 400px;
+			overflow: hidden;
+			border: 2px solid #ddd;
+			background: #fff;
+			display: none;
+			z-index: 999;
+			right: 0; /* Adjust as needed */
+		}
+
+		.zoom-preview img {
+			position: absolute;
+			width: 1000px; /* Large image size for zoom */
+			height: auto;
+		}	
+		
+		/* Product Details Page - Aligned with Home Page */
+	.product-desc h2 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2.5rem;
+		color: var(--primary-color);
+		margin-bottom: 20px;
+	}
+
+	.product-desc p {
+		font-size: 1.1rem;
+		line-height: 1.8;
+		color: var(--secondary-color);
+		margin-bottom: 20px;
+	}
+
+	.price {
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--accent-color);
+		margin-bottom: 20px;
+	}
+
+	.price .text-muted {
+		font-size: 1.2rem;
+		color: #999;
+		margin-left: 10px;
+	}
+
+	.price .text-success {
+		font-size: 1.2rem;
+		margin-left: 10px;
+	}
+
+	.rating {
+		margin-bottom: 20px;
+	}
+
+	.rating .fa-star {
+		font-size: 1.2rem;
+	}
+
+	.stock {
+		font-size: 1.2rem;
+		margin-bottom: 20px;
+	}
+
+	.stock .text-success,
+	.stock .text-warning,
+	.stock .text-danger {
+		font-weight: 600;
+	}
+
+	.btn-primary {
+		background-color: var(--accent-color);
+		border: none;
+		padding: 10px 25px;
+		font-weight: 600;
+		border-radius: 30px;
+		transition: all 0.3s;
+	}
+
+	.btn-primary:hover {
+		background-color: var(--primary-color);
+		color: #fff;
+		transform: translateY(-3px);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Image Gallery */
+	.image-container {
+		border-radius: 10px;
+		overflow: hidden;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	}
+
+	.thumbnail-images img {
+		border-radius: 10px;
+		transition: all 0.3s;
+	}
+
+	.thumbnail-images img:hover {
+		transform: scale(1.1);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+	}
+
+	/* Tabs Section */
+	.nav-tabs .nav-link {
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		border: none;
+		padding: 10px 20px;
+		transition: all 0.3s;
+	}
+
+	.nav-tabs .nav-link.active {
+		color: var(--accent-color);
+		border-bottom: 2px solid var(--accent-color);
+	}
+
+	.nav-tabs .nav-link:hover {
+		color: var(--accent-color);
+	}
+
+	.tab-content {
+		padding: 20px;
+		border-radius: 10px;
+		background-color: var(--light-gray);
+		margin-top: 20px;
+	}
+
+	/* Similar Products Section */
+	.similar-products h3 {
+		font-family: 'Playfair Display', serif;
+		font-size: 2rem;
+		color: var(--primary-color);
+		margin-bottom: 30px;
+	}
+
+	.product-list {
+		display: flex;
+		overflow-x: auto;
+		scroll-behavior: smooth;
+		padding-bottom: 10px;
+	}
+
+	.product-list .card {
+		min-width: 200px;
+		max-width: 220px;
+		border: none;
+		border-radius: 10px;
+		overflow: hidden;
+		transition: all 0.3s;
+		margin-right: 15px;
+	}
+
+	.product-list .card:hover {
+		transform: translateY(-10px);
+		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+	}
+
+	.product-list .card img {
+		height: 200px;
+		object-fit: cover;
+	}
+
+	.product-list .card-body {
+		padding: 15px;
+	}
+
+	.product-list .card-title {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--primary-color);
+		margin-bottom: 10px;
+	}
+
+	.product-list .card-text {
+		font-size: 1rem;
+		font-weight: 700;
+		color: var(--accent-color);
+	}
+
+	.product-list .text-muted {
+		font-size: 0.9rem;
+		color: #999;
+	}
+
+	.product-list .text-success {
+		font-size: 0.9rem;
+	}
+
+	/* Scroll Buttons */
+	.scroll-btn {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		background: rgb(80, 79, 79); 
+		border: none;
+		cursor: pointer;
+		font-size: 24px;
+		padding: 10px;
+		border-radius: 50%;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		z-index: 10;
+		color: #fff;
+	}
+
+	.scroll-btn:hover {
+		background: var(--primary-color);
+	}
+
+	.left {
+		left: -20px;
+	}
+
+	.right {
+		right: -20px;
+	}
+
+	/* Responsive Adjustments */
+	@media (max-width: 767px) {
+		.product-desc h2 {
+			font-size: 2rem;
+		}
+
+		.price {
+			font-size: 1.5rem;
+		}
+
+		.thumbnail-images img {
+			width: 60px;
+			height: 60px;
+		}
+
+		.product-list .card {
+			min-width: 150px;
+			max-width: 160px;
+		}
+
+		.product-list .card img {
+			height: 150px;
+		}
+	}
+	/* Ensure buttons have the same height */
+	.product-actions .btn {
+		height: 40px; /* Adjust height as needed */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Style for the wishlist button */
+	.wishlist-toggle {
+		width: 40px; /* Make it square */
+		background-color: #f8f9fa; /* Light background */
+		border: 1px solid #ddd; /* Add a border */
+		color: #0c0c0c; /* Red color for the heart icon */
+	}
+
+	.wishlist-toggle:hover {
+		background-color: #e9ecef; /* Slightly darker on hover */
+	}
+
+	/* Style for the Add to Cart button */
+	.add-to-cart {
+		background-color: #434444; /* Blue background */
+		color: #fff; /* White text */
+		border: none; /* Remove default border */
+	}
+
+	.add-to-cart:hover {
+		background-color: #7f7f80; /* Darker blue on hover */
+	}
+
+	#loaderOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .loader-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+		</style>
+	</head>
+	<body>
+		
+	<!-- <div class="colorlib-loader"></div> -->
+
+	<div id="loaderOverlay">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p class="mb-0 font-weight-medium">Processing your request...</p>
+        </div>
+    </div>
+
+	<div id="page">
+		<%- include('./userPartials/header') %>    
+
+		<%- include('./userPartials/breadcrumbs') %>
+
+        <% if (message) { %>
+            <div class="alert alert-warning text-center">
+                <%= message %>
+            </div>
+        <% } %>
+
+		<div class="colorlib-product" style="padding:0;">
+			<!-- Product Detail Section -->
+			<div class="container mt-4">
+				<div class="row">
+					<!-- Left: Image Gallery -->
+					<div class="col-md-6 position-relative">
+						<% if (product && product.images && product.images.length > 0) { %>
+							<div class="image-container">
+								<img id="mainImage" src="<%= product.images[0] %>" class="img-fluid rounded shadow" alt="<%= product.name %>">
+								<!-- Zoom Lens -->
+								<div class="zoom-lens" id="zoomLens"></div>
+							</div>
+							<div class="thumbnail-images d-flex justify-content-center mt-3">
+								<% product.images.forEach((image, index) => { %>
+									<img src="<%= image %>" class="img-thumbnail mx-1" style="width: 80px; height: 80px; cursor: pointer;" onclick="changeImage('<%= image %>')">
+								<% }) %>
+							</div>
+						<% } else { %>
+							<div class="alert alert-warning text-center">No images available for this product.</div>
+						<% } %>
+					</div>
+		
+					<!-- Right: Product Details -->
+					<div class="col-md-6">
+						<!-- Hidden Zoom Preview -->
+						<div class="zoom-preview" id="zoomPreview">
+							<img id="zoomImage" src="<%= product.images[0] %>">
+						</div>
+						<% if (product) { %>
+							<div class="product-desc">
+								<h2><%= product.name %></h2>
+								<p><%= product.description %></p>
+								<p class="price">
+									<span>₹<%= product.finalPrice.toFixed(2) %></span>
+									<% let offerValue=product.offerApplied ? product.prodOffer : 0;
+									let catDiscount = product.category.offerApplied ? product.category.catOffer : 0;
+									let defaultDiscount = product.discount || 0;
+										let maxDiscount= Math.max(offerValue,catDiscount,defaultDiscount); 
+				
+									if (maxDiscount > 0) { %>
+										<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
+										<span class="text-success"><%= maxDiscount %>% Off</span>
+									<% } %>
+								</p>
+								<p class="rating">
+									<% for (let i = 1; i <= 5; i++) { %>
+										<i class="fa <%= i <= product.ratings ? 'fa-star text-warning' : 'fa-star text-muted' %>"></i>
+									<% } %>
+									<span>(<%= product.ratings.toFixed(1) %> Ratings)</span>
+								</p>
+								<div class="stock">
+									<% if(product.stock > 5) { %>
+										<span class="text-success">In Stock (<%= product.stock %> left)</span>
+									<% } else if (product.stock === 0) { %>
+										<span class="text-danger">Out of Stock</span>
+									<% } else { %>
+										<span class="text-warning">Only <%= product.stock %> Left</span>
+									<% } %>
+								</div>
+								<div class="product-actions d-flex justify-content-start mt-2">
+									<!-- Wishlist Button -->
+									<% if (user) { %> <!-- Show wishlist only if user is logged in -->
+										<button class="btn btn-light wishlist-toggle" data-product-id="<%= product._id %>">
+											<i class="<%= (userWishlist && userWishlist.some(p => p.toString() === product._id.toString())) ? 'fas' : 'far' %> fa-heart"></i>
+										</button>
+									<% } %>
+									<!-- Add to Cart Button -->
+									<button class="btn btn-secondary rounded-pill add-to-cart" data-id="<%= product._id %>">
+										<i class="fas fa-shopping-cart"></i> Add to Cart
+									</button>
+								</div>
+							
+							</div>
+						<% } else { %>
+							<div class="alert alert-danger text-center">Product not found or is currently inactive.</div>
+						<% } %>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Product Tabs -->
+		<div class="container mt-5">
+			<ul class="nav nav-tabs" id="productTabs">
+				<li class="nav-item">
+					<a class="nav-link " data-bs-toggle="tab" href="#brand">Brand</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bs-toggle="tab" href="#description">Description</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link active" data-bs-toggle="tab" href="#review">Reviews</a>
+				</li>
+			</ul>
+			<div class="tab-content p-4 border bg-light">
+				<div class="tab-pane fade " id="brand">
+					<div class="d-flex align-items-center mb-3">
+						<img src="<%= brand.image %>" alt="<%= brand.name %>" class="rounded-circle" height="60">
+						<h4 class="ms-3 mb-0"><%= brand.name %></h4>
+					</div>
+					<p><%= brand.description %></p>
+				</div>
+				<div class="tab-pane fade" id="description">
+					<h3><%=product.name%></h3>
+					<p><%= product.description %></p>
+				</div>
+				<div class="tab-pane fade show active" id="review">
+					<% if (reviews && reviews.length > 0) { %>
+						<% reviews.forEach(review => { %>
+							<div class="review mb-4 p-3 border rounded">
+								<!-- User Info -->
+								<div class="d-flex align-items-center mb-2">
+									<!-- Profile Image -->
+									<img src="<%= review.user.image %>" 
+										 alt="<%= review.user.fullName %>" 
+										 class="rounded-circle me-3" 
+										 style="width: 50px; height: 50px; object-fit: cover;">
+									
+									<!-- User Name and Date -->
+									<div>
+										<strong><%= review.user.fullName %></strong>
+										<span class="text-muted d-block">
+											<%= new Date(review.createdAt).toLocaleDateString() %>
+										</span>
+									</div>
+								</div>
+				
+								<!-- Rating Stars -->
+								<div class="text-warning mb-2">
+									<% for (let i = 1; i <= 5; i++) { %>
+										<i class="fa <%= i <= review.rating ? 'fa-star' : 'fa-star text-muted' %>"></i>
+									<% } %>
+								</div>
+				
+								<!-- Review Comment -->
+								<p class="mb-0"><%= review.comment %></p>
+							</div>
+						<% }) %>
+					<% } else { %>
+						<p>No reviews yet. Be the first to review this product.</p>
+					<% } %>
+				</div>
+				<!-- <div class="tab-pane fade" id="review">
+					<% if (reviews && reviews.length > 0) { %>
+						<% reviews.forEach(review => { %>
+							<div class="review mb-3">
+								<strong><%= review.user.fullName %></strong>
+								<span class="text-muted float-end"><%= new Date(review.createdAt).toLocaleDateString() %></span>
+								<div class="text-warning">
+									<% for (let i = 1; i <= 5; i++) { %>
+										<i class="fa <%= i <= review.rating ? 'fa-star' : 'fa-star text-muted' %>"></i>
+									<% } %>
+								</div>
+								<p><%= review.comment %></p>
+							</div>
+						<% }) %>
+					<% } else { %>
+						<p>No reviews yet. Be the first to review this product.</p>
+					<% } %>
+				</div> -->
+			</div>
+		</div>
+		
+		<!-- Similar Products Section -->
+		<div class="container mt-5 mb-5">
+			<h3 class="similar-products">Similar Products</h3>
+			<% if (relatedProducts.length > 0) { %>
+				<div class="position-relative">
+					<!-- Scroll Buttons -->
+					<button class="scroll-btn left" onclick="scrollProducts(-1)">&#10094;</button>
+					<button class="scroll-btn right" onclick="scrollProducts(1)">&#10095;</button>
+					<div class="product-list">
+						<% relatedProducts.forEach(product => { %>
+							<div class="card">
+								<div class="position-relative">
+									<a href="/products/<%= product.slug %>"><img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>"></a>
+									<% if (user) { %>
+										<button class="btn btn-light wishlist-toggle position-absolute top-0 end-0" data-product-id="<%= product._id %>">
+											<i class="<%= (userWishlist && userWishlist.some(p => p.toString() === product._id.toString())) ? 'fas' : 'far' %> fa-heart"></i>
+										</button>
+									<!-- <button class="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle">
+										<i class="fa fa-heart"></i>
+									</button> -->
+									<% } %>
+								</div>
+								<div class="card-body">
+									<a class="nav-link" href="/products/<%= product.slug %>"><p class="card-title" ><%= product.name %></p></a>
+									<p class="card-text">
+										<strong>₹<%= product.finalPrice %></strong>
+										<% if (product.discount) { %>
+											<small class="text-muted ms-2"><del>₹<%= product.price %></del></small>
+											<span class="text-success"><%= product.discount %>% off</span>
+										<% } %>
+									</p>
+								</div>
+							</div>
+						<% }) %>
+					</div>
+				</div>
+			<% } else { %>
+				<div class="col-md-12 text-center">No Products Available</div>
+			<% } %>
+		</div>
+						</div>
+					</div>
+			</div>
+		</div>
+
+		<%- include('./userPartials/footer') %>
+	</div>
+
+	<div class="gototop js-top">
+		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- jQuery -->
+	<script src="/front/js/jquery.min.js"></script>
+   <!-- popper -->
+   <script src="/front/js/popper.min.js"></script>
+   <!-- bootstrap 4.1 -->
+   <script src="/front/js/bootstrap.min.js"></script>
+   <!-- jQuery easing -->
+   <script src="/front/js/jquery.easing.1.3.js"></script>
+	<!-- Waypoints -->
+	<script src="/front/js/jquery.waypoints.min.js"></script>
+	<!-- Flexslider -->
+	<script src="/front/js/jquery.flexslider-min.js"></script>
+	<!-- Owl carousel -->
+	<script src="/front/js/owl.carousel.min.js"></script>
+	<!-- Magnific Popup -->
+	<script src="/front/js/jquery.magnific-popup.min.js"></script>
+	<script src="/front/js/magnific-popup-options.js"></script>
+	<!-- Date Picker -->
+	<script src="/front/js/bootstrap-datepicker.js"></script>
+	<!-- Stellar Parallax -->
+	<script src="/front/js/jquery.stellar.min.js"></script>
+	<!-- Main -->
+	<script src="/front/js/main.js"></script>
+
+	<script>
+		// showloader();
+function showLoader() {
+            document.getElementById('loaderOverlay').style.display = 'flex';
+        }
+
+        // Function to hide loader
+        function hideLoader() {
+            document.getElementById('loaderOverlay').style.display = 'none';
+        }
+	const mainImage = document.getElementById('mainImage');
+	const zoomLens = document.getElementById('zoomLens');
+	const zoomPreview = document.getElementById('zoomPreview');
+	const zoomImage = document.getElementById('zoomImage');
+
+	mainImage.addEventListener('mouseenter', function () {
+		zoomLens.style.display = "block";
+		zoomPreview.style.display = "block";
+	});
+
+	mainImage.addEventListener('mousemove', function(event) {		
+    const { left, top, width, height } = mainImage.getBoundingClientRect();
+    
+    // Get cursor position relative to image
+    const x = event.pageX - left - window.scrollX;
+    const y = event.pageY - top - window.scrollY;
+    
+    // Position zoom lens
+    const lensSize = 100;
+    let lensX = x - lensSize / 2;
+    let lensY = y - lensSize / 2;
+    
+    // Keep lens inside image bounds
+    lensX = Math.max(0, Math.min(width - lensSize, lensX));
+    lensY = Math.max(0, Math.min(height - lensSize, lensY));
+    
+    zoomLens.style.left = `${lensX}px`;
+    zoomLens.style.top = `${lensY}px`;
+    
+    // Calculate the ratio between preview size and lens size
+    const xRatio = (zoomPreview.offsetWidth - zoomImage.offsetWidth) / (width - lensSize);
+    const yRatio = (zoomPreview.offsetHeight - zoomImage.offsetHeight) / (height - lensSize);
+    
+    // Position zoomed image preview with corrected calculations
+    const zoomX = lensX * xRatio;
+    const zoomY = lensY * yRatio;
+    
+    zoomImage.style.transform = `translate(${zoomX}px, ${zoomY}px)`;
+});
+	
+	mainImage.addEventListener('mouseleave', function () {
+		zoomLens.style.display = "none";
+		zoomPreview.style.display = "none";
+	});
+
+	function changeImage(src) {
+    mainImage.src = src; // Update main image
+    zoomImage.src = src; // Update zoomed preview image
+
+    // Ensure the zoom still works after changing the image
+    zoomImage.onload = function () {
+        zoomLens.style.display = "none";
+        zoomPreview.style.display = "none";
+    };
+}
+
+	
+		function scrollProducts(direction) {
+        const container = document.querySelector('.product-list');
+        const scrollAmount = 300; // Adjust for better UX
+        container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+		}
+
+
+			document.addEventListener('DOMContentLoaded', function () {
+		const addToCartButton = document.querySelector(".add-to-cart");
+
+		if (addToCartButton) {
+			addToCartButton.addEventListener('click', async function (event) {
+				const productId = this.getAttribute('data-id');
+
+				try {
+					const response = await fetch('/cart/add', {
+						method: 'POST',
+						headers: {
+							"Content-Type": "application/json",
+							 "Accept": "application/json"
+						},
+						body: JSON.stringify({ productId, quantity: 1 })
+						
+					});
+					
+					if (response.status === 401) { 
+						console.log("Redirecting to login...");	
+						window.location.href = "/login"; // Redirect to login page
+						return;
+					}
+
+				
+					const result = await response.json();
+
+					if (result.success) {
+						Swal.fire({
+							icon: "success",
+							title: "Added to Cart!",
+							text: "The product has been successfully added to your cart.",
+							showConfirmButton: false,
+							timer: 1500
+						});
+					} else {
+						Swal.fire({
+							icon: "warning",
+							title: "Oops!",
+							text: result.message, // Show server message
+						});
+					}
+				} catch (err) {
+					console.error("Error adding to cart:", err);
+					Swal.fire({
+						icon: "error",
+						title: "Error!",
+						text: "Something went wrong while adding to cart. Please try again!",
+					});
+				}
+			});
+		}
+
+		document.querySelectorAll('.wishlist-toggle').forEach(button=>{
+			button.addEventListener('click',async function(){
+
+				const productId = this.getAttribute('data-product-id');
+				try{
+					const response=await fetch(`/profile/wishlist/add`,{
+						method:"POST",
+						headers:{"Content-Type":"application/json"},
+						body:JSON.stringify({productId}),
+					});
+
+					const result=await response.json();
+					if(result.success){
+
+						Swal.fire({
+							icon:"success",
+							title:"Wishlist",
+							text:result.message,
+							confirmButtonText:"OK"
+						}).then(()=>location.reload())
+					}else{	
+							Swal.fire({
+							icon:"error",
+							title:"Error",
+							text:result.message,
+							confirmButtonText:"OK"
+						})
+						}
+					}catch(err){
+						console.error(err);
+						Swal.fire({
+							icon:"error",
+							title:"Error!!",
+							text:"Something went Wrong!!",
+							confirmButtonText:"OK"
+						})
+					}
+				})
+			})
+	});
+	
+		
+	</script>
+
+
+	</body>
+</html>
+

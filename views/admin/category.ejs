@@ -1,159 +1,307 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Category Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="/css/category.css">
+    <meta charset="utf-8">
+    <title>CRUX Categories</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
-  <%- include('../partials/header') %>
+   <%- include("../partials/sidebar") %>
+    <main class="main-wrap">
+      <%- include("../partials/header") %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Category List</h2>
+                </div>
+                <div>
+                    <form action="/admin/categories" method="GET" class="d-flex">
+                        <input type="text" id="searchCategories" name="searchCategories" placeholder="Search Categories" class="form-control  me-2">
+                        <select name="status" class="form-select">
+                            <option value="Show all" >Show All</option>
+                            <option value="Active" >Active</option>
+                            <option value="Inactive" >Inactive</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Search</button>
 
-  <div class="container-fluid">
-    <div class="row">
-      <%- include('../partials/sidebar') %>
-      
-      <div class="col-md-10 main-content">
-        <h1 class="mt-3 mb-4  ">Category Management</h1>
-        
-      
-
-        <!-- Category List -->
-                 <header class="d-flex justify-content-between align-items-center mb-4 flex-column flex-md-row mt-2">
-           
-          <form action="/admin/categories" method="GET" class="w-100 mb-3 mb-md-0">
-            <div class="input-group ">
-              <input type="text" id="searchBar" name="searchCategories" class="form-control" placeholder="Search categories..." value="<%= searchTerm %>">
-              <button id="searchButton" class="btn btn-primary btn-md">Search</button>
+                    </form>
+                </div>
+                <div class="d-grid">
+                    <a href="/admin/categories/add">
+                        <button class="btn btn-primary">Create category</button>
+                    </a>
+                </div>
             </div>
-          </form>          
-        </header> 
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Category List</h5> 
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr class="text-center align-middle">
-                    <th>Picture</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="categoryTableBody">
-                  <% if (categories.length > 0) { %>
-                  <% categories.forEach(category => { %>
-                    <tr class="text-center align-middle">
-                      <td><% if (category.image) { %>
-                        <img src="<%= category.image %>" alt="Category Image" class="img-thumbnail rounded-circle " style="width: 80px; height:80px">
-                    <% } else { %>
-                        <span>No Image</span>
-                    <% } %></td>
-                      <td><%= category.name %></td>
-                      <td><%= category.description %></td>
-                      <td>
-                        <% if (!category.isDeleted) { %>
-                          <span class="badge bg-success">Active</span>
-                        <% } else { %>
-                          <span class="badge bg-danger">Inactive</span>
+
+            <% if (messages.error) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <% if (messages.success) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Sl No</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Offer</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (categories.length > 0) { %>
+                                <% categories.forEach((category, index) => { %>
+                                    <tr >
+                                        <td class="align-middle"><%= index + 1 %></td>
+                                        <td>
+                                            <img src="<%= category.image%>" 
+                                                 class="rounded-circle" 
+                                                 alt="<%= category.name %>" 
+                                                 height="60">
+                                        </td>
+                                        <td class="align-middle"><b><%= category.name %></b></td>
+                                        <td class="align-middle"><%= category.description || "No description" %></td>
+                                        <td class="align-middle text-nowrap">
+                                            <% if (category.offerApplied && category.catOffer) { %>
+                                                <span class="badge bg-success"><%= category.catOffer %>% Off</span>
+                                            <% } else { %>
+                                                <span class="text-muted">No offer</span>
+                                            <% } %>
+                                        </td>
+                                        
+                                        <td class="align-middle">
+                                            <% if (!category.isDeleted) { %>
+                                                <span class="badge bg-success">Active</span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">Inactive</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <a href="/admin/categories/edit/<%= category._id %>" 
+                                                   class="btn btn-sm btn-warning text-white px-3 ">Edit</a>
+                                                <% if (!category.isDeleted) { %>
+                                                    <a href="#" onclick="toggleCategoryStatus('<%= category._id %>')"
+                                                       class="btn btn-sm btn-danger px-3">Block</a>
+                                                <% } else{ %>
+                                                    <a href="#" onclick="toggleCategoryStatus('<%= category._id %>')"
+                                                        class="btn btn-sm btn-success px-3">Unblock</a>
+                                                        <%}%>                                                                                                         
+                                            </div>  
+                                            <div class="d-flex justify-content-center mt-2"> 
+                                                <% if (category.offerApplied) { %>
+                                                    <button class="btn btn-sm btn-danger px-3" 
+                                                            onclick="removeCategoryOffer('<%= category._id %>')">Remove Offer</button>
+                                                <% } else { %>
+                                                    <button class="btn btn-sm btn-secondary text-white px-3" 
+                                                            onclick="openOfferModal('<%= category._id %>', '<%= category.name %>')">Add Offer</button>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            <b>No Categories found.</b>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination-area mt-15 mb-50">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&limit=<%= limit %>&searchbrands=<%= searchQuery %>&status=<%= statusFilter %>"><%= i %></a>
+                            </li>
                         <% } %>
-                      </td>
-                      <td>
-                        <button class="btn btn-sm btn-primary edit-category" data-id="<%= category._id %>" data-name="<%= category.name %>" data-description="<%= category.description %>" data-image="<%= category.image %>">
-                          <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <!-- <form action="/admin/categories/<%= category._id %>/toggle-status" style="display: inline;"> -->
-                          <button data-id="<%= category._id %>" class="btn btn-sm <%= category.isDeleted ? 'btn-success' : 'btn-danger' %> toggle-category-status">
-                            <%= category.isDeleted ? 'Activate' : 'Deactivate' %>
-                          </button>
-                        <!-- </form> -->
-                      </td>
-                    </tr>
-                  <% }) %>
-                  <% } else { %>
-                    <tr>
-                      <td colspan="5" class="text-center">No categories found</td>
-                    </tr>
-                  <% } %>
-                </tbody>
-              </table>
+                    </ul>
+                </nav>
             </div>
-          </div>
-        </div>
 
-        <!-- Add Category Section -->
-        <div class="card mt-4">
-          <div class="card-body">
-            <h5 class="card-title">Add New Category</h5>
-            <form action="/admin/categories/add" id="addCategoryForm" method="POST" enctype="multipart/form-data">
-              <div class="row">
-                <div class="col-md-4">
-                  <label for="categoryName" class="form-label">Category Name</label>
-                  <input type="text" class="form-control" id="categoryName" name="name" required>
-                </div>
-                <div class="col-md-4">
-                  <label for="categoryDescription" class="form-label">Description</label>
-                  <input type="text" class="form-control" id="categoryDescription" name="description">
-                </div>
-                <div class="col-md-4">
-                  <label for="categoryImage" class="form-label">Category Image</label>
-                  <input type="file" class="form-control" id="categoryImage" name="image" accept="image/*">
-                  <img id="addImagePreview" src="" alt="Preview" class="img-thumbnail mt-2" style="max-width: 100px; display: none;">
-                </div>
-              </div>
-              <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-plus"></i> Add Category</button>
-            </form>
-          </div>
-        </div>
+        </section>
 
+          <!-- Offer Modal -->
+    <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="offerModalLabel">Apply Offer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="offerForm">
+                        <input type="hidden" id="categoryId">
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Category</label>
+                            <input type="text" id="categoryName" class="form-control" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="offerPercentage" class="form-label">Category Offer Percentage</label>
+                            <input type="number" id="offerPercentage" class="form-control" min="1" max="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Offer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Edit Category Modal -->
-<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form id="editCategoryForm"  enctype="multipart/form-data">
-        <div class="modal-body">
-          <input type="hidden" id="editCategoryId" name="categoryId">
-          
-          <div class="mb-3">
-            <label for="editCategoryName" class="form-label">Category Name</label>
-            <input type="text" class="form-control" id="editCategoryName" name="name" required>
-          </div>
+        <%- include("../partials/footer") %>
+    </main>
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="/js/block-category.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
 
-          <div class="mb-3">
-            <label for="editCategoryDescription" class="form-label">Description</label>
-            <input type="text" class="form-control" id="editCategoryDescription" name="description">
-          </div>
+function openOfferModal(categoryId, categoryName) {
+    document.getElementById('categoryId').value = categoryId;
+    document.getElementById('categoryName').value = categoryName;
+    var offerModal = new bootstrap.Modal(document.getElementById('offerModal'));
+    offerModal.show();
+}   
 
-          <div class="mb-3">
-            <label for="editCategoryImage" class="form-label">Category Image</label>
-            <input type="file" class="form-control" id="editCategoryImage" name="image" accept="image/*">
-            <img id="editImagePreview" src="" alt="Current Image" class="img-thumbnail mt-2" style="max-width: 100px;">
-          </div>
-        </div>
+async function removeCategoryOffer(categoryId) {
+    try {
+        const response = await fetch(`/admin/categories/removeOffer/${categoryId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" }
+        });
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire("Success!", result.message, "success").then(() => location.reload());
+        } else {
+            Swal.fire("Error!", result.message, "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Something went wrong!", "error");
+    }
+}
 
-  <%- include('../partials/footer') %>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/category.js"></script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById("offerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const categoryId = document.getElementById("categoryId").value;
+    const offerPercentage = document.getElementById("offerPercentage").value;
+        console.log(categoryId,offerPercentage)
+    try {
+        const response = await fetch(`/admin/categories/applyOffer/${categoryId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ offerPercentage })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire("Success!", result.message, "success").then(() => location.reload());
+        } else {
+            Swal.fire("Error!", result.message, "error");
+        }
+    } catch (err) {
+        Swal.fire("Error!", "Something went wrong!", "error");
+    }
+    });
+
+    const searchInput = document.getElementById("searchCategories");
+    const statusFilter = document.getElementById("statusFilter");
+
+    function fetchCategories() {
+        const searchQuery = searchInput.value.trim();
+        const status = statusFilter.value;
+
+        fetch(`/admin/categories/live-search?searchCategories=${searchQuery}&status=${status}`)
+            .then(response => response.json())
+            .then(data => {
+                updateCategoryTable(data.categories);
+            })
+            .catch(error => console.error("Error fetching categories:", error));
+    }
+
+    function updateCategoryTable(categories) {
+        const tableBody = document.querySelector("tbody");
+        tableBody.innerHTML = ""; // Clear previous content
+
+        if (categories.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        <b>No Categories found.</b>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        categories.forEach((category, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td class="align-middle">${index + 1}</td>
+                <td><img src="${category.image}" class="rounded-circle" alt="${category.name}" height="60"></td>
+                <td class="align-middle"><b>${category.name}</b></td>
+                <td class="align-middle">${category.description || "No description"}</td>
+                <td class="align-middle">${category.slug}</td>
+                <td class="align-middle">
+                    <span class="badge ${category.isDeleted ? 'bg-danger' : 'bg-success'}">${category.isDeleted ? 'Inactive' : 'Active'}</span>
+                </td>
+                <td class="text-center align-middle">
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="/admin/categories/edit/${category._id}" class="btn btn-sm btn-warning text-white px-3">Edit</a>
+                        <a href="#" onclick="toggleCategoryStatus('${category._id}')" class="btn btn-sm ${category.isDeleted ? 'btn-success' : 'btn-danger'} px-3">
+                            ${category.isDeleted ? "Unblock" : "Block"}
+                        </a>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    searchInput.addEventListener("input", fetchCategories);
+    statusFilter.addEventListener("change", fetchCategories);
+
+    
+
+
+});
+        // Auto fade-out alerts after 5 seconds
+setTimeout(() => {
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(alert => {
+      alert.classList.add('fade'); // Bootstrap fade class
+      setTimeout(() => alert.remove(), 500); // Remove after fade animation
+  });
+}, 5000);
+    </script>
 </body>
+
 </html>

@@ -1,0 +1,70 @@
+.sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16.666667%;
+    overflow-y: auto;
+  }
+  .sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+  }
+  .sidebar a:hover {
+    background-color: #495057;
+  }
+  .navbar {
+    z-index: 10;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top:0;
+    left:0; 
+    width:100%;
+
+  }
+  .footer {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+  }
+  .main-content {   
+    margin-top: 5%;
+    margin-left: 16.666667%; /* Offset main content by sidebar width */
+    padding: 20px;
+    width: 83.333333%; /* Remaining width */
+    }
+
+    .image-preview {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+      }
+  
+      .image-preview img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 3px;
+      }
+  
+      .upload-box {
+        border: 2px dashed #007bff;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+      }
+  
+      .upload-box:hover {
+        background-color: #f1f1f1;
+      }

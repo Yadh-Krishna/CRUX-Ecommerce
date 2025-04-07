@@ -1,0 +1,260 @@
+
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CRUX | Edit Coupon</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/imgs/theme/favicon.svg">
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include("../partials/sidebar") %>
+    <main class="main-wrap">
+        <%- include("../partials/header") %>
+
+        <section class="content-main">
+            <div class="content-header d-flex justify-content-between">
+                <h2 class="content-title card-title">Edit Coupon</h2>
+                <a href="/admin/coupons" class="btn btn-secondary">Back to Coupons</a>
+            </div>
+
+            <% if (messages.error) { %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <% if (messages.success) { %>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <div class="card">
+                <div class="card-body">
+                    <form id="couponForm" action="/admin/coupons/edit/<%= coupon._id %>" >
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Coupon Name</label>
+                            <input type="text" id="name" name="name" class="form-control" value="<%= coupon.name %>">
+                            <small class="text-danger" id="nameError"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="offerPrice" class="form-label">Offer Price (₹)</label>
+                            <input type="number" id="offerPrice" name="offerPrice" class="form-control" value="<%= coupon.offerPrice %>" min="0">
+                            <small class="text-danger" id="offerPriceError"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="minimumPrice" class="form-label">Minimum Purchase Price (₹)</label>
+                            <input type="number" id="minimumPrice" name="minimumPrice" class="form-control" value="<%= coupon.minimumPrice %>" min="0">
+                            <small class="text-danger" id="minimumPriceError"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="maximumDiscount" class="form-label">Maximum Discount Price (₹)</label>
+                            <input type="number" id="maximumDiscount" name="maximumDiscount" class="form-control"  min="0" value="<%= coupon.maximumDiscount %>">
+                            <small class="text-danger" id="maximumDiscountError"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" id="startDate" name="startDate" class="form-control" value="<%= coupon.startDate.toISOString().split('T')[0] %>">
+                            <small class="text-danger" id="startDateError"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="expireOn" class="form-label">Expiration Date</label>
+                            <input type="date" id="expireOn" name="expireOn" class="form-control" value="<%= coupon.expireOn.toISOString().split('T')[0] %>">
+                            <small class="text-danger" id="expireOnError"></small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Coupon</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <%- include("../partials/footer") %>
+    </main>
+
+    <script src="/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+         
+        //Validation
+            document.addEventListener("DOMContentLoaded", function () {
+            const couponForm = document.getElementById("couponForm");       
+
+            // Attach input event listeners for real-time validation
+            document.getElementById("name").addEventListener("input", validateName);
+            document.getElementById("offerPrice").addEventListener("input", validateOfferPrice);
+            document.getElementById("minimumPrice").addEventListener("input", validateMinimumPrice);
+            document.getElementById("startDate").addEventListener("change", validateStartDate);
+            document.getElementById("expireOn").addEventListener("change", validateExpireOn);
+
+            // Form submission event
+            couponForm.addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    if (!validateCouponForm()) return; 
+
+    const couponId = "<%= coupon._id %>"; 
+
+    try {
+        const formData = {
+            name: document.getElementById("name").value.trim(),
+            offerPrice: parseFloat(document.getElementById("offerPrice").value),
+            minimumPrice: parseFloat(document.getElementById("minimumPrice").value),
+            startDate: document.getElementById("startDate").value,
+            expireOn: document.getElementById("expireOn").value,
+            maximumDiscount: document.getElementById('maximumDiscount').value
+        };
+
+        const response = await fetch(`/admin/coupons/edit/${couponId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        
+
+        if (response.ok) {
+            Swal.fire({
+                title: "Success",
+                text: result.message || "Coupon updated successfully!",
+                icon: "success",
+                confirmButtonText: "OK"
+            }).then(() => {
+                window.location.href = "/admin/coupons";
+            });
+        } else {
+            Swal.fire({
+                title: "Error",
+                text: result.message || "Something went wrong.",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        }
+    } catch (err) {
+        console.error("Edit Coupon Error:", err);
+
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+            confirmButtonText: "OK"
+        });
+    }
+});
+        });
+
+        function validateName() {
+            let name = document.getElementById("name").value.trim();
+            let nameError = document.getElementById("nameError");
+
+            if (!name) {
+                nameError.innerText = "Coupon name is required.";
+                return false;
+            }
+            nameError.innerText = "";
+            return true;
+        }
+
+        function validateOfferPrice() {
+            let offerPrice = parseFloat(document.getElementById("offerPrice").value);
+            let offerPriceError = document.getElementById("offerPriceError");
+
+            if (isNaN(offerPrice) || offerPrice < 0) {
+                offerPriceError.innerText = "Offer price must be 0 or greater.";
+                return false;
+            }
+
+            // Ensure offer price is not greater than minimum price
+            let minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
+            if (!isNaN(minimumPrice) && offerPrice > minimumPrice) {
+                offerPriceError.innerText = "Offer price cannot be greater than minimum price.";
+                return false;
+            }
+
+            offerPriceError.innerText = "";
+            return true;
+        }
+
+        function validateMinimumPrice() {
+            let minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
+            let minimumPriceError = document.getElementById("minimumPriceError");
+
+            if (isNaN(minimumPrice) || minimumPrice <= 0) {
+                minimumPriceError.innerText = "Minimum price is required and must be greater than 0.";
+                return false;
+            }
+
+            // Ensure offer price is not greater than minimum price
+            validateOfferPrice();
+
+            minimumPriceError.innerText = "";
+            return true;
+        }
+
+        function validateStartDate() {
+            let startDate = document.getElementById("startDate").value;
+            let startDateError = document.getElementById("startDateError");
+            let today = new Date().toISOString().split("T")[0];
+
+            if (!startDate) {
+                startDateError.innerText = "Start date is required.";
+                return false;
+            } else if (startDate < today) {
+                startDateError.innerText = "Start date cannot be in the past.";
+                return false;
+            }
+
+            startDateError.innerText = "";
+            return true;
+        }
+
+        function validateExpireOn() {
+            let startDate = document.getElementById("startDate").value;
+            let expireOn = document.getElementById("expireOn").value;
+            let expireOnError = document.getElementById("expireOnError");
+
+            if (!expireOn) {
+                expireOnError.innerText = "Expiration date is required.";
+                return false;
+            } else if (startDate && expireOn <= startDate) {
+                expireOnError.innerText = "Expiration date must be after the start date.";
+                return false;
+            }
+
+            expireOnError.innerText = "";
+            return true;
+        }
+
+        // Master validation function (called on form submission)
+        function validateCouponForm() {
+            let valid = true;
+
+            if (!validateName()) valid = false;
+            if (!validateOfferPrice()) valid = false;
+            if (!validateMinimumPrice()) valid = false;
+            if (!validateStartDate()) valid = false;
+            if (!validateExpireOn()) valid = false;
+
+            return valid;
+        }
+    </script>    
+</body>
+</html>

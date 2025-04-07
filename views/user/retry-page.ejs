@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>CRUX | Retry</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="/front/css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/icomoon.css">
+	<!-- Ion Icon Fonts-->
+	<link rel="stylesheet" href="/front/css/ionicons.min.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="/front/css/bootstrap.min.css">
+
+	<!-- Magnific Popup -->
+	<link rel="stylesheet" href="/front/css/magnific-popup.css">
+
+	<!-- Flexslider  -->
+	<link rel="stylesheet" href="/front/css/flexslider.css">
+
+	<!-- Owl Carousel -->
+	<link rel="stylesheet" href="/front/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="/front/css/owl.theme.default.min.css">
+	
+	<!-- Date Picker -->
+	<link rel="stylesheet" href="/front/css/bootstrap-datepicker.css">
+	<!-- Flaticons  -->
+	<link rel="stylesheet" href="/front/fonts/flaticon/font/flaticon.css">
+
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="/front/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- <div> class="colorlib-loader"></div> -->
+
+<div id="page">
+  <%- include('./userPartials/header') %>
+
+  <% if (messages.success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= messages.success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (messages.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= messages.error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="colorlib-product">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+          <div class="retry-container p-5 border rounded shadow-sm my-5">
+            <h2 class="mb-4">Payment Unsuccessful</h2>
+            <p class="mb-4">We couldn't process your payment. Please try again or choose a different payment method.</p>
+            
+            <div class="d-flex justify-content-center gap-3 mt-4">
+              <a href="#" >
+                <button id="retryPayment" class="btn btn-primary btn-lg">Retry Payment</button>                
+              </a>
+              <a href="/checkout" class="btn btn-outline-secondary btn-lg">
+                Go to Checkout 
+              </a>
+            </div>
+            
+            <div class="mt-4">
+              <p class="text-muted small">If you continue to experience issues, please contact our customer support.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('./userPartials/footer') %>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById("retryPayment").addEventListener("click", async function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get("orderId");
+
+        if (!orderId) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Order ID is required to retry payment',
+                confirmButtonText:"OK"
+            })
+            return;
+            
+        }
+
+        // Call server to get a new Razorpay order ID
+        const response = await fetch(`/order/retry-payment?orderId=${orderId}`,{method:"PATCH"});
+        const data = await response.json();
+
+        if (data.success) {
+            // Call Razorpay to open payment modal
+            initiateRazorpayPayment(data.orderId,data.amount);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.error,
+                confirmButtonText:"OK"
+            })
+        }
+    });
+
+    async function initiateRazorpayPayment(orderId,amount) {
+        const options = {
+            key: "<%= process.env.RAZOR_PAY_KEY_ID %>", // Use the Razorpay key
+            amount: amount * 100, // Convert to paise
+            currency: "INR",
+            name: "CRUX",
+            description: "Order Payment Retry",
+            order_id: orderId,
+            handler: async function (response) {
+               try{
+                let verifyResponse = await fetch("/order/verify-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    });
+                    
+                    let verifyResult = await verifyResponse.json();
+                    
+                    if (verifyResult.success) {
+                        // Complete the order
+                        let orderCompleteResponse = await fetch("/order", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                userId: "<%= user._id %>",
+                                addressId: '<%=order.address%>',
+                                paymentMethod: "Online",
+                                paymentId: response.razorpay_payment_id,
+                                orderId: response.razorpay_order_id
+                            })
+                        });
+                        
+                        let orderCompleteResult = await orderCompleteResponse.json();
+                        
+                        if (orderCompleteResult.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Payment Successful!",
+                                text: "Your order has been placed successfully.",
+                                confirmButtonText: "OK",
+                            }).then(() => {
+                                window.location.href = "/order";
+                            });
+                        } else {
+                            throw new Error(orderCompleteResult.error);
+                        }
+                    } else {
+                        throw new Error(verifyResult.error);
+                    }
+
+               }catch (error) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Payment Verification Failed",
+                        text: error.message || "Failed to verify payment. Please contact support.",
+                    });
+                }
+            },
+            modal: {
+                escape: false,
+                backdropclose: false,
+                handleback: false,
+                confirm_close: true,
+                ondismiss: function () {
+                    window.location.href = `/payment-retry?orderId=${orderId}`;
+                }
+            },
+            prefill: {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>",
+                contact: "<%= user.phone %>"
+            },
+            theme: { color: "#3399cc" }
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+    }
+</script>
+    </body>
+
+    </html>

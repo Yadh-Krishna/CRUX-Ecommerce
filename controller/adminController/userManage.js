@@ -1,79 +1,111 @@
-const User=require('../../models/dbuser');
+const User=require('../../models/userModel');
 const bcrypt=require('bcrypt');
+const asyncHandler=require('express-async-handler');
 
-const loadUsers= async (req, res) => {
-    try {
-        let searchTerm = req.query.searchUsers?.trim() || "";
-        let page = parseInt(req.query.page) || 1; // Get the page number from query, default to 1
-        let limit = 5; // Number of users per page
-        let skip = (page - 1) * limit; // Calculate how many records to skip
+const loadUsers=  asyncHandler(async (req, res) => {
+    let { search = "", status = "Show all", limit = 10, page = 1 } = req.query;
+    
+    limit = parseInt(limit);
+    page = parseInt(page);
 
-        let query = {};
-        if (searchTerm) {
-            query = {
-                $or: [
-                    { fullName: { $regex: new RegExp(searchTerm, "i") } },
-                    { email: { $regex: new RegExp(searchTerm, "i") } }
-                ]
-            };
-        }
+    const query = {};
 
-        const users = await User.find(query).sort({fullName:1}).skip(skip).limit(limit); // Fetch paginated users
-        const totalUsers = await User.countDocuments(query); // Count total users matching the search
+    // Status Filtering
+    if (status === "Active") query.isActive = true;
+    if (status === "Disabled") query.isActive = false;
 
-        res.render("users", {
-            users,
-            currentPage: page,
-            totalPages: Math.ceil(totalUsers / limit),
-            searchTerm
-        });
-    } catch (err) {
-        console.error("Error fetching users:", err);
-        res.status(500).send("Internal Server Error");
+    // Search Filtering
+    if (search) {
+        query.$or = [
+            { fullName: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } }
+        ];
     }
-}
 
-const blockUser= async (req, res) => {
+    // Fetch Users with Pagination
+    const [users, totalUsers] = await Promise.all([
+        User.find(query).sort({ fullName: 1 }).limit(limit).skip((page - 1) * limit),
+        User.countDocuments(query)
+    ]);
+
+    res.render("users", {
+        users,
+        totalUsers,
+        currentPage: page,
+        limit,
+        search,
+        status
+    });
+});
+
+const liveSearchUsers = asyncHandler(async (req, res) => {
     try {
-      const user = await User.findById(req.params.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      let search = req.query.search || "";
+      let status = req.query.status || "";
+      let limit = parseInt(req.query.limit) || 10;
+      let page = parseInt(req.query.page) || 1;
+      let skip = (page - 1) * limit;
+  
+      let filter = {};
+  
+      if (search) {
+        filter.fullName = { $regex: search, $options: "i" }; // Case-insensitive name search
       }
   
-      // Toggle user block status
-      user.isActive = !user.isActive;
-      await user.save();
+      if (status === "Active") {
+        filter.isActive = true;
+      } else if (status === "Disabled") {
+        filter.isActive = false;
+      }
   
-      res.json({ isActive: user.isActive });    
+      let users = await User.find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+  
+      const formatDate = (date) => {
+        const d = new Date(date);
+        return d.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+      };
+  
+      let formattedUsers = users.map((user) => ({
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        isActive: user.isActive,
+        image: user.image || "/assets/imgs/default-user.jpg",
+        formattedDate: formatDate(user.createdAt),
+      }));
+  
+      let totalUsers = await User.countDocuments(filter);
+      let totalPages = Math.ceil(totalUsers / limit);
+  
+      res.json({ users: formattedUsers, totalPages, currentPage: page });
     } catch (error) {
-      console.error("Error toggling user status:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+      console.error("Error in live search:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
     }
-  }
+  });
 
-const fetchSearch= async (req, res) => {
-    try {
-        const searchTerm = req.query.term?.trim();
-        if (!searchTerm) return res.json([]); // Empty response if no input
 
-        // Search users by full name or email (case-insensitive)
-        const users = await User.find({
-            $or: [
-                { fullName: { $regex: new RegExp(searchTerm, "i") } },
-                { email: { $regex: new RegExp(searchTerm, "i") } }
-            ]
-        }).limit(5); // Limit results for performance
-
-        res.json(users);
-    } catch (err) {
-        console.error("Search Error:", err);
-        res.status(500).json({ message: "Internal Server Error" });
+const blockUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+        req.flash("error", "User not found");
+        return res.status(404).json({ message: "User not found" });
     }
-}
 
+    // Toggle user block status
+    user.isActive = !user.isActive;
+    await user.save();
+
+    req.flash("success", `User ${user.isActive ? "unblocked" : "blocked"} successfully`);
+    res.json({ isActive: user.isActive });
+});
 
 module.exports={
     loadUsers,
     blockUser,
-    fetchSearch
+    liveSearchUsers
 }
