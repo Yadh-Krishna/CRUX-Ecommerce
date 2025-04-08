@@ -96,7 +96,7 @@ const logout = (req, res) => {
     res.redirect("/admin/login"); // Redirect to login page
 };
 
-const loadSales=async(req,res)=>{
+const loadSales=async(req,res,next)=>{
     try{
             let { period, dateFrom, dateTo, search, page = 1 } = req.query;
             const limit = 10; // Pagination limit
@@ -194,7 +194,8 @@ const loadSales=async(req,res)=>{
     
         } catch (error) {
             console.error(error);
-            res.status(500).send("Internal Server Error");
+            next(error);
+            // res.status(500).send("Internal Server Error");
         }    
 }
 
@@ -238,7 +239,7 @@ async function getFilteredOrders(query) {
         .lean();
 }
 
-const pdfExport = async (req, res) => {
+const pdfExport = async (req, res,next) => {
     try {
         const orders = await getFilteredOrders(req.query);
         const reportsDir = path.join(__dirname, "../../public/reports");
@@ -331,11 +332,12 @@ const pdfExport = async (req, res) => {
         writeStream.on("finish", () => res.download(filePath));
     } catch (error) {
         console.error(error);
-        res.status(500).send("Error generating PDF");
+        next(error);
+        //res.status(500).send("Error generating PDF");
     }
 };
 
-const excelExport = async (req, res) => {
+const excelExport = async (req, res,next) => {
     try {
         const orders = await getFilteredOrders(req.query);
         const workbook = new ExcelJS.Workbook();
@@ -439,9 +441,19 @@ const excelExport = async (req, res) => {
         res.end();
     } catch (error) {
         console.error("Excel Export Error:", error);
-        res.status(500).send("Error generating Excel");
+        next(error);
+        // res.status(500).send("Error generating Excel");
     }
 };
+
+const errorPage=async(req,res,next)=>{    
+        try{
+          res.status(404).render('404-error');
+        }catch(err){
+          console.error("Error while rendering 404 page",err);
+          next(err);
+        }
+}
 
 
 module.exports={
@@ -452,5 +464,6 @@ module.exports={
     logout,  
     loadSales,
     pdfExport,
-    excelExport
+    excelExport,
+    errorPage
 }

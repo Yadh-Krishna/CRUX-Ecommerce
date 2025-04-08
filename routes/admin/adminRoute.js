@@ -37,10 +37,7 @@ router.get("/users",auth, UserManagement.loadUsers);  //Customer User page
 router.get("/users/search", UserManagement.liveSearchUsers);
 router.patch("/users/delete/:id",auth, UserManagement.blockUser);// Toggle user status (Block/Unblock)
 
-//Error Handling
-router.get('/error',auth,(req,res)=>{
-    res.render('404-error');
-})
+
 
 //Category management
 router.get('/categories',auth,categoryManage.categoryList);
@@ -91,5 +88,9 @@ router.patch('/coupons/toggle/:id',auth,couponController.blockCoupon);
 //Wallet Management
 
 router.get('/wallet',auth,walletController.loadWalletPage);
+
+
+//Error Handling
+router.get('*',auth,adminDashboard.errorPage);
 
 module.exports=router;

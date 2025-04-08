@@ -426,7 +426,13 @@
                             
                                                     
                                                         <div class="mt-auto">
-                                                            <% if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
+                                                            <% if (item.status === 'Pending' && order.orderStatus === "Created") { %>
+                                                                <span class="badge bg-danger d-inline-flex align-items-center">
+                                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                                    Order creation failed
+                                                                  </span>                                                                                                              
+
+                                                            <% } else if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') { %>
                                                                 <button class="btn btn-danger btn-sm open-cancel-modal" data-id="<%= item._id %>" data-type="item" data-bs-toggle="modal" data-bs-target="#cancelModal" data-order-id="<%=order._id%>">
                                                                     <i class="fas fa-times-circle me-1"></i> Cancel Item
                                                                 </button>
@@ -498,7 +504,7 @@
 
                     <!-- CANCEL Modal (Handles Order & Item Cancellation) -->
                         <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelLabel" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="cancelLabel">Cancel</h5>
@@ -535,7 +541,7 @@
 
                         <!-- RETURN Modal (Handles Order & Item Return) -->
                         <div class="modal fade" id="returnModal" tabindex="-1" aria-labelledby="returnLabel" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="returnLabel">Return</h5>

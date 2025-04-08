@@ -10,7 +10,7 @@ const Brand=require('../../models/brandModel')
 const Product = require('../../models/productModel');
 const Review=require('../../models/reviewModel')
 
-const productDetails = async (req, res) => {
+const productDetails = async (req, res,next) => {
        try {
             const user = req.user;
             const slug = req.params.id; 
@@ -86,19 +86,20 @@ const productDetails = async (req, res) => {
     
         } catch (error) {
             console.error("Error fetching product:", error);
-            res.status(500).render("products", { 
-                message: "Server error.", 
-                product: null, 
-                reviews: [], 
-                user: null, 
-                brand: null, 
-                relatedProducts: null 
-            });
+            next(error);
+            // res.status(500).render("products", { 
+            //     message: "Server error.", 
+            //     product: null, 
+            //     reviews: [], 
+            //     user: null, 
+            //     brand: null, 
+            //     relatedProducts: null 
+            // });
         }
         
     };
 
-const loadHome=async(req,res)=>{
+const loadHome=async(req,res,next)=>{
 
     try {                         
         const user = req.user;     
@@ -137,12 +138,13 @@ const loadHome=async(req,res)=>{
 
     } catch (error) {
         console.error("Error loading home page:", error);
-        res.status(statusCodes.SERVER_ERROR).send(errorMessages.SERVER.SERVER_ERROR);
+        next(error);
+        // res.status(statusCodes.SERVER_ERROR).send(errorMessages.SERVER.SERVER_ERROR);
     }
         
     }
 
-const productList=async(req,res)=>{    
+const productList=async(req,res,next)=>{    
     try {
 
         const user = req.user;
@@ -236,15 +238,25 @@ const productList=async(req,res)=>{
 
     } catch (error) {
         console.error("Error fetching products:", error);
-        res.status(500).send("Server Error");
+        // res.status(500).send("Server Error");
+        next(error);
     }  
       
 }
 
+const errorPage = async(req,res,next)=>{
+    try{
+        res.render("error-page");
+    }catch(err){
+        console.error("Error rendering error page:", err);
+        next(err);
+    }
+}
 
 
 module.exports={
     productDetails,
     loadHome,
-    productList
+    productList,
+    errorPage
 }

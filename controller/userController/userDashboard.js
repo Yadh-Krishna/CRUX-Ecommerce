@@ -81,8 +81,6 @@ const registerUser = async (req, res) => {
         }
         }
         
-
-
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -200,7 +198,7 @@ const resendOtp = async(req,res)=>{
     try {
         
         const tempUser = req.cookies.tempUser ? JSON.parse(req.cookies.tempUser) : null;
-        console.log(tempUser);
+        // console.log(tempUser);
 
         if (!tempUser) {
             res.clearCookie("tempUser"); // Ensure expired cookie is removed
@@ -306,8 +304,6 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
-
-
 
 // Logout User (Clear Cookie)
 const logoutUser = (req, res) => {

@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>CRUX | 404</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/front/css/style.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #f9f9f9, #f0f0f0);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: #d1d1d1;
+            margin: 0;
+            line-height: 1;
+        }
+        .error-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 1rem 0;
+            color: #333;
+        }
+        .error-message {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .gem-illustration {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 2rem auto;
+        }
+        .gem-layer {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+        .gem-layer-1 {
+            inset: 0;
+            border-color: #e0e0e0;
+            animation: pulse 2s infinite;
+        }
+        .gem-layer-2 {
+            inset: 10px;
+            border-color: #d0d0d0;
+        }
+        .gem-layer-3 {
+            inset: 20px;
+            border-color: #c0c0c0;
+        }
+        .gem-layer-4 {
+            inset: 30px;
+            border-color: #b0b0b0;
+        }
+        .gem-layer-5 {
+            inset: 40px;
+            background-color: #a0a0a0;
+            border-radius: 50%;
+        }
+        .quote {
+            font-style: italic;
+            color: #888;
+            margin: 1.5rem 0;
+        }
+        .home-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .home-button:hover {
+            background-color: #555;
+        }
+        .arrow-icon {
+            margin-right: 0.5rem;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Page Not Found</h2>
+        <p class="error-message">
+            We couldn't find the page you're looking for. The page might have been removed or the link might be broken.
+        </p>
+
+        <div class="gem-illustration">
+            <div class="gem-layer gem-layer-1"></div>
+            <div class="gem-layer gem-layer-2"></div>
+            <div class="gem-layer gem-layer-3"></div>
+            <div class="gem-layer gem-layer-4"></div>
+            <div class="gem-layer gem-layer-5"></div>
+        </div>
+
+        <p class="quote">"Even the most precious gems can sometimes be misplaced."</p>
+
+        <a href="/" class="home-button">
+            <span class="arrow-icon">←</span>
+            Return to Home
+        </a>
+    </div>
+</body>
+</html>

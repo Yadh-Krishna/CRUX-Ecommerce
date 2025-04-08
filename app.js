@@ -16,6 +16,7 @@ const passport = require('./config/passport')
 const jwt= require('jsonwebtoken');
 const upload=require('./middleware/upload')
 const Razorpay=require('razorpay');
+const statusCodes=require('./utils/statusCodes')
 
 
 const googleAuth=require('./controller/authController')
@@ -57,10 +58,6 @@ app.use((req, res, next) => {
     next();
 });
   app.use(cookieParser());
-
-
-
-
 //view engine
 app.set('views',[path.join(__dirname,'views/admin'),path.join(__dirname,'views/user')]);
 app.set('view engine','ejs');
@@ -78,7 +75,7 @@ app.use((err, req, res, next) => {
   // Set flash message for errors
   req.flash("error", err.message || "Internal Server Error");
   // Redirect back to the previous page or a generic error page
-  res.redirect("/admin/error"); 
+  res.status(statusCodes.SERVER_ERROR).render("500-error"); 
 }); 
 
 const razorpay = new Razorpay({

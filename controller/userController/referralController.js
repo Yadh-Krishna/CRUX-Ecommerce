@@ -82,9 +82,6 @@ const sendReferralInvite= async(req,res)=>{
     }
 }
 
-
-
-
 module.exports={
     loadReferrals,
     sendReferralInvite

@@ -36,6 +36,7 @@ router.get('/products/:id',userAuthenticate.authenticateUser,userProductControll
 router.get('/product-list',userAuthenticate.authenticateUser,userProductController.productList);//product listing
 router.get('/',userAuthenticate.authenticateUser,userProductController.loadHome);//home page
 
+
 router.use(userAuthenticate.isAuthenticated);
 
 router.use('/profile',profileRoutes)
@@ -62,6 +63,5 @@ router.patch('/order/retry-payment',verifyToken,checkoutController.retryPayment)
 router.get('/payment-retry',verifyToken,checkoutController.loadRetry);
 
 
-
-
+router.get('*',userProductController.errorPage);
 module.exports = router; 
