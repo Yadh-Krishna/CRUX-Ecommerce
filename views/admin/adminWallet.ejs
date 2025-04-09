@@ -57,7 +57,7 @@
                         <div class="card mb-3 shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Credited</h5>
-                                <h3 class="text-success fw-bold">₹<%= wallet.totalCredited.toFixed(2) %></h3>
+                                <h3 class="text-success fw-bold">₹<%= credit.toFixed(2) %></h3>
                             </div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                         <div class="card mb-3 shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Debited</h5>
-                                <h3 class="text-danger fw-bold">₹<%= wallet.totalDebited.toFixed(2) %></h3>
+                                <h3 class="text-danger fw-bold">₹<%= debit.toFixed(2) %></h3>
                             </div>
                         </div>
                     </div>
@@ -105,8 +105,12 @@
                                 </td>
                                 <td>₹<%= transaction.transactionAmount.toFixed(2) %></td> <!-- Instead of transaction.amount -->
                                 <td>
-                                    <a href="/admin/orders/<%= transaction.orderId._id %>" class="btn btn-info btn-sm">View Details</a>
-                                </td>
+                                    <% if (transaction.orderId) { %>
+                                      <a href="/admin/orders/<%= transaction.orderId._id %>" class="btn btn-info btn-sm">View Details</a>
+                                    <% } else { %>
+                                      <span class="text-muted">No Order</span>
+                                    <% } %>
+                                  </td>
                             </tr>
                             <% }); %>
                         </tbody>
@@ -114,6 +118,36 @@
                 </div>
             </div>
         </div>
+        <!-- Pagination -->
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+          
+                <!-- Previous Button -->
+                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                    <i class="material-icons md-chevron_left"></i>
+                  </a>
+                </li>
+          
+                <!-- Page Numbers -->
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                  </li>
+                <% } %>
+          
+                <!-- Next Button -->
+                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                    <i class="material-icons md-chevron_right"></i>
+                  </a>
+                </li>
+          
+              </ul>
+            </nav>
+          </div>
+      
     </section>
     <%- include("../partials/footer") %>
 </main>

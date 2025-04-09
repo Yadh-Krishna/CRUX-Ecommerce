@@ -658,7 +658,7 @@ const retryPayment = async (req, res) => {
         .json({ success: false, error: "Order ID is required" });
     }
 
-    // Fetch the order details from the database
+   
     const order = await Order.findOne({ razorpayOrderId: orderId });
 
     if (!order) {

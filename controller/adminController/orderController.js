@@ -196,7 +196,7 @@ const orderStatusManage = async (req, res) => {
                   i._id.toString() !== item._id.toString()
               )
               .reduce((sum, i) => sum + i.finalPrice, 0);
-            console.log("Remaining Total", remainingTotal);
+            // console.log("Remaining Total", remainingTotal);
             if (remainingTotal === 0) {
               refundAmount = refundAmount - order.couponPrice;
             } else if (remainingTotal < maxCouponAmount) {
@@ -252,17 +252,21 @@ const orderStatusManage = async (req, res) => {
 
       generateInvoice(order, item, invoicePath);
       item.invoiceUrl = `/invoices/${invoiceFileName}`;
+     
+      if(order.paymentMethod==='COD'){
       let wallet = await Wallet.findOne({ userId: admin._id });
       if (wallet) {
         wallet.transactions.push({
           orderId: order._id,
           transactionType: "credit",
-          transactionAmount: order.totalAmount,
+          transactionAmount: (item.finalPrice+(item.finalPrice*0.1)),
           transactionStatus: "completed",
           transactionDescription: `Credited amount for order ${order.orderId}`,
         });
       }
       await wallet.save();
+    }
+    
     }
 
     // Update Item Status
@@ -292,16 +296,18 @@ const orderStatusManage = async (req, res) => {
 const downloadInvoice = async (req, res) => {
   try {
     const orderId = req.params.orderId;
-    const filePath = path.join(
-      __dirname,
-      "../../public/invoices",
-      `invoice_${orderId}.pdf`
-    );
-
-    // Check if the file exists
-    if (fs.existsSync(filePath)) {
-      res.download(filePath, `invoice_${orderId}.pdf`); // Download the file
-    } else {
+      const itemId = req.params.itemId;
+      const filePath = path.join(
+        __dirname,
+        "../../public/invoices",
+        `invoice_${orderId}_${itemId}.pdf`
+      );
+      const order = await Order.findOne({ orderId });
+  
+      // Check if the file exists
+      if (fs.existsSync(filePath)) {
+        res.download(filePath, `invoice_${orderId}_${itemId}.pdf`); // Download the file
+      } else {
       res.status(404).json({ success: false, message: "Invoice not found" });
     }
   } catch (err) {
