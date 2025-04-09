@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Evara Dashboard</title>
+    <title>CRUX | Orders</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,93 +33,86 @@
                     <input type="text" placeholder="Search order ID" class="form-control bg-white">
                 </div> -->
             </div>
-            <div class="card mb-4">
-                <header class="card-header">
-                    <div class="row gx-3">
-                        <!-- <div class="col-lg-4 col-md-6 me-auto">
-                            <input type="text" id="searchInput" name="search" placeholder="Search..." class="form-control">
-                        </div> -->
-                        <!-- <div class="col-lg-2 col-6 col-md-3">
-                            <select name="status" class="form-select">
-                                <option>Status</option>
-                                <option>Pending</option>
-                                <option>Processing</option>
-                                <option>Shipped</option>
-                                <option>Delivered</option>
-                                <option>Cancelled</option>
-                                <option>Return Requested</option>
-                                <option>Returned</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-2 col-6 col-md-3">
-                            <select name="limit"  class="form-select">
-                                <option>Show 20</option>
-                                <option>Show 30</option>
-                                <option>Show 40</option>
-                            </select>
-                        </div> -->
-                    </div>
-                </header>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr> <th>Sl No</th>
-                                    <th>#ID</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col" class="text-start">Date</th>
-                                    <th scope="col" class="text-start">Order Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% orders.forEach((order,index) => { %>
-                                <tr>
-                                    <td><%= index+1  %></td>
-                                    <td>#<%= order.orderId %></td>
-                                    <td class='text-nowrap'><b><%= order.user.fullName %></b></td>
-                                    <td><%= order.user.email %></td>
-                                    <td class="fw-bold">₹<%= order.totalAmount.toFixed(2) %></td>
-                                    <td>
-                                        <span class="badge text-dark <%= order.orderStatus === 'Pending' ? 'alert-warning' : 
-                                                             order.orderStatus === 'Processing' ? 'alert-info' : 
-                                                             order.orderStatus === 'Shipped' ? 'alert-primary' : 
-                                                             order.orderStatus === 'Delivered' ? 'alert-success' : 
-                                                             order.orderStatus === 'Cancelled' ? 'alert-danger' : 
-                                                             order.orderStatus === 'Return Requested' ? 'alert-dark' : 
-                                                             'alert-secondary' %>">
-                                            <%= order.orderStatus %>
-                                        </span>
-                                    </td>
-                                    <td class='text-nowrap'><%= order.createdAt.toDateString() %></td>
-                                    <td class="text-end">
-                                        <a href="/admin/orders/<%= order._id %>" class="btn btn-primary">Details</a>
-                                        </td>
-                                </tr>
+                <div class="card mb-4"> 
+                    <header class="card-header">
+                        <form method="get" class="row gx-3">
+                            <div class="col-lg-4 col-md-6 me-auto">
+                              <input type="text" name="search" value="<%=search%>" placeholder="Search by Order ID" class="form-control">
+                            </div>
+                            <div class="col-lg-2 col-6 col-md-3">
+                              <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">Status</option>
+                                <% const statusOptions = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned', 'Created']; %>
+                                <% statusOptions.forEach(opt => { %>
+                                  <option value="<%= opt %>" <%= status === opt ? 'selected' : '' %>><%= opt %></option>
                                 <% }) %>
-                            </tbody>
-                        </table>
+                              </select>
+                            </div>
+                            <div class="col-auto">
+                              <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                          </form>                      
+                    </header>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr> <th>Sl No</th>
+                                        <th>#ID</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col" class="text-start">Date</th>
+                                        <th scope="col" class="text-start">Order Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% orders.forEach((order,index) => { %>
+                                    <tr>
+                                        <td><%= index+1  %></td>
+                                        <td>#<%= order.orderId %></td>
+                                        <td class='text-nowrap'><b><%= order.user.fullName %></b></td>
+                                        <td><%= order.user.email %></td>
+                                        <td class="fw-bold">₹<%= order.totalAmount.toFixed(2) %></td>
+                                        <td>
+                                            <span class="badge text-dark <%= order.orderStatus === 'Pending' ? 'alert-warning' : 
+                                                                order.orderStatus === 'Processing' ? 'alert-info' : 
+                                                                order.orderStatus === 'Shipped' ? 'alert-primary' : 
+                                                                order.orderStatus === 'Delivered' ? 'alert-success' : 
+                                                                order.orderStatus === 'Cancelled' ? 'alert-danger' : 
+                                                                order.orderStatus === 'Return Requested' ? 'alert-dark' : 
+                                                                'alert-secondary' %>">
+                                                <%= order.orderStatus %>
+                                            </span>
+                                        </td>
+                                        <td class='text-nowrap'><%= order.createdAt.toDateString() %></td>
+                                        <td class="text-end">
+                                            <a href="/admin/orders/<%= order._id %>" class="btn btn-primary">Details</a>
+                                            </td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- <div class="pagination-area mt-15 mb-50">
+            <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
+                    <ul class="pagination justify-content-center">
                         <% for(let i = 1; i <= totalPages; i++) { %>
                         <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                            <a class="page-link" href="?page=<%= i %>&search=<%= search || '' %>&status=<%= status || '' %>"><%= i %></a>
                         </li>
                         <% } %>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search || '' %>&status=<%= status || '' %>">
                                 <i class="material-icons md-chevron_right"></i>
                             </a>
                         </li>
                     </ul>
                 </nav>
-            </div> -->
+            </div>
         </section>
          <!-- content-main end// -->
         <%- include('../partials/footer') %>
