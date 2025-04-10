@@ -186,7 +186,7 @@ const authenticateOtp = async (req, res) => {
     // }
     // console.log(" Outside referrral code command",referralCode);
     if (referralCode) {
-      console.log(" Inside referrral code command", referralCode);
+      // console.log(" Inside referrral code command", referralCode);
       const referral = await Referral.findOne({ referralCode }).populate(
         "userId"
       );

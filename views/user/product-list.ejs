@@ -541,11 +541,39 @@
         });
     }
 
+            const isUserLoggedIn = async () => {
+            try {   
+                const res = await fetch("/auth/status");
+                const data = await res.json();
+                console.log("Data ",data)
+                return data.loggedIn;
+            } catch {
+                return false;
+            }
+            };
+
     // Function to attach event listeners to cart and wishlist buttons
     function attachProductActionEvents() {
         document.querySelectorAll(".add-to-cart").forEach(button => {
             button.addEventListener('click', async function (event) {
                 event.preventDefault();
+
+                if (!(await isUserLoggedIn())) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Login Required",
+                            text: "Please login to continue.",
+                            showCancelButton: true,
+                            confirmButtonText: "Login",
+                            cancelButtonText: "Cancel"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                            window.location.href = "/login";
+                            }
+                        });
+                        return;
+                        }
+
                 const productId = this.getAttribute('data-id');
 
                 try {
@@ -613,208 +641,7 @@
     // Attach initial pagination and product events
     attachPaginationEvents();
     attachProductActionEvents();
-});
-
-        // function clearFilters() {
-        //     // Clear all selections
-        //     $('.select2-multi').val(null).trigger('change');
-        //     $('input[name="sort"]').prop('checked', false);
-        //     $('#searchInput').val('');
-            
-        //     // Redirect to the base URL without query parameters
-        //     window.location.href = window.location.pathname;
-        // }
-
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     // Initialize Select2 for multi-select dropdowns
-        //     $('.select2-multi').select2({
-        //         placeholder: "Select options",
-        //         allowClear: true
-        //     });
-
-        //     const searchInput = document.getElementById("searchInput");
-        //     const productContainer = document.querySelector(".row.row-pb-md"); // Product list container
-        //     const paginationContainer = document.querySelector(".block-27 ul"); // Pagination container
-
-        //     // Function to build query string based on selected filters
-        //     function buildQuery() {
-        //         let queryParams = new URLSearchParams();
-
-        //         // Search input
-        //         if (searchInput.value.trim()) {
-        //             queryParams.append("search", searchInput.value.trim());
-        //         }
-
-        //         // Gender Filter - using Select2
-        //         $('#genderSelect').select2('data').forEach(item => {
-        //             queryParams.append("gender", item.id);
-        //         });
-
-        //         // Brand Filter - using Select2
-        //         $('#brandSelect').select2('data').forEach(item => {
-        //             queryParams.append("brand", item.id);
-        //         });
-
-        //         // Category Filter - using Select2
-        //         $('#categorySelect').select2('data').forEach(item => {
-        //             queryParams.append("category", item.id);
-        //         });
-
-        //         // Sorting Option
-        //         let sort = document.querySelector("input[name='sort']:checked");
-        //         if (sort) {
-        //             queryParams.append("sort", sort.value);
-        //         }
-               
-        //         return queryParams.toString();
-        //     }
-
-        //     // Function to fetch filtered products
-        //     function fetchProducts(page = 1) {
-        //         let queryString = buildQuery();
-        //         let url = `/product-list?page=${page}&${queryString}`;
-
-        //         fetch(url, { method: "GET" })
-        //             .then(response => response.text())
-        //             .then(data => {
-        //                 // Parse received HTML and extract product & pagination content
-        //                 let parser = new DOMParser();
-        //                 let doc = parser.parseFromString(data, "text/html");
-
-        //                 // Update product list
-        //                 productContainer.innerHTML = doc.querySelector(".row.row-pb-md").innerHTML;
-
-        //                 // Update pagination
-        //                 paginationContainer.innerHTML = doc.querySelector(".block-27 ul").innerHTML;
-
-        //                 // Reattach event listeners to new pagination buttons
-        //                 attachPaginationEvents();
-                        
-        //                 // Reattach event listeners for cart and wishlist
-        //                 attachProductActionEvents();
-        //             })
-        //             .catch(error => console.error("Error fetching products:", error));
-        //     }
-
-        //     // Event listener for Apply Filters button
-        //     document.getElementById('applyFilters').addEventListener('click', () => fetchProducts());
-
-        //     // Event listener for search input (optional for immediate search)
-        //     searchInput.addEventListener("keyup", function(event) {
-        //         if (event.key === "Enter") {
-        //             fetchProducts();
-        //         }
-        //     });
-
-        //     // Function to attach event listeners to pagination links
-        //     function attachPaginationEvents() {
-        //         document.querySelectorAll(".block-27 ul li a").forEach(link => {
-        //             link.addEventListener("click", function (event) {
-        //                 event.preventDefault();
-        //                 let page = new URL(this.href).searchParams.get("page");
-        //                 fetchProducts(page);
-        //             });
-        //         });
-        //     }
-            
-        //     // Function to attach event listeners to cart and wishlist buttons
-        //     function attachProductActionEvents() {
-        //         // Add to Cart Functionality
-        //         const addToCartButtons = document.querySelectorAll(".add-to-cart");
-        //         addToCartButtons.forEach(button => {
-        //             button.addEventListener('click', async function (event) {
-        //                 event.preventDefault();
-        //                 const productId = this.getAttribute('data-id');
-                        
-        //                 try {
-        //                     const response = await fetch('/cart/add', {
-        //                         method: 'POST',  
-        //                         headers: {
-        //                             "Content-Type": "application/json",
-        //                             "Accept": "application/json"
-        //                         },
-        //                         body: JSON.stringify({ productId, quantity: 1 })
-        //                     });
-
-        //                     if (response.status === 401) {
-        //                         window.location.href = "/login";
-        //                         return;
-        //                     }
-
-        //                     const result = await response.json();
-
-        //                     if (result.success) {
-        //                         Swal.fire({
-        //                             icon: "success",
-        //                             title: "Added to Cart!",
-        //                             text: "The product has been successfully added to your cart.",
-        //                             showConfirmButton: false,
-        //                             timer: 1500
-        //                         });
-        //                     } else {
-        //                         Swal.fire({
-        //                             icon: "warning",
-        //                             title: "Oops!",
-        //                             text: result.message,
-        //                         });
-        //                     }
-        //                 } catch (err) {
-        //                     console.error("Error adding to cart:", err);
-        //                     Swal.fire({
-        //                         icon: "error",
-        //                         title: "Error!",
-        //                         text: "Something went wrong while adding to cart. Please try again!",
-        //                     });
-        //                 }
-        //             });
-        //         });
-
-        //         // Wishlist Functionality
-        //         document.querySelectorAll('.wishlist-toggle').forEach(button => {
-        //             button.addEventListener('click', async function() {
-        //                 const productId = this.getAttribute('data-product-id');
-        //                 try {
-        //                     const response = await fetch(`/profile/wishlist/add`, {
-        //                         method: "POST",
-        //                         headers: {"Content-Type": "application/json"},
-        //                         body: JSON.stringify({productId}),
-        //                     });
-
-        //                     const result = await response.json();
-        //                     if (result.success) {
-        //                         Swal.fire({
-        //                             icon: "success",
-        //                             title: "Added to wishlist",
-        //                             text: result.message,
-        //                             confirmButtonText: "OK"
-        //                         }).then(() => location.reload())
-        //                     } else {    
-        //                         Swal.fire({
-        //                             icon: "error",
-        //                             title: "Error",
-        //                             text: result.message,
-        //                             confirmButtonText: "OK"
-        //                         })
-        //                     }
-        //                 } catch (err) {
-        //                     console.error(err);
-        //                     Swal.fire({
-        //                         icon: "error",
-        //                         title: "Error!!",
-        //                         text: "Something went Wrong!!",
-        //                         confirmButtonText: "OK"
-        //                     })
-        //                 }
-        //             })
-        //         });
-        //     }
-
-        //     // Attach initial pagination events
-        //     attachPaginationEvents();
-            
-        //     // Attach initial product action events
-        //     attachProductActionEvents();
-        // });
+});      
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

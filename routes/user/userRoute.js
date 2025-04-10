@@ -4,7 +4,7 @@ const bcrypt=require('bcrypt');
 const nocache = require('nocache');
 const upload=require('../../middleware/upload')
 const userAuthenticate=require('../../middleware/authenticateUser')
-
+const jwt=require('jsonwebtoken')
 const userController=require('../../controller/userController/userDashboard');
 const manageUser=require('../../controller/userController/manageUser')
 const verifyToken=require('../../middleware/userAuth');
@@ -36,6 +36,19 @@ router.get('/products/:id',userAuthenticate.authenticateUser,userProductControll
 router.get('/product-list',userAuthenticate.authenticateUser,userProductController.productList);//product listing
 router.get('/',userAuthenticate.authenticateUser,userProductController.loadHome);//home page
 
+router.get("/auth/status", async(req, res) => {
+    try {
+    const token = req.cookies.userToken;
+    if (!token) {
+      return res.json({ loggedIn: false });
+    }      
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    //   console.log("decoded ",decoded);
+      res.json({ loggedIn: true, userId: decoded.userId, email: decoded.email });
+    } catch (err) {
+      res.json({ loggedIn: false });
+    }
+  });
 
 router.use(userAuthenticate.isAuthenticated);
 

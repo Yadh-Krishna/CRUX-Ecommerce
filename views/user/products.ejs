@@ -739,12 +739,38 @@ function showLoader() {
         container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
 		}
 
+		const isUserLoggedIn = async () => {
+            try {   
+                const res = await fetch("/auth/status");
+                const data = await res.json();
+                console.log("Data ",data)
+                return data.loggedIn;
+            } catch {
+                return false;
+            }
+            };
+
 
 			document.addEventListener('DOMContentLoaded', function () {
 		const addToCartButton = document.querySelector(".add-to-cart");
 
 		if (addToCartButton) {
 			addToCartButton.addEventListener('click', async function (event) {
+				if (!(await isUserLoggedIn())) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Login Required",
+                            text: "Please login to continue.",
+                            showCancelButton: true,
+                            confirmButtonText: "Login",
+                            cancelButtonText: "Cancel"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                            window.location.href = "/login";
+                            }
+                        });
+                        return;
+                        }
 				const productId = this.getAttribute('data-id');
 
 				try {
