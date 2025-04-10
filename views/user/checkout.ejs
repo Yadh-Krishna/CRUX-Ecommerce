@@ -476,7 +476,7 @@
                         <% 
                         // Filter coupons based on general availability or referral-based restrictions
                         const userSpecificCoupons = availableCoupons.filter(coupon => 
-                            !coupon.generatedByReferral || (coupon.generatedByReferral && !coupon.userId.includes(user._id))
+                            !coupon.generatedByReferral || (coupon.generatedByReferral && coupon.rewardUsers.includes(user._id))
                         );
                 
                         if (userSpecificCoupons.length > 0) { 
