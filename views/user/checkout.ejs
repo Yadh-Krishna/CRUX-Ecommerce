@@ -890,9 +890,9 @@ async function initiateRazorpayPayment(selectedAddress, orderId = null) {
         const appliedCoupon = appliedCouponInput ? appliedCouponInput.value : null;        
         
         
-        // Get cart items (you may need to modify this based on how you store cart data)
-        const cartItems = '<%= JSON.stringify(cart.items) %>';
-        // console.log(cartItems);
+        
+        const cartItems = <%- JSON.stringify(cart.items) %>;
+        
         // If orderId is provided, we're retrying a payment
         let orderResult;
         
