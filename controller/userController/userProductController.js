@@ -120,7 +120,7 @@ const loadHome = async (req, res, next) => {
       isDeleted: false,
       category: { $in: validCategoryIds },
       brands: { $in: validBrandIds },
-    }).populate("category", "name offerApplied catOffer");
+    }).populate("category", "name offerApplied catOffer").limit(8).sort({createdAt:-1});
 
     let wishlistProductIds = null;
     if (user) {
