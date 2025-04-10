@@ -149,7 +149,8 @@ const addProduct = asyncHandler(async (req, res) => {
       gender,
       tags,
     } = req.body;
-
+    // console.log("Category from body ",category)
+    let finalPrice;
     // Validate images
     if (!req.files || req.files.length < 3) {
       req.flash("error", "Upload at least 3 images.");
@@ -192,11 +193,12 @@ const addProduct = asyncHandler(async (req, res) => {
     );
 
     if (!discount) discount = 0;
-    const categories = await Category.findOne({ name: category });
+    const categories = await Category.findById(category);
+    // console.log("Ctegory ",categories);
     if (categories.offerApplied && categories.catOffer > discount) {
-      const finalPrice = price - (price * categories.catOffer) / 100;
+       finalPrice = price - (price * categories.catOffer) / 100;
     } else {
-      const finalPrice = price - (price * discount) / 100;
+       finalPrice = price - (price * discount) / 100;
     }
 
     // Save product to the database

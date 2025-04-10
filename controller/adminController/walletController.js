@@ -129,6 +129,18 @@ const loadWalletPage = async (req, res) => {
   }
 };
 
+
+const createToken= async(req,res)=>{
+
+const user=req.cookies.token;
+const decoded=user.verify(token,process.env.JWT_SECRET,{});
+
+
+
+
+}
+
+
 module.exports = {
   loadWalletPage,
 };
